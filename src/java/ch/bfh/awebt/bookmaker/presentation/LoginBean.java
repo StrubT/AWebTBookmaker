@@ -1,5 +1,6 @@
 package ch.bfh.awebt.bookmaker.presentation;
 
+import java.io.Serializable;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Locale;
@@ -15,7 +16,9 @@ import ch.bfh.awebt.bookmaker.persistence.data.User;
 
 @ManagedBean
 @SessionScoped
-public class LoginBean {
+public class LoginBean implements Serializable {
+
+	private static final long serialVersionUID = 2026572716229390497L;
 
 	private Locale locale;
 	private UserDAO userDAO;
