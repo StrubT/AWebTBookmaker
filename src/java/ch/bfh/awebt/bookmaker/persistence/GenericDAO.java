@@ -1,9 +1,12 @@
 package ch.bfh.awebt.bookmaker.persistence;
 
+import java.util.List;
+import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
+import javax.persistence.TypedQuery;
 
-public class GenericDAO<T> {
+public abstract class GenericDAO<T> {
 
 	private static final String PERSISTENCE_UNIT = "bookmaker";
 
@@ -14,6 +17,8 @@ public class GenericDAO<T> {
 		entityManager = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT).createEntityManager();
 	}
 
+	protected abstract Class<T> getEntityClass();
+
 	public T create(T entity) {
 
 		entityManager.getTransaction().begin();
@@ -23,9 +28,17 @@ public class GenericDAO<T> {
 		return entity;
 	}
 
-	public T find(Class<T> type, Long id) {
+	public T find(int id) {
 
-		return entityManager.find(type, id);
+		return entityManager.find(getEntityClass(), id);
+	}
+
+	public List<T> findByQuery(String name, Map<String, Object> parameters) {
+
+		TypedQuery<T> query = entityManager.createNamedQuery(name, getEntityClass());
+		parameters.forEach(query::setParameter);
+
+		return query.getResultList();
 	}
 
 	public T update(T entity) {

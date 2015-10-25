@@ -1,6 +1,5 @@
 package ch.bfh.awebt.bookmaker.persistence.data;
 
-import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -8,9 +7,7 @@ import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
 @MappedSuperclass
-public class PersistentObject implements Serializable {
-
-	private static final long serialVersionUID = -8288309083957125216L;
+public abstract class PersistentObject {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,6 +24,11 @@ public class PersistentObject implements Serializable {
 	}
 
 	public void setId(int id) {
-		id = id;
+		this.id = id;
+	}
+
+	@Override
+	public String toString() {
+		return String.format("%s[id=%d]", this.getClass().getSimpleName(), this.id);
 	}
 }

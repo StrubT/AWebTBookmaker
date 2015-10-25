@@ -1,18 +1,21 @@
 package ch.bfh.awebt.bookmaker.presentation;
 
-import java.io.Serializable;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 import java.util.Locale;
 import javax.annotation.PostConstruct;
+import javax.faces.application.Application;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
+import javax.persistence.PersistenceException;
+import ch.bfh.awebt.bookmaker.Streams;
 import ch.bfh.awebt.bookmaker.persistence.UserDAO;
 import ch.bfh.awebt.bookmaker.persistence.data.User;
 
 @ManagedBean
 @SessionScoped
-public class LoginBean implements Serializable {
+public class LoginBean {
 
 	private Locale locale;
 	private UserDAO userDAO;
@@ -24,8 +27,19 @@ public class LoginBean implements Serializable {
 	@PostConstruct
 	public void init() {
 
-		locale = FacesContext.getCurrentInstance().getExternalContext().getRequestLocale();
+		FacesContext context = FacesContext.getCurrentInstance();
+		Application application = context.getApplication();
+		List<Locale> supportedLocales = Streams.iteratorList(application.getSupportedLocales());
+		locale = Streams.iteratorStream(context.getExternalContext().getRequestLocales())
+			.flatMap(r -> supportedLocales.stream().filter(s -> r.getLanguage().equalsIgnoreCase(s.getLanguage())))
+			.findFirst().orElse(application.getDefaultLocale());
+
 		userDAO = new UserDAO();
+	}
+
+	public List<Locale> getLocales() {
+
+		return Streams.iteratorList(FacesContext.getCurrentInstance().getApplication().getSupportedLocales());
 	}
 
 	public Locale getLocale() {
@@ -65,6 +79,10 @@ public class LoginBean implements Serializable {
 		return null;
 	}
 
+	public boolean hasPassword() {
+		return _userPassword != null;
+	}
+
 	public void setPassword(String password) {
 		_userPassword = password.toCharArray();
 	}
@@ -82,8 +100,8 @@ public class LoginBean implements Serializable {
 				this.user = user; //log in
 				return "secret?faces-redirect=true";
 
-			} catch (NoSuchAlgorithmException ex) {
-				MessageFactory.addWarning("ch.bfh.awebt.bookmaker.LOGIN_ERROR_HASHING_FAILED");
+			} catch (PersistenceException | NoSuchAlgorithmException ex) {
+				MessageFactory.addWarning("ch.bfh.awebt.bookmaker.LOGIN_REGISTER_ERROR_UNEXPECTED");
 			}
 
 		else
@@ -103,8 +121,8 @@ public class LoginBean implements Serializable {
 			} else
 				MessageFactory.addWarning("ch.bfh.awebt.bookmaker.LOGIN_ERROR_INCORRECT_INFORMATION");
 
-		} catch (NoSuchAlgorithmException ex) {
-			MessageFactory.addWarning("ch.bfh.awebt.bookmaker.LOGIN_ERROR_HASHING_FAILED");
+		} catch (PersistenceException | NoSuchAlgorithmException ex) {
+			MessageFactory.addWarning("ch.bfh.awebt.bookmaker.LOGIN_ERROR_UNEXPECTED");
 		}
 
 		return "login?faces-redirect=true";

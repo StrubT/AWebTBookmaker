@@ -1,5 +1,6 @@
 package ch.bfh.awebt.bookmaker.persistence.data;
 
+import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -12,7 +13,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "users")
 @NamedQuery(name = User.FIND_BY_LOGIN_QUERY, query = "SELECT u FROM User u WHERE LOWER(u.login) = LOWER(:login)")
-public class User extends PersistentObject {
+public class User extends PersistentObject implements Serializable {
 
 	public static final String FIND_BY_LOGIN_QUERY = "User.FIND_BY_LOGIN_QUERY";
 
