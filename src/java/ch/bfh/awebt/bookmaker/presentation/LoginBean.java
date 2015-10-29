@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.PostConstruct;
 import javax.faces.application.Application;
 import javax.faces.bean.ManagedBean;
@@ -15,6 +17,11 @@ import ch.bfh.awebt.bookmaker.Streams;
 import ch.bfh.awebt.bookmaker.persistence.UserDAO;
 import ch.bfh.awebt.bookmaker.persistence.data.User;
 
+/**
+ * Represents a {@link SessionScoped} {@link ManagedBean} providing login and localisation helpers.
+ *
+ * @author strut1 &amp; touwm1
+ */
 @ManagedBean
 @SessionScoped
 public class LoginBean implements Serializable {
@@ -29,54 +36,91 @@ public class LoginBean implements Serializable {
 	private Locale locale;
 	private User user;
 	private String _userLogin;
-	private char[] _userPassword;
+	private byte[] _userPasswordHash;
 
+	/**
+	 * Initialises the managed bean.
+	 */
 	@PostConstruct
 	public void init() {
 
-		FacesContext context = FacesContext.getCurrentInstance();
-		Application application = context.getApplication();
-		List<Locale> supportedLocales = Streams.iteratorList(application.getSupportedLocales());
-		locale = Streams.iteratorStream(context.getExternalContext().getRequestLocales())
+		List<Locale> supportedLocales = getLocales();
+		locale = Streams.iteratorStream(FacesContext.getCurrentInstance().getExternalContext().getRequestLocales()) //find the first requested locale which is supported by the application
 			.flatMap(r -> supportedLocales.stream().filter(s -> r.getLanguage().equalsIgnoreCase(s.getLanguage())))
-			.findFirst().orElse(application.getDefaultLocale());
+			.findFirst().orElse(supportedLocales.get(0)); //or use the default locale instad
 	}
 
+	/**
+	 * Sets the {@link NavigationBean}. <br>
+	 * This method is not to be called by client code, the framework automatically sets the bean instance.
+	 *
+	 * @param navigationBean the bean to use
+	 */
 	public void setNavigationBean(NavigationBean navigationBean) {
 		this.navigationBean = navigationBean;
 	}
 
+	/**
+	 * Gets a {@link List} containing the locales supported by the application.
+	 *
+	 * @return {@link List} containing the locales supported by the application
+	 */
 	public List<Locale> getLocales() {
 
-		return Streams.iteratorList(FacesContext.getCurrentInstance().getApplication().getSupportedLocales());
+		Application application = FacesContext.getCurrentInstance().getApplication();
+
+		return Stream.concat(Stream.of(application.getDefaultLocale()), //get the default locale first
+												 Streams.iteratorStream(application.getSupportedLocales())) //get other supported locales
+			.distinct() //remove any duplicates (the default locale is actually included in the supported locales, but in the last position)
+			.collect(Collectors.toList());
 	}
 
+	/**
+	 * Gets the locale to show the application in.
+	 *
+	 * @return locale to show the application in
+	 */
 	public Locale getLocale() {
 		return locale;
 	}
 
+	/**
+	 * Gets the language to show the application in.
+	 *
+	 * @return language to show the application in
+	 */
 	public String getLanguage() {
 		return getLocale().getLanguage();
 	}
 
+	/**
+	 * Sets the language to show the application in.
+	 *
+	 * @param language language to show the application in
+	 *
+	 * @return outcome: identifier of the view to navigate to
+	 */
 	public String setLanguage(String language) {
 
 		locale = new Locale(language);
 
 		if (user != null) {
-			user.setLanguage(language);
+			user.setLanguage(language); //remember the language for logged-in users
 			userDAO.update(user);
 		}
 
-		FacesContext.getCurrentInstance().getViewRoot().setLocale(locale);
+		FacesContext.getCurrentInstance().getViewRoot().setLocale(locale); //change the locale of the web page
 
-		return String.format("%s?faces-redirect=true", navigationBean.getCurrentView());
+		return navigationBean.getCurrentView(); //forces the application to reload the texts
 	}
 
-	public boolean isLoggedIn() {
-		return user != null;
-	}
-
+	/**
+	 * Gets whether or not a page should be show in the navigation.
+	 *
+	 * @param page page to determine whether or not to show in the navigation
+	 *
+	 * @return whether or not the specified page should be show in the navigation
+	 */
 	public boolean isVisible(NavigationPage page) {
 
 		switch (page.getCondition()) {
@@ -86,16 +130,21 @@ public class LoginBean implements Serializable {
 				return false;
 
 			case PLAYER:
-				return isLoggedIn();
+				return user != null;
 
 			case MANAGER:
-				return isLoggedIn() && user.isManager();
+				return user != null && user.isManager();
 
 			default:
 				throw new IllegalStateException("Unhandled page condition.");
 		}
 	}
 
+	/**
+	 * Gets the user currently logged in.
+	 *
+	 * @return user currently logged in
+	 */
 	public User getUser() {
 		return user;
 	}
@@ -104,46 +153,87 @@ public class LoginBean implements Serializable {
 
 		this.user = user;
 		_userLogin = user.getLogin();
+		_userPasswordHash = null;
+
 		locale = new Locale(user.getLanguage());
 	}
 
+	/**
+	 * Gets the login of the user to log in OR already logged in.
+	 *
+	 * @return login of the user
+	 */
 	public String getLogin() {
 		return _userLogin;
 	}
 
+	/**
+	 * Sets the login of the user to log in.
+	 *
+	 * @param login login of the user to log in
+	 */
 	public void setLogin(String login) {
 		_userLogin = login;
 	}
 
-	@Deprecated
+	/**
+	 * Gets the password of the user to log in. <br>
+	 * This method will always return {@code null}, the password is not being exposed.
+	 * It is only needed for {@link #setPassword(String)} to work properly.
+	 *
+	 * @return {@code null}
+	 */
 	public String getPassword() {
 		return null;
 	}
 
+	/**
+	 * Gets whether or not the password of the user to log in has already been entered.
+	 *
+	 * @return whether or not the password of the user to log in has already been entered
+	 */
 	public boolean hasPassword() {
-		return _userPassword != null;
+		return _userPasswordHash != null;
 	}
 
+	/**
+	 * Sets the password of the user to log in.
+	 *
+	 * @param password password of the user to log in
+	 */
 	public void setPassword(String password) {
-		_userPassword = password.toCharArray();
+
+		try {
+			_userPasswordHash = User.hashPassword(password.toCharArray());
+
+		} catch (NoSuchAlgorithmException ex) {
+			MessageFactory.addWarning("ch.bfh.awebt.bookmaker.SECURITY_ERROR");
+		}
 	}
 
+	/**
+	 * Tries to register a user with the entered login and password.
+	 *
+	 * @return outcome: identifier of the view to navigate to
+	 */
 	public String register() {
 
-		if (_userLogin != null && _userLogin.length() > 0
-				&& _userPassword != null && _userPassword.length > 0)
+		if (_userLogin != null && _userLogin.length() > 0 && _userPasswordHash != null)
 
-			try {
-				User user = new User(_userLogin, locale.getLanguage(), _userPassword);
-				userDAO.create(user);
-				_userPassword = null;
+			if (userDAO.findByLogin(_userLogin) != null)
+				MessageFactory.addWarning("ch.bfh.awebt.bookmaker.LOGIN_REGISTER_LOGIN_TAKEN");
 
-				setUser(user); //log in
-				return "secret?faces-redirect=true";
+			else
+				try {
+					User user = new User(_userLogin, locale.getLanguage(), _userPasswordHash);
+					userDAO.create(user);
 
-			} catch (PersistenceException | NoSuchAlgorithmException ex) {
-				MessageFactory.addWarning("ch.bfh.awebt.bookmaker.LOGIN_REGISTER_ERROR_UNEXPECTED");
-			}
+					setUser(user); //log in
+					return "secret?faces-redirect=true";
+
+				} catch (PersistenceException ex) {
+					MessageFactory.addWarning("ch.bfh.awebt.bookmaker.PERSISTENCE_ERROR");
+				}
 
 		else
 			MessageFactory.addWarning("ch.bfh.awebt.bookmaker.LOGIN_ERROR_MISSING_INFORMATION");
@@ -151,30 +241,40 @@ public class LoginBean implements Serializable {
 		return "register?faces-redirect=true";
 	}
 
+	/**
+	 * Tries to log in the user with the entered login and password.
+	 *
+	 * @return outcome: identifier of the view to navigate to
+	 */
 	public String login() {
 
 		try {
 			User user = userDAO.findByLogin(_userLogin);
-			if (user != null && user.validatePassword(_userPassword)) {
+			if (user != null && user.validatePassword(_userPasswordHash)) {
 				setUser(user);
 				return "secret?faces-redirect=true";
 
 			} else
 				MessageFactory.addWarning("ch.bfh.awebt.bookmaker.LOGIN_ERROR_INCORRECT_INFORMATION");
 
-		} catch (PersistenceException | NoSuchAlgorithmException ex) {
-			MessageFactory.addWarning("ch.bfh.awebt.bookmaker.LOGIN_ERROR_UNEXPECTED");
+		} catch (PersistenceException ex) {
+			MessageFactory.addWarning("ch.bfh.awebt.bookmaker.PERSISTENCE_ERROR");
 		}
 
 		return "login?faces-redirect=true";
 	}
 
+	/**
+	 * Logs out the currently logged in user.
+	 *
+	 * @return outcome: identifier of the view to navigate to
+	 */
 	public String logout() {
 
 		user = null;
 		_userLogin = null;
-		_userPassword = null;
+		_userPasswordHash = null;
 
-		return String.format("%s?faces-redirect=true", navigationBean.getCurrentView());
+		return navigationBean.getCurrentView(); //forces the application to reload
 	}
 }

@@ -139,6 +139,18 @@ public class User extends PersistentObject implements Serializable {
 	}
 
 	/**
+	 * Checks if the given password matches the user's one.
+	 *
+	 * @param passwordHash hashed password to match against the user's one
+	 *
+	 * @return whether or not the given password matches the user's one
+	 */
+	public boolean validatePassword(byte[] passwordHash) {
+
+		return MessageDigest.isEqual(this.passwordHash, passwordHash);
+	}
+
+	/**
 	 * Gets whether or not the user is a manager.
 	 *
 	 * @return whether or not the user is a manager
@@ -174,7 +186,16 @@ public class User extends PersistentObject implements Serializable {
 		this.language = language;
 	}
 
-	private static byte[] hashPassword(char[] password) throws NoSuchAlgorithmException {
+	/**
+	 * Generate a hash for a given password.
+	 *
+	 * @param password password to generate hash for
+	 *
+	 * @return hash for the specified password
+	 *
+	 * @throws NoSuchAlgorithmException if the password could not be hashed
+	 */
+	public static byte[] hashPassword(char[] password) throws NoSuchAlgorithmException {
 
 		try {
 			byte[] passwordBytes = new byte[password.length * 2];
