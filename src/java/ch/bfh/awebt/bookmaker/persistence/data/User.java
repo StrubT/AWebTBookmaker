@@ -27,27 +27,31 @@ public class User extends PersistentObject implements Serializable {
 	@Column(name = "password", nullable = false)
 	private byte[] passwordHash;
 
+	@Column(name = "manager", nullable = false)
+	private boolean isManager = false;
+
+	@Column(name = "locale", nullable = false)
+	private String language;
+
 	public User() {
 		super();
-
 	}
 
-	protected User(String login) {
+	protected User(String login, String language) {
 		this();
 
 		this.login = login;
+		this.language = language;
 	}
 
-	public User(String login, char[] password) throws NoSuchAlgorithmException {
-		this(login);
-
-		passwordHash = hashPassword(password);
-	}
-
-	public User(String login, byte[] passwordHash) {
-		this(login);
+	public User(String login, String language, byte[] passwordHash) {
+		this(login, language);
 
 		this.passwordHash = passwordHash;
+	}
+
+	public User(String login, String language, char[] password) throws NoSuchAlgorithmException {
+		this(login, language, hashPassword(password));
 	}
 
 	public String getLogin() {
@@ -73,7 +77,23 @@ public class User extends PersistentObject implements Serializable {
 		return MessageDigest.isEqual(passwordHash, hashPassword(password));
 	}
 
-	private byte[] hashPassword(char[] password) throws NoSuchAlgorithmException {
+	public boolean isManager() {
+		return isManager;
+	}
+
+	public void setIsManager(boolean isManager) {
+		this.isManager = isManager;
+	}
+
+	public String getLanguage() {
+		return language;
+	}
+
+	public void setLanguage(String language) {
+		this.language = language;
+	}
+
+	private static byte[] hashPassword(char[] password) throws NoSuchAlgorithmException {
 
 		try {
 			byte[] passwordBytes = new byte[password.length * 2];

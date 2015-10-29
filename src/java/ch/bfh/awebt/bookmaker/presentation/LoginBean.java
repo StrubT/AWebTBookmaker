@@ -7,6 +7,7 @@ import java.util.Locale;
 import javax.annotation.PostConstruct;
 import javax.faces.application.Application;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.persistence.PersistenceException;
@@ -20,9 +21,12 @@ public class LoginBean implements Serializable {
 
 	private static final long serialVersionUID = 2026572716229390497L;
 
-	private Locale locale;
-	private UserDAO userDAO;
+	@ManagedProperty("#{navigationBean}")
+	private NavigationBean navigationBean;
 
+	private final UserDAO userDAO = new UserDAO();
+
+	private Locale locale;
 	private User user;
 	private String _userLogin;
 	private char[] _userPassword;
@@ -36,8 +40,10 @@ public class LoginBean implements Serializable {
 		locale = Streams.iteratorStream(context.getExternalContext().getRequestLocales())
 			.flatMap(r -> supportedLocales.stream().filter(s -> r.getLanguage().equalsIgnoreCase(s.getLanguage())))
 			.findFirst().orElse(application.getDefaultLocale());
+	}
 
-		userDAO = new UserDAO();
+	public void setNavigationBean(NavigationBean navigationBean) {
+		this.navigationBean = navigationBean;
 	}
 
 	public List<Locale> getLocales() {
@@ -50,27 +56,54 @@ public class LoginBean implements Serializable {
 	}
 
 	public String getLanguage() {
-		return locale.getLanguage();
+		return getLocale().getLanguage();
 	}
 
-	public String setLanguage(String language, String action) {
+	public String setLanguage(String language) {
 
 		locale = new Locale(language);
+
+		if (user != null) {
+			user.setLanguage(language);
+			userDAO.update(user);
+		}
+
 		FacesContext.getCurrentInstance().getViewRoot().setLocale(locale);
 
-		return String.format("%s?faces-redirect=true", action);
+		return String.format("%s?faces-redirect=true", navigationBean.getCurrentView());
 	}
 
 	public boolean isLoggedIn() {
 		return user != null;
 	}
 
+	public boolean isVisible(NavigationPage page) {
+
+		switch (page.getCondition()) {
+			case ALWAYS:
+				return true;
+
+			case PLAYER:
+				return isLoggedIn();
+
+			default:
+				return isLoggedIn() && user.isManager();
+		}
+	}
+
 	public User getUser() {
 		return user;
 	}
 
+	private void setUser(User user) {
+
+		this.user = user;
+		_userLogin = user.getLogin();
+		locale = new Locale(user.getLanguage());
+	}
+
 	public String getLogin() {
-		return user != null ? user.getLogin() : _userLogin;
+		return _userLogin;
 	}
 
 	public void setLogin(String login) {
@@ -96,11 +129,11 @@ public class LoginBean implements Serializable {
 				&& _userPassword != null && _userPassword.length > 0)
 
 			try {
-				User user = new User(_userLogin, _userPassword);
+				User user = new User(_userLogin, locale.getLanguage(), _userPassword);
 				userDAO.create(user);
 				_userPassword = null;
 
-				this.user = user; //log in
+				setUser(user); //log in
 				return "secret?faces-redirect=true";
 
 			} catch (PersistenceException | NoSuchAlgorithmException ex) {
@@ -118,7 +151,7 @@ public class LoginBean implements Serializable {
 		try {
 			User user = userDAO.findByLogin(_userLogin);
 			if (user != null && user.validatePassword(_userPassword)) {
-				this.user = user;
+				setUser(user);
 				return "secret?faces-redirect=true";
 
 			} else
@@ -137,6 +170,6 @@ public class LoginBean implements Serializable {
 		_userLogin = null;
 		_userPassword = null;
 
-		return "home?faces-redirect=true";
+		return String.format("%s?faces-redirect=true", navigationBean.getCurrentView());
 	}
 }
