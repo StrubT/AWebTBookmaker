@@ -82,12 +82,17 @@ public class LoginBean implements Serializable {
 		switch (page.getCondition()) {
 			case ALWAYS:
 				return true;
+			case NEVER:
+				return false;
 
 			case PLAYER:
 				return isLoggedIn();
 
-			default:
+			case MANAGER:
 				return isLoggedIn() && user.isManager();
+
+			default:
+				throw new IllegalStateException("Unhandled page condition.");
 		}
 	}
 
