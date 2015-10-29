@@ -31,6 +31,8 @@ public abstract class PersistentObject implements Serializable {
 
 	/**
 	 * Constructs a new persistent record with a given unique identifier.
+	 *
+	 * @param id unique identifier of the persistent record
 	 */
 	protected PersistentObject(int id) {
 

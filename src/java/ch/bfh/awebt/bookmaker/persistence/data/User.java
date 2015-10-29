@@ -129,6 +129,8 @@ public class User extends PersistentObject implements Serializable {
 	 *
 	 * @param password clear-text password to match against the user's one
 	 *
+	 * @return whether or not the given password matches the user's one
+	 *
 	 * @throws NoSuchAlgorithmException if the given password could not be hashed
 	 */
 	public boolean validatePassword(char[] password) throws NoSuchAlgorithmException {
