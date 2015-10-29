@@ -52,7 +52,21 @@
 				</div>
 			</header>
 			<div class="container">
-				<ui:insert name="content" />
+				<c:choose>
+					<c:when test="#{loginBean.hasAccess(navigationBean.currentPage)}">
+						<ui:insert name="content" />
+					</c:when>
+					<c:otherwise>
+						<main class="panel panel-danger">
+							<div class="panel-heading">
+								<h2 class="panel-title">#{texts.NoAccessTitle}</h2>
+							</div>
+							<div class="panel-body">
+								#{texts.NoAccessContent}
+							</div>
+						</main>
+					</c:otherwise>
+				</c:choose>
 			</div>
 			<footer class="navbar navbar-default navbar-fixed-bottom">
 				<div class="container">

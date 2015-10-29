@@ -123,21 +123,44 @@ public class LoginBean implements Serializable {
 	 */
 	public boolean isVisible(NavigationPage page) {
 
-		switch (page.getCondition()) {
-			case ALWAYS:
-				return true;
-			case NEVER:
-				return false;
+		if (page != null)
+			switch (page.getCondition()) {
+				case ALWAYS:
+					return true;
 
-			case PLAYER:
-				return user != null;
+				case PLAYER:
+					return user != null;
 
-			case MANAGER:
-				return user != null && user.isManager();
+				case MANAGER:
+					return user != null && user.isManager();
+			}
 
-			default:
-				throw new IllegalStateException("Unhandled page condition.");
-		}
+		return false;
+	}
+
+	/**
+	 * Gets whether or not the user has access to a page.
+	 *
+	 * @param page page to determine whether or not the user has access to
+	 *
+	 * @return whether or not the user has access to the page
+	 */
+	public boolean hasAccess(NavigationPage page) {
+
+		if (page != null)
+			switch (page.getCondition()) {
+				case ALWAYS:
+				case NEVER: //not shown in navigation, but public access
+					return true;
+
+				case PLAYER:
+					return user != null;
+
+				case MANAGER:
+					return user != null && user.isManager();
+			}
+
+		return false;
 	}
 
 	/**

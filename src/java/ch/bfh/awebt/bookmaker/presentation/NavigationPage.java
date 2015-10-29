@@ -14,7 +14,7 @@ public class NavigationPage {
 
 		/**
 		 * Never show the page in the navigation. <br>
-		 * The page may be accessed via in-page links.
+		 * The page may be accessed by anyone via in-page links.
 		 */
 		NEVER,
 
