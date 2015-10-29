@@ -11,22 +11,52 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+/**
+ * Utility class to use with streams.
+ *
+ * @author strut1 &amp; touwm1
+ */
 public final class Streams {
 
 	private Streams() {
 		//utility class
 	}
 
+	/**
+	 * Creates a {@link Stream} from an {@link Iterator}.
+	 *
+	 * @param <T>      type of the elements
+	 * @param iterator iterator containing the elements to return
+	 *
+	 * @return a stream containing the elements from the iterator
+	 */
 	public static <T> Stream<T> iteratorStream(Iterator<T> iterator) {
 
 		return StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED), false);
 	}
 
+	/**
+	 * Creates a {@link List} from an {@link Iterator}.
+	 *
+	 * @param <T>      type of the elements
+	 * @param iterator iterator containing the elements to return
+	 *
+	 * @return a list containing the elements from the iterator
+	 */
 	public static <T> List<T> iteratorList(Iterator<T> iterator) {
 
 		return iteratorStream(iterator).collect(Collectors.toList());
 	}
 
+	/**
+	 * Creates a {@link Collector} returning only one element.
+	 *
+	 * @param <T> type of the element
+	 *
+	 * @return an {@link Optional} containing either the single element or nothing if there is no element in the {@link Stream}
+	 *
+	 * @throws TooManyElementsException if there are multiple elements in the {@link Stream}
+	 */
 	public static <T> Collector<T, ?, Optional<T>> optionalSingleCollector() {
 
 		return Collectors.reducing((a, b) -> {
@@ -34,11 +64,30 @@ public final class Streams {
 		});
 	}
 
+	/**
+	 * Creates a {@link Collector} returning only one element.
+	 *
+	 * @param <T> type of the element
+	 *
+	 * @return either the single element or {@code null} if there is no element in the {@link Stream}
+	 *
+	 * @throws TooManyElementsException if there are multiple elements in the {@link Stream}
+	 */
 	public static <T> Collector<T, ?, T> nullableSingleCollector() {
 
 		return Collector.of(() -> new OptionalBox<>(true), OptionalBox<T>::set, OptionalBox<T>::set, OptionalBox<T>::get);
 	}
 
+	/**
+	 * Creates a {@link Collector} returning exactly one element.
+	 *
+	 * @param <T> type of the element
+	 *
+	 * @return the single element in the {@link Stream}
+	 *
+	 * @throws NoSuchElementException   if there are no elements in the {@link Stream}
+	 * @throws TooManyElementsException if there are multiple elements in the {@link Stream}
+	 */
 	public static <T> Collector<T, ?, T> singleCollector() {
 
 		return Collector.of(() -> new OptionalBox<>(false), OptionalBox<T>::set, OptionalBox<T>::set, OptionalBox<T>::get);
@@ -51,17 +100,17 @@ public final class Streams {
 		private T value = null;
 		private boolean present = false;
 
-		public OptionalBox(boolean optional) {
+		private OptionalBox(boolean optional) {
 
 			this.optional = optional;
 		}
 
-		public OptionalBox<T> set(OptionalBox<T> optional) {
+		private OptionalBox<T> set(OptionalBox<T> optional) {
 
 			return optional.present ? this.set(optional.value) : this;
 		}
 
-		public OptionalBox<T> set(T value) {
+		private OptionalBox<T> set(T value) {
 
 			if (present)
 				throw new TooManyElementsException();
@@ -71,7 +120,7 @@ public final class Streams {
 			return this;
 		}
 
-		public T get() {
+		private T get() {
 
 			if (!present && !optional)
 				throw new NoSuchElementException();
