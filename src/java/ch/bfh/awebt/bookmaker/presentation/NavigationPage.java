@@ -8,58 +8,70 @@ package ch.bfh.awebt.bookmaker.presentation;
 public class NavigationPage {
 
 	/**
-	 * Represents the conditions under which a page is shown in the navigation.
+	 * Represents the conditions under which a page can be accessed.
 	 */
-	public static enum Condition {
+	public static enum AccessCondition {
 
 		/**
-		 * Never show the page in the navigation. <br>
-		 * The page may be accessed by anyone via in-page links.
+		 * The page is inaccessible. <br>
+		 * This constant should only be used for navigation visibility, not access control.
 		 */
 		NEVER,
 
 		/**
-		 * Show this page only in the navigation if the logged-in user is a manager.
+		 * This page is only accessible to logged-in managers.
 		 */
 		MANAGER,
 
 		/**
-		 * Show this page only in the navigation if a user is logged in.
+		 * This page is only accessible to logged-in user.
 		 */
 		PLAYER,
 
 		/**
-		 * Show this page always (whether or not a user is logged in).
+		 * This page is accessible to everyone (even anonymous visitors).
 		 */
 		ALWAYS
 	}
 
-	private final String view;
-	private final String name;
-	private final Condition condition;
+	private final String view, name;
+	private final AccessCondition accessCondition, navigationCondition;
 
 	/**
-	 * Construct a new page object that will always be shown.
+	 * Construct a new page object accessible to everyone.
 	 *
 	 * @param view identifier of the view to show
 	 * @param name name of the page (used for the internationalised title)
 	 */
 	public NavigationPage(String view, String name) {
-		this(view, name, Condition.ALWAYS);
+		this(view, name, AccessCondition.ALWAYS);
+	}
+
+	/**
+	 * Construct a new page object that will only be accessible under a certain condition.
+	 *
+	 * @param view            identifier of the view to show
+	 * @param name            name of the page (used for the internationalised title)
+	 * @param accessCondition condition under which the page is accessible
+	 */
+	public NavigationPage(String view, String name, AccessCondition accessCondition) {
+		this(view, name, accessCondition, accessCondition);
 	}
 
 	/**
 	 * Construct a new page object that will only be shown under a certain condition.
 	 *
-	 * @param view      identifier of the view to show
-	 * @param name      name of the page (used for the internationalised title)
-	 * @param condition condition the page is shown under
+	 * @param view                identifier of the view to show
+	 * @param name                name of the page (used for the internationalised title)
+	 * @param accessCondition     condition under which the page is accessible
+	 * @param navigationCondition condition under which the page is shown in the navigation
 	 */
-	public NavigationPage(String view, String name, Condition condition) {
+	public NavigationPage(String view, String name, AccessCondition accessCondition, AccessCondition navigationCondition) {
 
 		this.view = view;
 		this.name = name;
-		this.condition = condition;
+		this.accessCondition = accessCondition;
+		this.navigationCondition = navigationCondition;
 	}
 
 	/**
@@ -81,12 +93,21 @@ public class NavigationPage {
 	}
 
 	/**
-	 * Gets the condition the page is shown under.
+	 * Gets the condition under which the page is accessible.
 	 *
-	 * @return condition the page is shown under
+	 * @return condition under which the page is accessible
 	 */
-	public Condition getCondition() {
-		return condition;
+	public AccessCondition getAccessCondition() {
+		return accessCondition;
+	}
+
+	/**
+	 * Gets the condition under which the page is shown in the navigation.
+	 *
+	 * @return condition under which the page is shown in the navigation
+	 */
+	public AccessCondition getNavigationCondition() {
+		return navigationCondition;
 	}
 
 	/**

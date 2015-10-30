@@ -16,6 +16,7 @@ import javax.persistence.PersistenceException;
 import ch.bfh.awebt.bookmaker.Streams;
 import ch.bfh.awebt.bookmaker.persistence.UserDAO;
 import ch.bfh.awebt.bookmaker.persistence.data.User;
+import ch.bfh.awebt.bookmaker.presentation.NavigationPage.AccessCondition;
 
 /**
  * Represents a {@link SessionScoped} {@link ManagedBean} providing login and localisation helpers.
@@ -121,21 +122,9 @@ public class LoginBean implements Serializable {
 	 *
 	 * @return whether or not the specified page should be show in the navigation
 	 */
-	public boolean isVisible(NavigationPage page) {
+	public boolean showInNavigation(NavigationPage page) {
 
-		if (page != null)
-			switch (page.getCondition()) {
-				case ALWAYS:
-					return true;
-
-				case PLAYER:
-					return user != null;
-
-				case MANAGER:
-					return user != null && user.isManager();
-			}
-
-		return false;
+		return evaluateCondition(page != null ? page.getNavigationCondition() : AccessCondition.NEVER);
 	}
 
 	/**
@@ -145,22 +134,26 @@ public class LoginBean implements Serializable {
 	 *
 	 * @return whether or not the user has access to the page
 	 */
-	public boolean hasAccess(NavigationPage page) {
+	public boolean userHasAccess(NavigationPage page) {
 
-		if (page != null)
-			switch (page.getCondition()) {
-				case ALWAYS:
-				case NEVER: //not shown in navigation, but public access
-					return true;
+		return evaluateCondition(page != null ? page.getAccessCondition() : AccessCondition.NEVER);
+	}
 
-				case PLAYER:
-					return user != null;
+	private boolean evaluateCondition(AccessCondition accessCondition) {
 
-				case MANAGER:
-					return user != null && user.isManager();
-			}
+		switch (accessCondition) {
+			case ALWAYS:
+				return true;
 
-		return false;
+			case PLAYER:
+				return user != null;
+
+			case MANAGER:
+				return user != null && user.isManager();
+
+			default:
+				return false;
+		}
 	}
 
 	/**
@@ -298,6 +291,10 @@ public class LoginBean implements Serializable {
 		_userLogin = null;
 		_userPasswordHash = null;
 
-		return navigationBean.getCurrentView(); //forces the application to reload
+		if (userHasAccess(navigationBean.getCurrentPage()))
+			return navigationBean.getCurrentView(); //forces the application to reload
+
+		else
+			return "home?faces-redirect=true";
 	}
 }

@@ -33,7 +33,7 @@
 						<nav>
 							<ul class="nav navbar-nav">
 								<c:forEach items="#{navigationBean.pages}" var="page">
-									<c:if test="#{loginBean.isVisible(page)}">
+									<c:if test="#{loginBean.showInNavigation(page)}">
 										<li class="#{navigationBean.currentPage eq page ? 'active' : ''}"><h:link outcome="#{page.view}">#{texts[page.title]}</h:link></li>
 									</c:if>
 								</c:forEach>
@@ -53,7 +53,7 @@
 			</header>
 			<div class="container">
 				<c:choose>
-					<c:when test="#{loginBean.hasAccess(navigationBean.currentPage)}">
+					<c:when test="#{loginBean.userHasAccess(navigationBean.currentPage)}">
 						<ui:insert name="content" />
 					</c:when>
 					<c:otherwise>
