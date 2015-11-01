@@ -7,6 +7,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.NamedQuery;
 import javax.persistence.Persistence;
+import javax.persistence.PersistenceException;
 import javax.persistence.TypedQuery;
 import ch.bfh.awebt.bookmaker.persistence.data.PersistentObject;
 
@@ -66,12 +67,12 @@ public abstract class GenericDAO<T extends PersistentObject> implements Serializ
 			entityManager.persist(entity);
 			transaction.commit();
 
+			return entity;
+
 		} catch (Exception ex) {
 			transaction.rollback();
-			throw ex;
+			throw new PersistenceException("Could not persist the entity.", ex);
 		}
-
-		return entity;
 	}
 
 	/**
@@ -94,7 +95,7 @@ public abstract class GenericDAO<T extends PersistentObject> implements Serializ
 	 *
 	 * @return a {@link List} with the found entities
 	 */
-	public List<T> findByQuery(String name, Map<String, Object> parameters) {
+	protected List<T> findByQuery(String name, Map<String, Object> parameters) {
 
 		TypedQuery<T> query = getEntityManager().createNamedQuery(name, getEntityClass());
 		parameters.forEach(query::setParameter);
@@ -120,12 +121,12 @@ public abstract class GenericDAO<T extends PersistentObject> implements Serializ
 			entity = entityManager.merge(entity);
 			transaction.commit();
 
+			return entity;
+
 		} catch (Exception ex) {
 			transaction.rollback();
-			throw ex;
+			throw new PersistenceException("Could not merge the entity.", ex);
 		}
-
-		return entity;
 	}
 
 	/**
@@ -141,13 +142,12 @@ public abstract class GenericDAO<T extends PersistentObject> implements Serializ
 		transaction.begin();
 
 		try {
-			entity = entityManager.merge(entity);
-			entityManager.remove(entity);
+			entityManager.remove(entityManager.merge(entity));
 			transaction.commit();
 
 		} catch (Exception ex) {
 			transaction.rollback();
-			throw ex;
+			throw new PersistenceException("Could not remove the entity.", ex);
 		}
 	}
 }

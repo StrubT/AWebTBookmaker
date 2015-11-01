@@ -4,27 +4,27 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import ch.bfh.awebt.bookmaker.Streams;
 import ch.bfh.awebt.bookmaker.presentation.NavigationPage.AccessCondition;
 
 /**
- * Represents a {@link SessionScoped} {@link ManagedBean} providing navigation helpers.
+ * Represents a {@link ApplicationScoped} {@link ManagedBean} providing navigation helpers.
  *
  * @author strut1 &amp; touwm1
  */
 @ManagedBean
-@SessionScoped
+@ApplicationScoped
 public class NavigationBean implements Serializable {
 
 	private static final long serialVersionUID = -1616488627854886893L;
 
-	private static final List<NavigationPage> PAGES = Arrays.asList(new NavigationPage("/home.xhtml", "Home"),
-																																	new NavigationPage("/secret.xhtml", "Secret", AccessCondition.PLAYER),
-																																	new NavigationPage("/login.xhtml", "Login", AccessCondition.ALWAYS, AccessCondition.NEVER),
-																																	new NavigationPage("/register.xhtml", "LoginRegister", AccessCondition.ALWAYS, AccessCondition.NEVER));
+	private final List<NavigationPage> PAGES = Arrays.asList(new NavigationPage("/home.xhtml", "Home"),
+																													 new NavigationPage("/secret.xhtml", "Secret", AccessCondition.PLAYER),
+																													 new NavigationPage("/login.xhtml", "Login", AccessCondition.ALWAYS, AccessCondition.NEVER),
+																													 new NavigationPage("/register.xhtml", "LoginRegister", AccessCondition.ALWAYS, AccessCondition.NEVER));
 
 	/**
 	 * Gets a {@link List} of all the pages in this web site.
