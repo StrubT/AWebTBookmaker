@@ -1,11 +1,15 @@
 package ch.bfh.awebt.bookmaker.presentation;
 
+import java.io.Serializable;
+
 /**
  * Represents a page in the site navigation.
  *
  * @author strut1 &amp; touwm1
  */
-public class NavigationPage {
+public class NavigationPage implements Serializable {
+
+	private static final long serialVersionUID = -4638236743177666379L;
 
 	/**
 	 * Represents the conditions under which a page can be accessed.
