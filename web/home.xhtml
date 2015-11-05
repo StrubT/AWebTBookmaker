@@ -9,5 +9,30 @@
 	<ui:define name="main">
 		<h2>#{texts.HomeTitle}</h2>
 		<p>#{texts.HomeContent}</p>
+		<hr />
+		<p>
+			#{teams['SUI']} vs. #{teams['ESP']}
+			<hr />
+			<h:outputFormat value="#{bets['EVN']}" />
+			<hr />
+			<h:outputFormat value="#{bets['WIN']}">
+				<f:param value="#{teams['SUI']}" />
+			</h:outputFormat>
+			<hr />
+			<h:outputFormat value="#{bets['LDT']}">
+				<f:param value="#{teams['SUI']}" />
+				<f:param value="00:45:00" />
+			</h:outputFormat>
+			<hr />
+			<h:outputFormat value="#{bets['EVT']}">
+				<f:param value="00:45:00" />
+			</h:outputFormat>
+			<hr />
+			<h:outputFormat value="#{bets['LDG']}">
+				<f:param value="#{teams['SUI']}" />
+				<f:param value="00:45:00" />
+				<f:param value="3" />
+			</h:outputFormat>
+		</p>
 	</ui:define>
 </ui:composition>

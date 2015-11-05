@@ -18,5 +18,13 @@
 			<base-name>ch.bfh.awebt.bookmaker.bundles.texts</base-name>
 			<var>texts</var>
 		</resource-bundle>
+		<resource-bundle>
+			<base-name>ch.bfh.awebt.bookmaker.bundles.teams</base-name>
+			<var>teams</var>
+		</resource-bundle>
+		<resource-bundle>
+			<base-name>ch.bfh.awebt.bookmaker.bundles.bets</base-name>
+			<var>bets</var>
+		</resource-bundle>
 	</application>
 </faces-config>
