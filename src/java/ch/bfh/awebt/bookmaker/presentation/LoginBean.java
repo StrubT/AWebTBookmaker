@@ -107,7 +107,7 @@ public class LoginBean implements Serializable {
 
 		if (user != null) {
 			user.setLanguage(language); //remember the language for logged-in users
-			userDAO.update(user);
+			userDAO.merge(user);
 		}
 
 		FacesContext.getCurrentInstance().getViewRoot().setLocale(locale); //change the locale of the web page
@@ -242,7 +242,7 @@ public class LoginBean implements Serializable {
 			else
 				try {
 					User user = new User(_userLogin, locale.getLanguage(), _userPasswordHash);
-					userDAO.create(user);
+					userDAO.persist(user);
 
 					setUser(user); //log in
 					return "secret?faces-redirect=true";

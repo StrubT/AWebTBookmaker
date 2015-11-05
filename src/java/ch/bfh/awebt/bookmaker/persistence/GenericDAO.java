@@ -12,7 +12,8 @@ import javax.persistence.TypedQuery;
 import ch.bfh.awebt.bookmaker.persistence.data.PersistentObject;
 
 /**
- * Represents a data access object for a generic entity type.
+ * Represents a data access object for a generic entity type. <br>
+ * Provides CRUD operations for generic {@link PersistentObject}s.
  *
  * @param <T> type of the entities
  *
@@ -50,13 +51,13 @@ public abstract class GenericDAO<T extends PersistentObject> implements Serializ
 	protected abstract Class<T> getEntityClass();
 
 	/**
-	 * <strong>C</strong>reates / persists an entity in the data source.
+	 * <strong>C</strong>reate: persists an entity in the data source.
 	 *
 	 * @param entity entity to persist
 	 *
 	 * @return persisted entity
 	 */
-	public T create(T entity) {
+	public T persist(T entity) {
 
 		EntityManager entityManager = getEntityManager();
 		EntityTransaction transaction = entityManager.getTransaction();
@@ -104,13 +105,13 @@ public abstract class GenericDAO<T extends PersistentObject> implements Serializ
 	}
 
 	/**
-	 * <strong>U</strong>pdates / merges an entity into the data source.
+	 * <strong>U</strong>pdate: merges an entity into the data source.
 	 *
 	 * @param entity entity to update
 	 *
 	 * @return merged entity
 	 */
-	public T update(T entity) {
+	public T merge(T entity) {
 
 		EntityManager entityManager = getEntityManager();
 		EntityTransaction transaction = entityManager.getTransaction();
@@ -130,11 +131,11 @@ public abstract class GenericDAO<T extends PersistentObject> implements Serializ
 	}
 
 	/**
-	 * <strong>D</strong>eletes / removes an entity from the data source.
+	 * <strong>D</strong>elete: removes an entity from the data source.
 	 *
 	 * @param entity entity to remove
 	 */
-	public void delete(T entity) {
+	public void remove(T entity) {
 
 		EntityManager entityManager = getEntityManager();
 		EntityTransaction transaction = entityManager.getTransaction();
