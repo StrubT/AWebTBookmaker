@@ -349,7 +349,7 @@ CREATE TABLE `users` (
   `password` binary(16) NOT NULL,
   `manager` bit(1) NOT NULL DEFAULT b'0',
   `locale` varchar(10) NOT NULL,
-  `balance` decimal(10,0) NOT NULL DEFAULT '0',
+  `balance` decimal(10,3) NOT NULL DEFAULT '0',
   `cardnumber` char(16) DEFAULT NULL,
   `cardexpiration` date DEFAULT NULL,
   `cardcode` char(3) DEFAULT NULL
@@ -374,7 +374,7 @@ DROP TABLE IF EXISTS `users_bets`;
 CREATE TABLE `users_bets` (
   `user` int(11) NOT NULL,
   `bet` int(11) NOT NULL,
-  `stake` decimal(10,0) NOT NULL
+  `stake` decimal(10,3) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --

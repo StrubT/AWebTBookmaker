@@ -1,14 +1,21 @@
 package ch.bfh.awebt.bookmaker.persistence.data;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDate;
 import java.util.Arrays;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import ch.bfh.awebt.bookmaker.converters.LocalDateConverter;
 
 /**
  * Represents an application user.
@@ -18,7 +25,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "users")
 @NamedQuery(name = User.FIND_BY_LOGIN_QUERY, query = "SELECT u FROM User u WHERE LOWER(u.login) = LOWER(:login)")
-public class User extends PersistentObject implements Serializable {
+public class User implements PersistentObject, Serializable {
 
 	private static final long serialVersionUID = -7147878463002225404L;
 
@@ -32,6 +39,11 @@ public class User extends PersistentObject implements Serializable {
 	 */
 	public static final String HASH_ALGORITHM = "MD5";
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id", nullable = false, unique = true)
+	private int id;
+
 	@Column(name = "login", nullable = false, unique = true)
 	private String login;
 
@@ -43,6 +55,19 @@ public class User extends PersistentObject implements Serializable {
 
 	@Column(name = "locale", nullable = false)
 	private String language;
+
+	@Column(name = "balance", nullable = false, precision = 10, scale = 3)
+	private BigDecimal balance;
+
+	@Column(name = "cardnumber", nullable = true)
+	private String creditCardNumber;
+
+	@Column(name = "cardexpiration", nullable = true)
+	@Convert(converter = LocalDateConverter.class)
+	private LocalDate creditCardExpirationDate;
+
+	@Column(name = "cardcode", nullable = true)
+	private String creditCardValidationCode;
 
 	/**
 	 * Construct an empty user.
@@ -82,6 +107,24 @@ public class User extends PersistentObject implements Serializable {
 	 */
 	public User(String login, String language, char[] password) throws NoSuchAlgorithmException {
 		this(login, language, hashPassword(password));
+	}
+
+	/**
+	 * Gets the unique identifier of the user.
+	 *
+	 * @return unique identifier of the user
+	 */
+	public int getId() {
+		return id;
+	}
+
+	/**
+	 * Sets the unique identifier of the user.
+	 *
+	 * @param id unique identifier of the user
+	 */
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	/**
