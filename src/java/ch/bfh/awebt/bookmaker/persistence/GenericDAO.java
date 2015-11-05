@@ -1,6 +1,5 @@
 package ch.bfh.awebt.bookmaker.persistence;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.EntityManager;
@@ -9,6 +8,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Persistence;
 import javax.persistence.PersistenceException;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaQuery;
 import ch.bfh.awebt.bookmaker.persistence.data.PersistentObject;
 
 /**
@@ -19,9 +19,7 @@ import ch.bfh.awebt.bookmaker.persistence.data.PersistentObject;
  *
  * @author strut1 &amp; touwm1
  */
-public abstract class GenericDAO<T extends PersistentObject> implements Serializable {
-
-	private static final long serialVersionUID = -6512800996496357465L;
+public abstract class GenericDAO<T extends PersistentObject<?>> {
 
 	/**
 	 * Gets the name of the persistence unit to use.
@@ -86,6 +84,14 @@ public abstract class GenericDAO<T extends PersistentObject> implements Serializ
 	public T find(int id) {
 
 		return getEntityManager().find(getEntityClass(), id);
+	}
+
+	public List<T> findAll() {
+
+		CriteriaQuery<T> criteriaQuery = getEntityManager().getCriteriaBuilder().createQuery(getEntityClass());
+		TypedQuery<T> query = getEntityManager().createQuery(criteriaQuery.select(criteriaQuery.from(getEntityClass())));
+
+		return query.getResultList();
 	}
 
 	/**

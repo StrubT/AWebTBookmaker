@@ -53,28 +53,6 @@ INSERT INTO `bets` (`id`, `game`, `type`, `odds`, `occurred`, `team`, `time`, `g
 -- --------------------------------------------------------
 
 --
--- Table structure for table `bettypes`
---
-
-DROP TABLE IF EXISTS `bettypes`;
-CREATE TABLE `bettypes` (
-  `code` char(3) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `bettypes`
---
-
-INSERT INTO `bettypes` (`code`) VALUES
-('EVN'),
-('EVT'),
-('LDG'),
-('LDT'),
-('WIN');
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `games`
 --
 
@@ -388,12 +366,6 @@ ALTER TABLE `bets`
  ADD PRIMARY KEY (`id`), ADD KEY `type` (`type`), ADD KEY `game` (`game`), ADD KEY `team` (`team`);
 
 --
--- Indexes for table `bettypes`
---
-ALTER TABLE `bettypes`
- ADD PRIMARY KEY (`code`);
-
---
 -- Indexes for table `games`
 --
 ALTER TABLE `games`
@@ -445,8 +417,7 @@ MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=5;
 --
 ALTER TABLE `bets`
 ADD CONSTRAINT `bets_ibfk_1` FOREIGN KEY (`game`) REFERENCES `games` (`id`),
-ADD CONSTRAINT `bets_ibfk_2` FOREIGN KEY (`type`) REFERENCES `bettypes` (`code`),
-ADD CONSTRAINT `bets_ibfk_3` FOREIGN KEY (`team`) REFERENCES `teams` (`code`);
+ADD CONSTRAINT `bets_ibfk_2` FOREIGN KEY (`team`) REFERENCES `teams` (`code`);
 
 --
 -- Constraints for table `games`

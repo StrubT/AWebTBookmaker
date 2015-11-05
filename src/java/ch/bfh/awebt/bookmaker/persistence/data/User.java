@@ -6,14 +6,20 @@ import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import ch.bfh.awebt.bookmaker.converters.LocalDateConverter;
 
@@ -25,7 +31,7 @@ import ch.bfh.awebt.bookmaker.converters.LocalDateConverter;
 @Entity
 @Table(name = "users")
 @NamedQuery(name = User.FIND_BY_LOGIN_QUERY, query = "SELECT u FROM User u WHERE LOWER(u.login) = LOWER(:login)")
-public class User implements PersistentObject, Serializable {
+public class User extends PersistentObject<Integer> implements Serializable {
 
 	private static final long serialVersionUID = -7147878463002225404L;
 
@@ -42,9 +48,9 @@ public class User implements PersistentObject, Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", nullable = false, unique = true)
-	private int id;
+	private Integer id;
 
-	@Column(name = "login", nullable = false, unique = true)
+	@Column(name = "login", nullable = false, length = 25, unique = true)
 	private String login;
 
 	@Column(name = "password", nullable = false)
@@ -53,27 +59,26 @@ public class User implements PersistentObject, Serializable {
 	@Column(name = "manager", nullable = false)
 	private boolean isManager = false;
 
-	@Column(name = "locale", nullable = false)
+	@Column(name = "locale", nullable = false, length = 10)
 	private String language;
 
 	@Column(name = "balance", nullable = false, precision = 10, scale = 3)
 	private BigDecimal balance;
 
-	@Column(name = "cardnumber", nullable = true)
+	@Column(name = "cardnumber", length = 16)
 	private String creditCardNumber;
 
-	@Column(name = "cardexpiration", nullable = true)
+	@Column(name = "cardexpiration")
 	@Convert(converter = LocalDateConverter.class)
 	private LocalDate creditCardExpirationDate;
 
-	@Column(name = "cardcode", nullable = true)
+	@Column(name = "cardcode", length = 3)
 	private String creditCardValidationCode;
 
-	/**
-	 * Construct an empty user.
-	 */
-	public User() {
-		super();
+	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<UserBet> bets;
+
+	protected User() {
 	}
 
 	private User(String login, String language) {
@@ -81,6 +86,8 @@ public class User implements PersistentObject, Serializable {
 
 		this.login = login;
 		this.language = language;
+
+		bets = new ArrayList<>();
 	}
 
 	/**
@@ -109,12 +116,8 @@ public class User implements PersistentObject, Serializable {
 		this(login, language, hashPassword(password));
 	}
 
-	/**
-	 * Gets the unique identifier of the user.
-	 *
-	 * @return unique identifier of the user
-	 */
-	public int getId() {
+	@Override
+	public Integer getId() {
 		return id;
 	}
 
@@ -227,6 +230,50 @@ public class User implements PersistentObject, Serializable {
 	 */
 	public void setLanguage(String language) {
 		this.language = language;
+	}
+
+	public BigDecimal getBalance() {
+		return balance;
+	}
+
+	public void setBalance(BigDecimal balance) {
+		this.balance = balance;
+	}
+
+	public String getCreditCardNumber() {
+		return creditCardNumber;
+	}
+
+	public void setCreditCardNumber(String creditCardNumber) {
+		this.creditCardNumber = creditCardNumber;
+	}
+
+	public LocalDate getCreditCardExpirationDate() {
+		return creditCardExpirationDate;
+	}
+
+	public void setCreditCardExpirationDate(LocalDate creditCardExpirationDate) {
+		this.creditCardExpirationDate = creditCardExpirationDate;
+	}
+
+	public String getCreditCardValidationCode() {
+		return creditCardValidationCode;
+	}
+
+	public void setCreditCardValidationCode(String creditCardValidationCode) {
+		this.creditCardValidationCode = creditCardValidationCode;
+	}
+
+	public List<UserBet> getBets() {
+		return Collections.unmodifiableList(bets);
+	}
+
+	public boolean addBet(UserBet bet) {
+		return bets.add(bet);
+	}
+
+	public boolean removeBet(UserBet bet) {
+		return bets.remove(bet);
 	}
 
 	/**

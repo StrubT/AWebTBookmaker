@@ -11,28 +11,34 @@
 		<p>#{texts.HomeContent}</p>
 		<hr />
 		<p>
-			#{teams['SUI']} vs. #{teams['ESP']}
-			<hr />
-			<h:outputFormat value="#{bets['EVN']}" />
-			<hr />
-			<h:outputFormat value="#{bets['WIN']}">
-				<f:param value="#{teams['SUI']}" />
-			</h:outputFormat>
-			<hr />
-			<h:outputFormat value="#{bets['LDT']}">
-				<f:param value="#{teams['SUI']}" />
-				<f:param value="00:45:00" />
-			</h:outputFormat>
-			<hr />
-			<h:outputFormat value="#{bets['EVT']}">
-				<f:param value="00:45:00" />
-			</h:outputFormat>
-			<hr />
-			<h:outputFormat value="#{bets['LDG']}">
-				<f:param value="#{teams['SUI']}" />
-				<f:param value="00:45:00" />
-				<f:param value="3" />
-			</h:outputFormat>
+			<c:forEach items="#{gameBean.games}" var="game">
+				<section class="panel panel-default">
+					<header class="panel-heading">
+						<h3 class="panel-title">
+							<h:outputFormat value="#{texts.GameName}">
+								<f:param value="#{teams[game.team1.code]}" />
+								<f:param value="#{teams[game.team2.code]}" />
+							</h:outputFormat>
+						</h3>
+					</header>
+					<div class="panel-body">
+						<h:dataTable value="#{game.bets}" var="bet" class="table table-condensed table-striped">
+							<h:column>
+								<f:facet name="header">Description</f:facet>
+								<h:outputFormat value="#{bets[bet.type]}">
+									<f:param value="#{teams[bet.team.code]}" />
+									<f:param value="#{bet.time}" />
+									<f:param value="#{bet.goals}" />
+								</h:outputFormat>
+							</h:column>
+							<h:column>
+								<f:facet name="header">Odds</f:facet>
+								<data value="#{bet.odds}">#{bet.odds}</data>
+							</h:column>
+						</h:dataTable>
+					</div>
+				</section>
+			</c:forEach>
 		</p>
 	</ui:define>
 </ui:composition>

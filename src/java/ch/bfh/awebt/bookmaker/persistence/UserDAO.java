@@ -1,5 +1,6 @@
 package ch.bfh.awebt.bookmaker.persistence;
 
+import java.io.Serializable;
 import ch.bfh.awebt.bookmaker.MapBuilder;
 import ch.bfh.awebt.bookmaker.Streams;
 import ch.bfh.awebt.bookmaker.persistence.data.User;
@@ -9,7 +10,7 @@ import ch.bfh.awebt.bookmaker.persistence.data.User;
  *
  * @author strut1 &amp; touwm1
  */
-public class UserDAO extends GenericDAO<User> {
+public class UserDAO extends GenericDAO<User> implements Serializable {
 
 	private static final long serialVersionUID = 7855160381047946895L;
 
