@@ -25,6 +25,7 @@
 						<h:dataTable value="#{game.bets}" var="bet" class="table table-condensed table-striped">
 							<h:column>
 								<f:facet name="header">Description</f:facet>
+								<h:inputHidden id="betId" value="#{bet.id}" />
 								<h:outputFormat value="#{bets[bet.type]}">
 									<f:param value="#{teams[bet.team.code]}" />
 									<f:param value="#{bet.time}" />
@@ -34,6 +35,12 @@
 							<h:column>
 								<f:facet name="header">Odds</f:facet>
 								<data value="#{bet.odds}">#{bet.odds}</data>
+							</h:column>
+							<h:column rendered="#{loginBean.userHasAccess('PLAYER')}">
+								<f:facet name="header">Stake (CHF)</f:facet>
+								<h:inputText id="betStake" value="0.0" class="form-control input-sm">
+									<f:passThroughAttribute name="type" value="number" />
+								</h:inputText>
 							</h:column>
 						</h:dataTable>
 					</div>

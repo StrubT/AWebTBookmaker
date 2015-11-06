@@ -43,7 +43,7 @@
 							<ul class="nav navbar-nav">
 								<c:forEach items="#{loginBean.locales}" var="locale">
 									<li class="#{loginBean.locale eq locale ? 'active' : ''}">
-										<h:commandLink action="#{loginBean.setLanguage(locale.language)}" class="navbar-link" value="#{locale.getDisplayName(locale)}" title="#{locale.getDisplayName()}" />
+										<h:commandLink action="#{loginBean.setLanguage(locale.language)}" class="navbar-link" value="#{locale.getDisplayName(locale)}" title="#{locale.displayName}" />
 									</li>
 								</c:forEach>
 							</ul>
@@ -53,7 +53,7 @@
 			</header>
 			<div class="container">
 				<c:choose>
-					<c:when test="#{loginBean.userHasAccess(navigationBean.currentPage)}">
+					<c:when test="#{loginBean.userHasAccessTo(navigationBean.currentPage)}">
 						<ui:insert name="content" />
 					</c:when>
 					<c:otherwise>
@@ -86,7 +86,7 @@
 						</div>
 						<div class="form-group">
 							<div class="btn-toolbar btn-group-sm">
-								<h:commandButton id="registerButton" action="register?faces-redirect=true" class="btn btn-default" value="#{texts.LoginRegisterButton}" />
+								<h:commandButton id="registerButton" action="#{loginBean.register}" class="btn btn-default" value="#{texts.LoginRegisterButton}" />
 								<h:commandButton id="loginButton" action="#{loginBean.login}" class="btn btn-primary" value="#{texts.LoginLoginButton}" />
 							</div>
 						</div>

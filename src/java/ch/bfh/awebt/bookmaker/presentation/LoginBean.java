@@ -16,7 +16,6 @@ import javax.persistence.PersistenceException;
 import ch.bfh.awebt.bookmaker.Streams;
 import ch.bfh.awebt.bookmaker.persistence.UserDAO;
 import ch.bfh.awebt.bookmaker.persistence.data.User;
-import ch.bfh.awebt.bookmaker.presentation.NavigationPage.AccessCondition;
 
 /**
  * Represents a {@link SessionScoped} {@link ManagedBean} providing login and localisation helpers.
@@ -124,7 +123,7 @@ public class LoginBean implements Serializable {
 	 */
 	public boolean showInNavigation(NavigationPage page) {
 
-		return evaluateCondition(page != null ? page.getNavigationCondition() : AccessCondition.NEVER);
+		return userHasAccess(page != null ? page.getNavigationCondition() : AccessCondition.NEVER);
 	}
 
 	/**
@@ -134,12 +133,19 @@ public class LoginBean implements Serializable {
 	 *
 	 * @return whether or not the user has access to the page
 	 */
-	public boolean userHasAccess(NavigationPage page) {
+	public boolean userHasAccessTo(NavigationPage page) {
 
-		return evaluateCondition(page != null ? page.getAccessCondition() : AccessCondition.NEVER);
+		return userHasAccess(page != null ? page.getAccessCondition() : AccessCondition.NEVER);
 	}
 
-	private boolean evaluateCondition(AccessCondition accessCondition) {
+	/**
+	 * Gets whether or not the user has access to a resource.
+	 *
+	 * @param accessCondition the condition to use to determine whether or not the user has access
+	 *
+	 * @return whether or not the user matches the condition
+	 */
+	public boolean userHasAccess(AccessCondition accessCondition) {
 
 		switch (accessCondition) {
 			case ALWAYS:
@@ -291,7 +297,7 @@ public class LoginBean implements Serializable {
 		_userLogin = null;
 		_userPasswordHash = null;
 
-		if (userHasAccess(navigationBean.getCurrentPage()))
+		if (userHasAccessTo(navigationBean.getCurrentPage()))
 			return navigationBean.getCurrentView(); //forces the application to reload
 
 		else

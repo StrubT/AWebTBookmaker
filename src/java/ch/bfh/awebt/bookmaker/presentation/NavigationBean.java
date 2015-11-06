@@ -8,7 +8,6 @@ import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
 import javax.faces.context.FacesContext;
 import ch.bfh.awebt.bookmaker.Streams;
-import ch.bfh.awebt.bookmaker.presentation.NavigationPage.AccessCondition;
 
 /**
  * Represents a {@link ApplicationScoped} {@link ManagedBean} providing navigation helpers.

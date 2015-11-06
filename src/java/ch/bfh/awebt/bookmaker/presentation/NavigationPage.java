@@ -11,33 +11,6 @@ public class NavigationPage implements Serializable {
 
 	private static final long serialVersionUID = -4638236743177666379L;
 
-	/**
-	 * Represents the conditions under which a page can be accessed.
-	 */
-	public static enum AccessCondition {
-
-		/**
-		 * The page is inaccessible. <br>
-		 * This constant should only be used for navigation visibility, not access control.
-		 */
-		NEVER,
-
-		/**
-		 * This page is only accessible to logged-in managers.
-		 */
-		MANAGER,
-
-		/**
-		 * This page is only accessible to logged-in user.
-		 */
-		PLAYER,
-
-		/**
-		 * This page is accessible to everyone (even anonymous visitors).
-		 */
-		ALWAYS
-	}
-
 	private final String view, name;
 	private final AccessCondition accessCondition, navigationCondition;
 
