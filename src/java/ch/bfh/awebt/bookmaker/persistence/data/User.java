@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,6 +22,7 @@ import javax.persistence.Id;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Version;
 import ch.bfh.awebt.bookmaker.converters.LocalDateConverter;
 
 /**
@@ -50,6 +52,10 @@ public class User extends PersistentObject<Integer> implements Serializable {
 	@Column(name = "id", nullable = false, unique = true)
 	private Integer id;
 
+	@Version
+	@Column(name = "version", nullable = false)
+	private Timestamp timeStamp;
+
 	@Column(name = "login", nullable = false, length = 25, unique = true)
 	private String login;
 
@@ -78,7 +84,12 @@ public class User extends PersistentObject<Integer> implements Serializable {
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<UserBet> bets;
 
+	/**
+	 * Constructs an empty user.
+	 */
 	protected User() {
+
+		bets = new ArrayList<>();
 	}
 
 	private User(String login, String language) {
@@ -86,12 +97,10 @@ public class User extends PersistentObject<Integer> implements Serializable {
 
 		this.login = login;
 		this.language = language;
-
-		bets = new ArrayList<>();
 	}
 
 	/**
-	 * Construct a user with a specified login, name and password.
+	 * Constructs a user with a specified login, name and password.
 	 *
 	 * @param login        unique login of the user
 	 * @param language     language the user wants to view the application in
@@ -104,7 +113,7 @@ public class User extends PersistentObject<Integer> implements Serializable {
 	}
 
 	/**
-	 * Construct a user with a specified login, name and password.
+	 * Constructs a user with a specified login, name and password.
 	 *
 	 * @param login    unique login of the user
 	 * @param language language the user wants to view the application in
@@ -126,8 +135,26 @@ public class User extends PersistentObject<Integer> implements Serializable {
 	 *
 	 * @param id unique identifier of the user
 	 */
-	public void setId(int id) {
+	protected void setId(int id) {
 		this.id = id;
+	}
+
+	/**
+	 * Gets the {@link Version} timestamp of the persistent object.
+	 *
+	 * @return timestamp of the object
+	 */
+	public Timestamp getTimeStamp() {
+		return new Timestamp(timeStamp.getTime());
+	}
+
+	/**
+	 * Sets the {@link Version} timestamp of the persistent object.
+	 *
+	 * @param timeStamp timestamp of the object
+	 */
+	protected void setTimeStamp(Timestamp timeStamp) {
+		this.timeStamp = new Timestamp(timeStamp.getTime());
 	}
 
 	/**
@@ -232,48 +259,120 @@ public class User extends PersistentObject<Integer> implements Serializable {
 		this.language = language;
 	}
 
+	/**
+	 * Gets the balance of the user's account with the bookmaker.
+	 *
+	 * @return balance of the user's account
+	 */
 	public BigDecimal getBalance() {
 		return balance;
 	}
 
+	/**
+	 * Sets the balance of the user's account with the bookmaker.
+	 *
+	 * @param balance balance of the user's account
+	 */
 	public void setBalance(BigDecimal balance) {
 		this.balance = balance;
 	}
 
+	/**
+	 * Deposits an amount in the user's account with the bookmaker.
+	 *
+	 * @param amount amount to deposit
+	 *
+	 * @return new balance of the user's account
+	 */
+	public BigDecimal deposit(BigDecimal amount) {
+
+		return this.balance = this.balance.add(amount);
+	}
+
+	/**
+	 * Withdraws an amount from the user's account with the bookmaker.
+	 *
+	 * @param amount amount to withdraw
+	 *
+	 * @return new balance of the user's account
+	 */
+	public BigDecimal withdraw(BigDecimal amount) {
+
+		return this.balance = this.balance.subtract(amount);
+	}
+
+	/**
+	 * Gets the number of the user's credit card registered with the bookmaker.
+	 *
+	 * @return number of the user's credit card
+	 */
 	public String getCreditCardNumber() {
 		return creditCardNumber;
 	}
 
+	/**
+	 * Sets the number of the user's credit card registered with the bookmaker.
+	 *
+	 * @param creditCardNumber number of the user's credit card
+	 */
 	public void setCreditCardNumber(String creditCardNumber) {
 		this.creditCardNumber = creditCardNumber;
 	}
 
+	/**
+	 * Gets the expiration date of the user's credit card registered with the bookmaker.
+	 *
+	 * @return expiration date of the user's credit card
+	 */
 	public LocalDate getCreditCardExpirationDate() {
 		return creditCardExpirationDate;
 	}
 
+	/**
+	 * Sets the expiration date of the user's credit card registered with the bookmaker.
+	 *
+	 * @param creditCardExpirationDate expiration date of the user's credit card
+	 */
 	public void setCreditCardExpirationDate(LocalDate creditCardExpirationDate) {
 		this.creditCardExpirationDate = creditCardExpirationDate;
 	}
 
+	/**
+	 * Gets the validation code of the user's credit card registered with the bookmaker.
+	 *
+	 * @return validation code of the user's credit card
+	 */
 	public String getCreditCardValidationCode() {
 		return creditCardValidationCode;
 	}
 
+	/**
+	 * Sets the validation code of the user's credit card registered with the bookmaker.
+	 *
+	 * @param creditCardValidationCode validation code of the user's credit card
+	 */
 	public void setCreditCardValidationCode(String creditCardValidationCode) {
 		this.creditCardValidationCode = creditCardValidationCode;
 	}
 
+	/**
+	 * Gets the bets placed by the user with the bookmaker.
+	 *
+	 * @return unmodifiable {@link List} of the user's bets
+	 */
 	public List<UserBet> getBets() {
 		return Collections.unmodifiableList(bets);
 	}
 
-	public boolean addBet(UserBet bet) {
+	/**
+	 * Places a new bet for the user with the bookmaker.
+	 *
+	 * @param bet bet to place for the user
+	 *
+	 * @return whether or not the bet was added to the list
+	 */
+	boolean addBet(UserBet bet) {
 		return bets.add(bet);
-	}
-
-	public boolean removeBet(UserBet bet) {
-		return bets.remove(bet);
 	}
 
 	/**

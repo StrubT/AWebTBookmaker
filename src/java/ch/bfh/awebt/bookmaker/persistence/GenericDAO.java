@@ -69,7 +69,9 @@ public abstract class GenericDAO<T extends PersistentObject<?>> {
 			return entity;
 
 		} catch (Exception ex) {
-			transaction.rollback();
+			if (transaction.isActive())
+				transaction.rollback();
+
 			throw new PersistenceException("Could not persist the entity.", ex);
 		}
 	}
@@ -111,6 +113,19 @@ public abstract class GenericDAO<T extends PersistentObject<?>> {
 	}
 
 	/**
+	 * <strong>R</strong>ead: refreshes an entity with the data source.
+	 *
+	 * @param entity entity to refresh
+	 *
+	 * @return refreshed entity
+	 */
+	public T refresh(T entity) {
+
+		getEntityManager().refresh(entity);
+		return entity;
+	}
+
+	/**
 	 * <strong>U</strong>pdate: merges an entity into the data source.
 	 *
 	 * @param entity entity to update
@@ -131,7 +146,9 @@ public abstract class GenericDAO<T extends PersistentObject<?>> {
 			return entity;
 
 		} catch (Exception ex) {
-			transaction.rollback();
+			if (transaction.isActive())
+				transaction.rollback();
+
 			throw new PersistenceException("Could not merge the entity.", ex);
 		}
 	}
@@ -153,7 +170,9 @@ public abstract class GenericDAO<T extends PersistentObject<?>> {
 			transaction.commit();
 
 		} catch (Exception ex) {
-			transaction.rollback();
+			if (transaction.isActive())
+				transaction.rollback();
+
 			throw new PersistenceException("Could not remove the entity.", ex);
 		}
 	}

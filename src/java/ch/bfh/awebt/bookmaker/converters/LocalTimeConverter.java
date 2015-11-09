@@ -20,6 +20,9 @@ import javax.persistence.AttributeConverter;
 @FacesConverter("ch.bfh.awebt.bookmaker.LOCAL_TIME_CONVERTER")
 public class LocalTimeConverter implements Converter, AttributeConverter<LocalTime, Time> {
 
+	/**
+	 * Gets the format used to represent the time.
+	 */
 	public static final DateTimeFormatter FORMAT = DateTimeFormatter.ISO_LOCAL_TIME;
 
 	/**

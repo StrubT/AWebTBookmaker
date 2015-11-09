@@ -432,3 +432,10 @@ ADD CONSTRAINT `games_ibfk_2` FOREIGN KEY (`team2`) REFERENCES `teams` (`code`);
 ALTER TABLE `users_bets`
 ADD CONSTRAINT `users_bets_ibfk_1` FOREIGN KEY (`user`) REFERENCES `users` (`id`),
 ADD CONSTRAINT `users_bets_ibfk_2` FOREIGN KEY (`bet`) REFERENCES `bets` (`id`);
+
+
+------------------
+--- 2015-11-09 ---
+------------------
+
+ALTER TABLE `users` ADD `version` TIMESTAMP NOT NULL AFTER `id`;

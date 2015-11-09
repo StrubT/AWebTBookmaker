@@ -3,19 +3,22 @@ package ch.bfh.awebt.bookmaker.persistence.data;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import ch.bfh.awebt.bookmaker.converters.BetTypeConverter;
 import ch.bfh.awebt.bookmaker.converters.LocalTimeConverter;
 
 @Entity
@@ -34,7 +37,7 @@ public class Bet extends PersistentObject<Integer> implements Serializable {
 	private Game game;
 
 	@Column(name = "type", nullable = false)
-	@Enumerated(EnumType.STRING)
+	@Convert(converter = BetTypeConverter.class)
 	private BetType type;
 
 	@Column(name = "odds", nullable = false, precision = 10, scale = 3)
@@ -54,33 +57,40 @@ public class Bet extends PersistentObject<Integer> implements Serializable {
 	@Column(name = "goals")
 	private Integer goals;
 
+	@OneToMany(mappedBy = "bet", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<UserBet> userBets;
+
+	/**
+	 * Constructs an empty bet.
+	 */
 	protected Bet() {
+
+		userBets = new ArrayList<>();
 	}
 
-	public Bet(int id, Game game, BetType type, BigDecimal odds) {
-		this(id, game, type, odds, null, null, null, null);
+	public Bet(Game game, BetType type, BigDecimal odds) {
+		this(game, type, odds, null, null, null, null);
 	}
 
-	public Bet(int id, Game game, BetType type, BigDecimal odds, Boolean occurred) {
-		this(id, game, type, odds, occurred, null, null, null);
+	public Bet(Game game, BetType type, BigDecimal odds, Boolean occurred) {
+		this(game, type, odds, occurred, null, null, null);
 	}
 
-	public Bet(int id, Game game, BetType type, BigDecimal odds, Boolean occurred, Team team) {
-		this(id, game, type, odds, occurred, team, null, null);
+	public Bet(Game game, BetType type, BigDecimal odds, Boolean occurred, Team team) {
+		this(game, type, odds, occurred, team, null, null);
 	}
 
-	public Bet(int id, Game game, BetType type, BigDecimal odds, Boolean occurred, LocalTime time) {
-		this(id, game, type, odds, occurred, null, time, null);
+	public Bet(Game game, BetType type, BigDecimal odds, Boolean occurred, LocalTime time) {
+		this(game, type, odds, occurred, null, time, null);
 	}
 
-	public Bet(int id, Game game, BetType type, BigDecimal odds, Boolean occurred, Team team, LocalTime time) {
-		this(id, game, type, odds, occurred, team, time, null);
+	public Bet(Game game, BetType type, BigDecimal odds, Boolean occurred, Team team, LocalTime time) {
+		this(game, type, odds, occurred, team, time, null);
 	}
 
-	public Bet(int id, Game game, BetType type, BigDecimal odds, Boolean occurred, Team team, LocalTime time, Integer goals) {
+	public Bet(Game game, BetType type, BigDecimal odds, Boolean occurred, Team team, LocalTime time, Integer goals) {
 		this();
 
-		this.id = id;
 		this.game = game;
 		this.type = type;
 		this.odds = odds;
@@ -88,6 +98,8 @@ public class Bet extends PersistentObject<Integer> implements Serializable {
 		this.team = team;
 		this.time = time;
 		this.goals = goals;
+
+		game.addBet(this);
 	}
 
 	@Override
@@ -153,5 +165,13 @@ public class Bet extends PersistentObject<Integer> implements Serializable {
 
 	public void setGoals(Integer goals) {
 		this.goals = goals;
+	}
+
+	public List<UserBet> getUserBets() {
+		return Collections.unmodifiableList(userBets);
+	}
+
+	boolean addUserBet(UserBet userBet) {
+		return userBets.add(userBet);
 	}
 }

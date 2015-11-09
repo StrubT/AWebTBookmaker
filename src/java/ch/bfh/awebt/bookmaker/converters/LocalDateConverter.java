@@ -21,6 +21,9 @@ import javax.persistence.AttributeConverter;
 @FacesConverter("ch.bfh.awebt.bookmaker.LOCAL_DATE_CONVERTER")
 public class LocalDateConverter implements Converter, AttributeConverter<LocalDate, Date> {
 
+	/**
+	 * Gets the format used to represent the date.
+	 */
 	public static final DateTimeFormatter FORMAT = DateTimeFormatter.ISO_LOCAL_DATE;
 
 	/**

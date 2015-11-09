@@ -2,6 +2,11 @@ package ch.bfh.awebt.bookmaker.presentation;
 
 import java.io.Serializable;
 import java.security.NoSuchAlgorithmException;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.time.format.TextStyle;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -112,6 +117,35 @@ public class LoginBean implements Serializable {
 		FacesContext.getCurrentInstance().getViewRoot().setLocale(locale); //change the locale of the web page
 
 		return navigationBean.getCurrentView(); //forces the application to reload the texts
+	}
+
+	/**
+	 * Formats a date/time according to the ISO standard.
+	 *
+	 * @param dateTime date time to format
+	 *
+	 * @return date/time formatted according to the ISO standard
+	 */
+	public String formatDateTimeISO(ZonedDateTime dateTime) {
+
+		return dateTime.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+	}
+
+	/**
+	 * Formats a date/time according to the user settings.
+	 *
+	 * @param dateTime date time to format
+	 *
+	 * @return date/time formatted according to the user settings
+	 */
+	public String formatDateTimeUser(ZonedDateTime dateTime) {
+
+		ZoneId zone = ZoneId.of("Europe/Zurich"); //TODO: support locales & determine or store time zones
+		Locale locale = Locale.UK;
+
+		return String.format("%s (%s)",
+												 dateTime.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.FULL, FormatStyle.SHORT).withZone(zone).withLocale(locale)),
+												 zone.getDisplayName(TextStyle.FULL, locale));
 	}
 
 	/**
