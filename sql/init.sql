@@ -439,3 +439,4 @@ ADD CONSTRAINT `users_bets_ibfk_2` FOREIGN KEY (`bet`) REFERENCES `bets` (`id`);
 ------------------
 
 ALTER TABLE `users` ADD `version` TIMESTAMP NOT NULL AFTER `id`;
+ALTER TABLE `users` ADD `timezone` VARCHAR(25) NOT NULL AFTER `locale`;

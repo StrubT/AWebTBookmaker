@@ -2,6 +2,7 @@ package ch.bfh.awebt.bookmaker.presentation;
 
 import java.io.Serializable;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -36,12 +37,15 @@ public class LoginBean implements Serializable {
 	@ManagedProperty("#{navigationBean}")
 	private NavigationBean navigationBean;
 
-	private final UserDAO userDAO = new UserDAO();
+	private transient UserDAO userDAO;
 
 	private Locale locale;
-	private User user;
-	private String _userLogin;
-	private byte[] _userPasswordHash;
+	private ZoneId timeZone;
+
+	private transient User user;
+	private Integer userId;
+	private String userLogin;
+	private byte[] userPasswordHash;
 
 	/**
 	 * Initialises the managed bean.
@@ -49,10 +53,21 @@ public class LoginBean implements Serializable {
 	@PostConstruct
 	public void init() {
 
-		List<Locale> supportedLocales = getLocales();
-		locale = Streams.iteratorStream(FacesContext.getCurrentInstance().getExternalContext().getRequestLocales()) //find the first requested locale which is supported by the application
-			.flatMap(r -> supportedLocales.stream().filter(s -> r.getLanguage().equalsIgnoreCase(s.getLanguage())))
+		List<Locale> supportedLocales = getSupportedLocales();
+		locale = getRequestLocales().stream() //find the first requested locale which is supported by the application
+			.filter(r -> supportedLocales.stream().anyMatch(s -> r.getLanguage().equals(s.getLanguage())))
+			.sorted(this::compareLocalesPreferRegionalised) //prefer regionalised locales
 			.findFirst().orElse(supportedLocales.get(0)); //or use the default locale instad
+
+		timeZone = ZoneId.systemDefault();
+	}
+
+	private int compareLocalesPreferRegionalised(Locale locale1, Locale locale2) {
+
+		boolean regionalised1 = locale1.getCountry() != null && locale1.getCountry().length() > 0;
+		boolean regionalised2 = locale2.getCountry() != null && locale2.getCountry().length() > 0;
+
+		return (regionalised2 ? 1 : 0) - (regionalised1 ? 1 : 0);
 	}
 
 	/**
@@ -70,7 +85,7 @@ public class LoginBean implements Serializable {
 	 *
 	 * @return {@link List} containing the locales supported by the application
 	 */
-	public List<Locale> getLocales() {
+	public List<Locale> getSupportedLocales() {
 
 		Application application = FacesContext.getCurrentInstance().getApplication();
 
@@ -81,12 +96,44 @@ public class LoginBean implements Serializable {
 	}
 
 	/**
+	 * Gets a {@link List} containing the locales requested by the user.
+	 *
+	 * @return {@link List} containing the locales requested by the user
+	 */
+	public List<Locale> getRequestLocales() {
+
+		return Streams.iteratorStream(FacesContext.getCurrentInstance().getExternalContext().getRequestLocales()) //wrap the requested locales in a list
+			.collect(Collectors.toList());
+	}
+
+	/**
 	 * Gets the locale to show the application in.
 	 *
 	 * @return locale to show the application in
 	 */
 	public Locale getLocale() {
 		return locale;
+	}
+
+	/**
+	 * Sets the locale to show the application in.
+	 *
+	 * @param locale locale to show the application in
+	 *
+	 * @return outcome: identifier of the view to navigate to
+	 */
+	public String setLocale(Locale locale) {
+
+		this.locale = locale;
+
+		if (getUser() != null) {
+			getUser().setLocale(locale); //remember the language for logged-in users
+			getUserDAO().merge(getUser());
+		}
+
+		FacesContext.getCurrentInstance().getViewRoot().setLocale(locale); //change the locale of the web page
+
+		return navigationBean.getCurrentView(); //forces the application to reload the texts
 	}
 
 	/**
@@ -107,16 +154,41 @@ public class LoginBean implements Serializable {
 	 */
 	public String setLanguage(String language) {
 
-		locale = new Locale(language);
+		return setLocale(getRequestLocales().stream() //find the first requested locale with the selected language
+			.filter(r -> r.getLanguage().equalsIgnoreCase(language))
+			.sorted(this::compareLocalesPreferRegionalised) //prefer regionalised locales
+			.findFirst().orElse(new Locale(language))); //or use a non-regionalised locale instad
+	}
 
-		if (user != null) {
-			user.setLanguage(language); //remember the language for logged-in users
-			userDAO.merge(user);
-		}
+	/**
+	 * Gets the available time zones.
+	 *
+	 * @return a {@code List} containing the available time zones
+	 */
+	public List<ZoneId> getTimeZones() {
 
-		FacesContext.getCurrentInstance().getViewRoot().setLocale(locale); //change the locale of the web page
+		return ZoneId.getAvailableZoneIds().stream()
+			.map(ZoneId::of)
+			.sorted(this::compareTimeZones)
+			.collect(Collectors.toList());
+	}
 
-		return navigationBean.getCurrentView(); //forces the application to reload the texts
+	/**
+	 * Gets the time zone to show times in.
+	 *
+	 * @return time zone to show times in
+	 */
+	public ZoneId getTimeZone() {
+		return timeZone;
+	}
+
+	/**
+	 * Sets the time zone to show times in.
+	 *
+	 * @param timeZone time zone to show times in
+	 */
+	public void setTimeZone(ZoneId timeZone) {
+		this.timeZone = timeZone;
 	}
 
 	/**
@@ -140,12 +212,127 @@ public class LoginBean implements Serializable {
 	 */
 	public String formatDateTimeUser(ZonedDateTime dateTime) {
 
-		ZoneId zone = ZoneId.of("Europe/Zurich"); //TODO: support locales & determine or store time zones
-		Locale locale = Locale.UK;
-
 		return String.format("%s (%s)",
-												 dateTime.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.FULL, FormatStyle.SHORT).withZone(zone).withLocale(locale)),
-												 zone.getDisplayName(TextStyle.FULL, locale));
+												 dateTime.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.FULL, FormatStyle.SHORT).withZone(timeZone).withLocale(locale)),
+												 timeZone.getDisplayName(TextStyle.FULL, locale));
+	}
+
+	/**
+	 * Formats a time zone according to the user settings.
+	 *
+	 * @param timeZone time zone to format
+	 *
+	 * @return time zone formatted according to the user settings
+	 */
+	public String formatTimeZoneUser(ZoneId timeZone) {
+
+		return String.format("(%s) %s - %s",
+												 timeZone.getRules().getOffset(LocalDateTime.now()),
+												 timeZone.toString(),
+												 timeZone.getDisplayName(TextStyle.FULL, locale));
+	}
+
+	private int compareTimeZones(ZoneId timeZone1, ZoneId timeZone2) {
+
+		LocalDateTime now = LocalDateTime.now();
+		int c = timeZone2.getRules().getOffset(now).compareTo(timeZone1.getRules().getOffset(now)); //compare by current offset first
+
+		if (c == 0) {
+			c = timeZone1.toString().compareTo(timeZone2.toString()); //compare by id in second priority
+
+			if (c == 0)
+				c = timeZone1.getDisplayName(TextStyle.FULL, locale).compareTo(timeZone2.getDisplayName(TextStyle.FULL, locale)); //compare by name last
+		}
+
+		return c;
+	}
+
+	private UserDAO getUserDAO() {
+
+		if (userDAO == null)
+			userDAO = new UserDAO();
+
+		return userDAO;
+	}
+
+	/**
+	 * Gets the user currently logged in.
+	 *
+	 * @return user currently logged in
+	 */
+	public User getUser() {
+
+		if (user == null && userId != null)
+			user = getUserDAO().find(userId);
+
+		return user;
+	}
+
+	private void setUser(User user) {
+
+		this.user = user;
+		userId = user != null ? user.getId() : null;
+
+		if (user != null) {
+			userLogin = user.getLogin();
+			locale = user.getLocale();
+			timeZone = user.getTimeZone();
+		}
+
+		userPasswordHash = null;
+	}
+
+	/**
+	 * Gets the login of the user to log in OR already logged in.
+	 *
+	 * @return login of the user
+	 */
+	public String getLogin() {
+		return userLogin;
+	}
+
+	/**
+	 * Sets the login of the user to log in.
+	 *
+	 * @param login login of the user to log in
+	 */
+	public void setLogin(String login) {
+		userLogin = login;
+	}
+
+	/**
+	 * Gets the password of the user to log in. <br>
+	 * This method will always return {@code null}, the password is not being exposed.
+	 * It is only needed for {@link #setPassword(String)} to work properly.
+	 *
+	 * @return {@code null}
+	 */
+	public String getPassword() {
+		return null;
+	}
+
+	/**
+	 * Gets whether or not the password of the user to log in has already been entered.
+	 *
+	 * @return whether or not the password of the user to log in has already been entered
+	 */
+	public boolean hasPassword() {
+		return userPasswordHash != null;
+	}
+
+	/**
+	 * Sets the password of the user to log in.
+	 *
+	 * @param password password of the user to log in
+	 */
+	public void setPassword(String password) {
+
+		try {
+			userPasswordHash = User.hashPassword(password.toCharArray());
+
+		} catch (NoSuchAlgorithmException ex) {
+			MessageFactory.addWarning("ch.bfh.awebt.bookmaker.SECURITY_ERROR");
+		}
 	}
 
 	/**
@@ -186,84 +373,13 @@ public class LoginBean implements Serializable {
 				return true;
 
 			case PLAYER:
-				return user != null;
+				return getUser() != null;
 
 			case MANAGER:
-				return user != null && user.isManager();
+				return getUser() != null && getUser().isManager();
 
 			default:
 				return false;
-		}
-	}
-
-	/**
-	 * Gets the user currently logged in.
-	 *
-	 * @return user currently logged in
-	 */
-	public User getUser() {
-		return user;
-	}
-
-	private void setUser(User user) {
-
-		this.user = user;
-		_userLogin = user.getLogin();
-		_userPasswordHash = null;
-
-		locale = new Locale(user.getLanguage());
-	}
-
-	/**
-	 * Gets the login of the user to log in OR already logged in.
-	 *
-	 * @return login of the user
-	 */
-	public String getLogin() {
-		return _userLogin;
-	}
-
-	/**
-	 * Sets the login of the user to log in.
-	 *
-	 * @param login login of the user to log in
-	 */
-	public void setLogin(String login) {
-		_userLogin = login;
-	}
-
-	/**
-	 * Gets the password of the user to log in. <br>
-	 * This method will always return {@code null}, the password is not being exposed.
-	 * It is only needed for {@link #setPassword(String)} to work properly.
-	 *
-	 * @return {@code null}
-	 */
-	public String getPassword() {
-		return null;
-	}
-
-	/**
-	 * Gets whether or not the password of the user to log in has already been entered.
-	 *
-	 * @return whether or not the password of the user to log in has already been entered
-	 */
-	public boolean hasPassword() {
-		return _userPasswordHash != null;
-	}
-
-	/**
-	 * Sets the password of the user to log in.
-	 *
-	 * @param password password of the user to log in
-	 */
-	public void setPassword(String password) {
-
-		try {
-			_userPasswordHash = User.hashPassword(password.toCharArray());
-
-		} catch (NoSuchAlgorithmException ex) {
-			MessageFactory.addWarning("ch.bfh.awebt.bookmaker.SECURITY_ERROR");
 		}
 	}
 
@@ -274,15 +390,15 @@ public class LoginBean implements Serializable {
 	 */
 	public String register() {
 
-		if (_userLogin != null && _userLogin.length() > 0 && _userPasswordHash != null)
+		if (userLogin != null && userLogin.length() > 0 && userPasswordHash != null)
 
-			if (userDAO.findByLogin(_userLogin) != null)
+			if (getUserDAO().findByLogin(userLogin) != null)
 				MessageFactory.addWarning("ch.bfh.awebt.bookmaker.LOGIN_REGISTER_LOGIN_TAKEN");
 
 			else
 				try {
-					User user = new User(_userLogin, locale.getLanguage(), _userPasswordHash);
-					userDAO.persist(user);
+					User user = new User(userLogin, locale, timeZone, userPasswordHash);
+					getUserDAO().persist(user);
 
 					setUser(user); //log in
 					return "secret?faces-redirect=true";
@@ -305,8 +421,8 @@ public class LoginBean implements Serializable {
 	public String login() {
 
 		try {
-			User user = userDAO.findByLogin(_userLogin);
-			if (user != null && user.validatePassword(_userPasswordHash)) {
+			User user = getUserDAO().findByLogin(userLogin);
+			if (user != null && user.validatePassword(userPasswordHash)) {
 				setUser(user);
 				return "secret?faces-redirect=true";
 
@@ -327,9 +443,7 @@ public class LoginBean implements Serializable {
 	 */
 	public String logout() {
 
-		user = null;
-		_userLogin = null;
-		_userPasswordHash = null;
+		setUser(null);
 
 		if (userHasAccessTo(navigationBean.getCurrentPage()))
 			return navigationBean.getCurrentView(); //forces the application to reload

@@ -7,10 +7,12 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -24,6 +26,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Version;
 import ch.bfh.awebt.bookmaker.converters.LocalDateConverter;
+import ch.bfh.awebt.bookmaker.converters.LocaleConverter;
+import ch.bfh.awebt.bookmaker.converters.ZoneIdConverter;
 
 /**
  * Represents an application user.
@@ -54,7 +58,7 @@ public class User extends PersistentObject<Integer> implements Serializable {
 
 	@Version
 	@Column(name = "version", nullable = false)
-	private Timestamp timeStamp;
+	private Timestamp versionTimeStamp;
 
 	@Column(name = "login", nullable = false, length = 25, unique = true)
 	private String login;
@@ -66,7 +70,12 @@ public class User extends PersistentObject<Integer> implements Serializable {
 	private boolean isManager = false;
 
 	@Column(name = "locale", nullable = false, length = 10)
-	private String language;
+	@Convert(converter = LocaleConverter.class)
+	private Locale locale;
+
+	@Column(name = "timeZone", nullable = false, length = 10)
+	@Convert(converter = ZoneIdConverter.class)
+	private ZoneId timeZone;
 
 	@Column(name = "balance", nullable = false, precision = 10, scale = 3)
 	private BigDecimal balance;
@@ -92,22 +101,24 @@ public class User extends PersistentObject<Integer> implements Serializable {
 		bets = new ArrayList<>();
 	}
 
-	private User(String login, String language) {
+	private User(String login, Locale locale, ZoneId timeZone) {
 		this();
 
 		this.login = login;
-		this.language = language;
+		this.locale = locale;
+		this.timeZone = timeZone;
 	}
 
 	/**
 	 * Constructs a user with a specified login, name and password.
 	 *
 	 * @param login        unique login of the user
-	 * @param language     language the user wants to view the application in
+	 * @param locale       locale the user wants to view the application in
+	 * @param timeZone     time zone the user wants to view times in
 	 * @param passwordHash hashed password of the user
 	 */
-	public User(String login, String language, byte[] passwordHash) {
-		this(login, language);
+	public User(String login, Locale locale, ZoneId timeZone, byte[] passwordHash) {
+		this(login, locale, timeZone);
 
 		this.passwordHash = passwordHash;
 	}
@@ -116,13 +127,14 @@ public class User extends PersistentObject<Integer> implements Serializable {
 	 * Constructs a user with a specified login, name and password.
 	 *
 	 * @param login    unique login of the user
-	 * @param language language the user wants to view the application in
+	 * @param locale   locale the user wants to view the application in
+	 * @param timeZone time zone the user wants to view times in
 	 * @param password clear-text password of the user
 	 *
 	 * @throws NoSuchAlgorithmException if the password could not be hashed
 	 */
-	public User(String login, String language, char[] password) throws NoSuchAlgorithmException {
-		this(login, language, hashPassword(password));
+	public User(String login, Locale locale, ZoneId timeZone, char[] password) throws NoSuchAlgorithmException {
+		this(login, locale, timeZone, hashPassword(password));
 	}
 
 	@Override
@@ -144,8 +156,8 @@ public class User extends PersistentObject<Integer> implements Serializable {
 	 *
 	 * @return timestamp of the object
 	 */
-	public Timestamp getTimeStamp() {
-		return new Timestamp(timeStamp.getTime());
+	public Timestamp getVersionTimeStamp() {
+		return new Timestamp(versionTimeStamp.getTime());
 	}
 
 	/**
@@ -153,8 +165,8 @@ public class User extends PersistentObject<Integer> implements Serializable {
 	 *
 	 * @param timeStamp timestamp of the object
 	 */
-	protected void setTimeStamp(Timestamp timeStamp) {
-		this.timeStamp = new Timestamp(timeStamp.getTime());
+	protected void setVersionTimeStamp(Timestamp timeStamp) {
+		this.versionTimeStamp = new Timestamp(timeStamp.getTime());
 	}
 
 	/**
@@ -242,21 +254,39 @@ public class User extends PersistentObject<Integer> implements Serializable {
 	}
 
 	/**
-	 * Gets the language the user wants to view the application in.
+	 * Gets the locale the user wants to view the application in.
 	 *
-	 * @return language the user wants to view the application in
+	 * @return locale the user wants to view the application in
 	 */
-	public String getLanguage() {
-		return language;
+	public Locale getLocale() {
+		return locale;
 	}
 
 	/**
-	 * Sets the language the user wants to view the application in.
+	 * Sets the locale the user wants to view the application in.
 	 *
-	 * @param language language the user wants to view the application in
+	 * @param locale locale the user wants to view the application in
 	 */
-	public void setLanguage(String language) {
-		this.language = language;
+	public void setLocale(Locale locale) {
+		this.locale = locale;
+	}
+
+	/**
+	 * Gets the time zone the user wants to view times in.
+	 *
+	 * @return time zone the user wants to view times in
+	 */
+	public ZoneId getTimeZone() {
+		return timeZone;
+	}
+
+	/**
+	 * Sets the time zone the user wants to view times in.
+	 *
+	 * @param timeZone time zone the user wants to view times in
+	 */
+	public void setTimeZone(ZoneId timeZone) {
+		this.timeZone = timeZone;
 	}
 
 	/**

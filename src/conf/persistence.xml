@@ -17,6 +17,8 @@
 		<class>ch.bfh.awebt.bookmaker.converters.LocalDateTimeConverter</class>
 		<class>ch.bfh.awebt.bookmaker.converters.LocalDateConverter</class>
 		<class>ch.bfh.awebt.bookmaker.converters.BetTypeConverter</class>
+		<class>ch.bfh.awebt.bookmaker.converters.LocaleConverter</class>
+		<class>ch.bfh.awebt.bookmaker.converters.ZoneIdConverter</class>
 
 		<properties>
 			<property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/bookmaker?zeroDateTimeBehavior=convertToNull" />

@@ -29,6 +29,25 @@
 				</div>
 			</c:if>
 			<div class="form-group">
+				<label class="col-sm-2 control-label">#{texts.LoginLocaleLabel}</label>
+				<div class="col-sm-10">
+					<p class="form-control-static">
+						#{loginBean.locale.getDisplayName(loginBean.locale)}
+						<span class="text-muted">&#8211; #{texts.LoginLocaleExplanation}</span>
+					</p>
+				</div>
+			</div>
+			<div class="form-group">
+				<h:outputLabel for="timeZoneSelect" class="col-sm-2 control-label">#{texts.LoginTimeZoneLabel}</h:outputLabel>
+				<div class="col-sm-10">
+					<h:selectOneListbox id="timeZoneSelect" class="form-control" value="#{loginBean.timeZone}" size="1">
+						<c:forEach items="#{loginBean.timeZones}" var="timeZone">
+							<f:selectItem itemValue="#{timeZone}" itemLabel="#{loginBean.formatTimeZoneUser(timeZone)}" />
+						</c:forEach>
+					</h:selectOneListbox>
+				</div>
+			</div>
+			<div class="form-group">
 				<div class="col-sm-offset-2 col-sm-10">
 					<div class="btn-toolbar">
 						<h:commandButton id="registerButton" action="#{loginBean.register}" class="btn btn-default" value="#{texts.LoginRegisterButton}" />
