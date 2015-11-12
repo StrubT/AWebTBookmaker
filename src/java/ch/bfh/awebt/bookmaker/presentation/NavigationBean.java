@@ -55,6 +55,6 @@ public class NavigationBean implements Serializable {
 		String view = getCurrentView();
 		return PAGES.stream()
 			.filter(p -> view.equals(p.getView()))
-			.collect(Streams.singleCollector());
+			.collect(Streams.nullableSingleCollector());
 	}
 }
