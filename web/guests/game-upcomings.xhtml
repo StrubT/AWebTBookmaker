@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition template="../_template-default.xhtml"
+								xmlns="http://www.w3.org/1999/xhtml"
+								xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+								xmlns:f="http://java.sun.com/jsf/core"
+								xmlns:h="http://java.sun.com/jsf/html"
+								xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+								xmlns:t="http://myfaces.apache.org/tomahawk">
+	<ui:define name="main">
+		<h2>#{texts.GameUpcomTitle}</h2>
+		<p>#{texts.GameUpcomContent}</p>
+		<p>
+			<h:dataTable value="#{gameBean.games}" var="game" class="table table-condensed table-striped">
+				<h:column>
+					<f:facet name="header">#{texts.GameTeam1}</f:facet> <!--Home team-->
+						#{teams[game.team1.code]}
+				</h:column>
+				<h:column>
+					<f:facet name="header">Away team</f:facet>
+
+					<h:outputFormat value="#{teams[game.team2.code]}">
+
+					</h:outputFormat>
+				</h:column>
+				<h:column>
+					<f:facet name="header">Time</f:facet>
+					<small><time datetime="#{loginBean.formatDateTimeISO(game.startTimeZoned)}">#{loginBean.formatDateTimeUser(game.startTimeZoned)}</time></small>
+				</h:column>
+				<h:column>
+					<h:outputLink value="game-bet.xhtml?game=#{game.id}">Bets</h:outputLink>
+				</h:column>
+			</h:dataTable>
+		</p>
+	</ui:define>
+</ui:composition>
+
+
+
+<!--<h:dataTable value="#{game.bets}" var="bet" class="table table-condensed table-striped">
+			<h:column>
+				<f:facet name="header">Description</f:facet>
+
+				<h:outputFormat value="#{bets[bet.type.code]}">
+					<f:param value="#{teams[bet.team.code]}" />
+					<f:param value="#{bet.time}" />
+					<f:param value="#{bet.goals}" />
+				</h:outputFormat>
+			</h:column>
+			<h:column>
+				<f:facet name="header">Odds</f:facet>
+				<data value="#{bet.odds}">#{bet.odds}</data>
+			</h:column>
+			<h:column rendered="#{loginBean.userHasAccess('PLAYER')}">
+				<f:facet name="header">Stake (CHF)</f:facet>
+				<h:inputText id="betStake" value="0.0" class="form-control input-sm">
+					<f:passThroughAttribute name="type" value="number" />
+				</h:inputText>
+			</h:column>
+		</h:dataTable>-->
