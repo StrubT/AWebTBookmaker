@@ -26,4 +26,12 @@ public class GameBean implements Serializable {
 	public List<Game> getGames() {
 		return new GameDAO().findAll();
 	}
+
+	public Game getGame(int id) {
+		return new GameDAO().find(id);
+	}
+
+	public Game getGame(String id) {
+		return this.getGame(Integer.parseInt(id));
+	}
 }

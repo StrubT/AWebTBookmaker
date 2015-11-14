@@ -11,4 +11,5 @@ public class BetDAO extends GenericDAO<Bet> implements Serializable {
 	protected Class<Bet> getEntityClass() {
 		return Bet.class;
 	}
+
 }

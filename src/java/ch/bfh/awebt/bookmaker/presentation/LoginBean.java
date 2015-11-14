@@ -379,7 +379,7 @@ public class LoginBean implements Serializable {
 				return getUser() != null && getUser().isManager();
 
 			default:
-				return false;
+				return true;
 		}
 	}
 
