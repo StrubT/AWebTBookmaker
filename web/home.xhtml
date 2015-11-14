@@ -9,43 +9,7 @@
 	<ui:define name="main">
 		<h2>#{texts.HomeTitle}</h2>
 		<p>#{texts.HomeContent}</p>
-		<p>
-			<c:forEach items="#{gameBean.games}" var="game">
-				<section class="panel panel-default">
-					<header class="panel-heading">
-						<h3 class="panel-title">
-							<h:outputFormat value="#{texts.GameName}">
-								<f:param value="#{teams[game.team1.code]}" />
-								<f:param value="#{teams[game.team2.code]}" />
-							</h:outputFormat>
-							<small><time datetime="#{loginBean.formatDateTimeISO(game.startTimeZoned)}">#{loginBean.formatDateTimeUser(game.startTimeZoned)}</time></small>
-						</h3>
-					</header>
-					<div class="panel-body">
-						<h:dataTable value="#{game.bets}" var="bet" class="table table-condensed table-striped">
-							<h:column>
-								<f:facet name="header">Description</f:facet>
-								<h:inputHidden id="betId" value="#{bet.id}" />
-								<h:outputFormat value="#{bets[bet.type.code]}">
-									<f:param value="#{teams[bet.team.code]}" />
-									<f:param value="#{bet.time}" />
-									<f:param value="#{bet.goals}" />
-								</h:outputFormat>
-							</h:column>
-							<h:column>
-								<f:facet name="header">Odds</f:facet>
-								<data value="#{bet.odds}">#{bet.odds}</data>
-							</h:column>
-							<h:column rendered="#{loginBean.userHasAccess('PLAYER')}">
-								<f:facet name="header">Stake (CHF)</f:facet>
-								<h:inputText id="betStake" value="0.0" class="form-control input-sm">
-									<f:passThroughAttribute name="type" value="number" />
-								</h:inputText>
-							</h:column>
-						</h:dataTable>
-					</div>
-				</section>
-			</c:forEach>
-		</p>
+		<p><h:outputLink value="guests/game-upcomings.xhtml">Show Games</h:outputLink> </p>
+
 	</ui:define>
 </ui:composition>
