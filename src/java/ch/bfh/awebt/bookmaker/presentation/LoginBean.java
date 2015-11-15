@@ -123,8 +123,8 @@ public class LoginBean implements Serializable {
 
 		this.locale = locale;
 
-		if (getUser() != null) {
-			User user = getUser();
+		User user = getUser();
+		if (user != null) {
 			user.setLocale(locale); //remember the language for logged-in users
 			getUserDAO().merge(user);
 		}
@@ -258,7 +258,7 @@ public class LoginBean implements Serializable {
 	 */
 	public User getUser() {
 
-		return getUserDAO().find(userId);
+		return userId != null ? getUserDAO().find(userId) : null;
 	}
 
 	private void setUser(User user) {

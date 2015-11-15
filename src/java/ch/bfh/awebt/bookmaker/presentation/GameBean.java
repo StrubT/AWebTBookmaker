@@ -158,6 +158,26 @@ public class GameBean implements Serializable {
 	}
 
 	/**
+	 * Gets the upcoming games.
+	 *
+	 * @return {@link List} of upcoming games
+	 */
+	public List<Game> getUpcomingGames() {
+
+		return getGameDAO().findUpcoming();
+	}
+
+	/**
+	 * Gets the past games.
+	 *
+	 * @return {@link List} of past games
+	 */
+	public List<Game> getPastGames() {
+
+		return getGameDAO().findPast();
+	}
+
+	/**
 	 * Gets the game.
 	 *
 	 * @return game with the specified unique identifier

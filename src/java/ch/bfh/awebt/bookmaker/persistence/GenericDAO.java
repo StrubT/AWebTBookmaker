@@ -101,10 +101,11 @@ public abstract class GenericDAO<T extends PersistentObject<?>> {
 	 *
 	 * @param name       name of the query to use
 	 * @param parameters parameters to pass to the query
+	 * @param <P>        type of the parameters
 	 *
 	 * @return a {@link List} with the found entities
 	 */
-	protected List<T> findByQuery(String name, Map<String, Object> parameters) {
+	protected <P> List<T> findByQuery(String name, Map<String, P> parameters) {
 
 		TypedQuery<T> query = getEntityManager().createNamedQuery(name, getEntityClass());
 		parameters.forEach(query::setParameter);

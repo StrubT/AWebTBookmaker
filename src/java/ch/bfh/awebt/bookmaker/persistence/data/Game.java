@@ -17,6 +17,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import ch.bfh.awebt.bookmaker.converters.LocalDateTimeConverter;
@@ -28,9 +30,22 @@ import ch.bfh.awebt.bookmaker.converters.LocalDateTimeConverter;
  */
 @Entity
 @Table(name = "games")
+@NamedQueries({
+	@NamedQuery(name = Game.FIND_START_AFTER, query = "select g from Game g where g.startTimeUTC > :startTimeUTC"),
+	@NamedQuery(name = Game.FIND_START_BEFORE, query = "select g from Game g where g.startTimeUTC <= :startTimeUTC")})
 public class Game extends PersistentObject<Integer> implements Serializable {
 
 	private static final long serialVersionUID = 5535286169721878761L;
+
+	/**
+	 * Name of the {@link NamedQuery} to find games starting after a specified start date/time in UTC.
+	 */
+	public static final String FIND_START_AFTER = "Game.FIND_START_AFTER";
+
+	/**
+	 * Name of the {@link NamedQuery} to find games starting before a specified start date/time in UTC.
+	 */
+	public static final String FIND_START_BEFORE = "Game.FIND_START_BEFORE";
 
 	/**
 	 * Gets the UTC (Coordinated Universal Time) time zone.

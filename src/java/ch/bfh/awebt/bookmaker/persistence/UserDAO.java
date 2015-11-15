@@ -28,7 +28,7 @@ public class UserDAO extends GenericDAO<User> implements Serializable {
 	 */
 	public User findByLogin(String login) {
 
-		return findByQuery(User.FIND_BY_LOGIN_QUERY, MapBuilder.<String, Object>single("login", login))
+		return findByQuery(User.FIND_BY_LOGIN_QUERY, MapBuilder.single("login", login))
 			.stream().collect(Streams.nullableSingleCollector());
 	}
 }

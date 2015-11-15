@@ -9,7 +9,7 @@
 	<ui:define name="main">
 		<h2>#{texts.GameUpcomingTitle}</h2>
 		<p>
-			<h:dataTable value="#{gameBean.games}" var="game" class="table table-condensed table-striped">
+			<h:dataTable value="#{gameBean.upcomingGames}" var="game" class="table table-condensed table-striped">
 				<h:column>
 					<h:link outcome="/players/game.xhtml?id=#{game.id}">#{texts.GameDetailsLink}</h:link>
 				</h:column>

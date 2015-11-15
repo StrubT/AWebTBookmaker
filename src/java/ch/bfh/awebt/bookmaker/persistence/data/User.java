@@ -36,7 +36,7 @@ import ch.bfh.awebt.bookmaker.converters.ZoneIdConverter;
  */
 @Entity
 @Table(name = "users")
-@NamedQuery(name = User.FIND_BY_LOGIN_QUERY, query = "SELECT u FROM User u WHERE LOWER(u.login) = LOWER(:login)")
+@NamedQuery(name = User.FIND_BY_LOGIN_QUERY, query = "select u from User u where lower(u.login) = lower(:login)")
 public class User extends PersistentObject<Integer> implements Serializable {
 
 	private static final long serialVersionUID = -7147878463002225404L;
