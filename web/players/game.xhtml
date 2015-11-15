@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ui:composition template="../_template-default.xhtml"
+								xmlns="http://www.w3.org/1999/xhtml"
+								xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+								xmlns:f="http://java.sun.com/jsf/core"
+								xmlns:h="http://java.sun.com/jsf/html"
+								xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+								xmlns:t="http://myfaces.apache.org/tomahawk">
+	<f:metadata>
+    <f:viewParam name="id" value="#{gameBean.gameId}" />
+	</f:metadata>
+	<ui:define name="main">
+		<h2>
+			#{texts.GameDetailsTitle} |
+			<h:outputFormat value="#{texts.GameName}">
+				<f:param value="#{teams[gameBean.gameTeam1]}" />
+				<f:param value="#{teams[gameBean.gameTeam2]}" />
+			</h:outputFormat>
+		</h2>
+		<h:dataTable value="#{gameBean.game.bets}" var="bet" class="table table-condensed table-striped">
+			<h:column>
+				<f:facet name="header">#{texts.GameBetDescriptionLabel}</f:facet>
+				<h:outputFormat value="#{bets[bet.type.code]}">
+					<f:param value="#{teams[bet.team.code]}" />
+					<f:param value="#{bet.time}" />
+					<f:param value="#{bet.goals}" />
+				</h:outputFormat>
+			</h:column>
+			<h:column>
+				<f:facet name="header">#{texts.GameBetOddsLabel}</f:facet>
+				<data value="#{bet.odds}">#{bet.odds}</data>
+			</h:column>
+			<h:column rendered="#{loginBean.userHasAccess('PLAYER')}">
+				<f:facet name="header">#{texts.GameBetStakeLabel} (#{texts.Currency})</f:facet>
+				<h:inputText id="betStake" value="0.0" class="form-control input-sm">
+					<f:passThroughAttribute name="type" value="number" />
+				</h:inputText>
+			</h:column>
+		</h:dataTable>
+	</ui:define>
+</ui:composition>

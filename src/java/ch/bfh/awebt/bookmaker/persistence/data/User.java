@@ -78,7 +78,7 @@ public class User extends PersistentObject<Integer> implements Serializable {
 	private ZoneId timeZone;
 
 	@Column(name = "balance", nullable = false, precision = 10, scale = 3)
-	private BigDecimal balance;
+	private BigDecimal balance = BigDecimal.ZERO;
 
 	@Column(name = "cardnumber", length = 16)
 	private String creditCardNumber;

@@ -17,7 +17,7 @@ public enum AccessCondition {
 	MANAGER,
 
 	/**
-	 * This page is only accessible to logged-in user.
+	 * This page is only accessible to logged-in users.
 	 */
 	PLAYER,
 

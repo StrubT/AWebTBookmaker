@@ -1,16 +1,41 @@
 package ch.bfh.awebt.bookmaker.converters;
 
 import java.util.Locale;
+import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
+import javax.faces.convert.Converter;
+import javax.faces.convert.ConverterException;
+import javax.faces.convert.FacesConverter;
 import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
 
 /**
  * Represents a converter for {@link Locale}s.
  *
  * @author strut1 &amp; touwm1
  */
-@Converter
-public class LocaleConverter implements AttributeConverter<Locale, String> {
+@javax.persistence.Converter
+@FacesConverter("ch.bfh.awebt.bookmaker.LOCAL_DATE_CONVERTER")
+public class LocaleConverter implements Converter, AttributeConverter<Locale, String> {
+
+	/**
+	 * Converts the {@link Locale} to a {@link String} value.
+	 *
+	 * @param context   JSF context (not used)
+	 * @param component JSF UI component (not used)
+	 * @param locale    {@link Locale} to convert
+	 *
+	 * @return {@link String} value for the specified {@link Locale}
+	 *
+	 * @throws ConverterException if the {@link Locale} could not be converted
+	 */
+	@Override
+	public String getAsString(FacesContext context, UIComponent component, Object locale) throws ConverterException {
+
+		if (!(locale == null || locale instanceof Locale))
+			throw new ConverterException("Object is not a Locale.");
+
+		return convertToDatabaseColumn((Locale)locale);
+	}
 
 	/**
 	 * Converts the {@link Locale} to a {@link String} value.
@@ -31,6 +56,23 @@ public class LocaleConverter implements AttributeConverter<Locale, String> {
 		if (locale.getVariant() != null && locale.getVariant().length() > 0)
 			sb.append('_').append(locale.getVariant());
 		return sb.toString();
+	}
+
+	/**
+	 * Converts the {@link String} to a {@link Locale} value.
+	 *
+	 * @param context   JSF context (not used)
+	 * @param component JSF UI component (not used)
+	 * @param locale    {@link String} to convert
+	 *
+	 * @return {@link Locale} value for the specified {@link String}
+	 *
+	 * @throws ConverterException if the {@link String} could not be converted
+	 */
+	@Override
+	public Locale getAsObject(FacesContext context, UIComponent component, String locale) throws ConverterException {
+
+		return convertToEntityAttribute(locale);
 	}
 
 	/**

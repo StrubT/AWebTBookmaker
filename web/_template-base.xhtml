@@ -18,85 +18,95 @@
 			<h:outputScript library="js" name="bootstrap-3.3.5.min.js" />
 		</h:head>
 		<h:body>
-			<header class="navbar navbar-default navbar-fixed-top">
-				<div class="container">
-					<div class="navbar-header">
-						<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false">
-							<span class="sr-only">#{texts.NavigationToggle}</span>
-							<span class="icon-bar"></span>
-							<span class="icon-bar"></span>
-							<span class="icon-bar"></span>
-						</button>
-						<h:link outcome="/home.xhtml" class="navbar-brand">#{texts.ApplicationName}</h:link>
+			<h:form id="form" prependId="false">
+				<header class="navbar navbar-default navbar-fixed-top">
+					<div class="container">
+						<div class="navbar-header">
+							<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false">
+								<span class="sr-only">#{texts.NavigationToggle}</span>
+								<span class="icon-bar"></span>
+								<span class="icon-bar"></span>
+								<span class="icon-bar"></span>
+							</button>
+							<h:link outcome="#{navigationBean.homePage.view}" class="navbar-brand">#{texts.ApplicationName}</h:link>
+						</div>
+						<div id="navbar-collapse" class="collapse navbar-collapse">
+							<nav>
+								<ul class="nav navbar-nav">
+									<c:forEach items="#{navigationBean.pages}" var="page">
+										<c:if test="#{loginBean.showInNavigation(page)}">
+											<li class="#{navigationBean.currentPage eq page ? 'active' : ''}"><h:link outcome="#{page.view}">#{texts[page.title]}</h:link></li>
+										</c:if>
+									</c:forEach>
+								</ul>
+							</nav>
+							<div class="navbar-right">
+								<ul class="nav navbar-nav">
+									<c:forEach items="#{loginBean.supportedLocales}" var="locale">
+										<li class="#{loginBean.language eq locale.language ? 'active' : ''}">
+											<h:commandLink action="#{loginBean.setLanguage(locale.language)}" class="navbar-link" value="#{locale.getDisplayName(locale)}" title="#{locale.displayName}" />
+										</li>
+									</c:forEach>
+								</ul>
+							</div>
+						</div>
 					</div>
-					<div class="collapse navbar-collapse" id="navbar-collapse">
-						<nav>
-							<ul class="nav navbar-nav">
-								<c:forEach items="#{navigationBean.pages}" var="page">
-									<c:if test="#{loginBean.showInNavigation(page)}">
-										<li class="#{navigationBean.currentPage eq page ? 'active' : ''}"><h:link outcome="#{page.view}">#{texts[page.title]}</h:link></li>
-									</c:if>
-								</c:forEach>
-							</ul>
-						</nav>
-						<h:form id="navLocaleForm" class="navbar-right">
-							<ul class="nav navbar-nav">
-								<c:forEach items="#{loginBean.supportedLocales}" var="locale">
-									<li class="#{loginBean.language eq locale.language ? 'active' : ''}">
-										<h:commandLink action="#{loginBean.setLanguage(locale.language)}" class="navbar-link" value="#{locale.getDisplayName(locale)}" title="#{locale.displayName}" />
-									</li>
-								</c:forEach>
-							</ul>
-						</h:form>
-					</div>
-				</div>
-			</header>
-			<div class="container">
-				<c:choose>
-					<c:when test="#{loginBean.userHasAccessTo(navigationBean.currentPage)}">
-						<ui:insert name="content" />
-					</c:when>
-					<c:otherwise>
-						<main class="panel panel-danger">
-							<div class="panel-heading">
-								<h2 class="panel-title">#{texts.NoAccessTitle}</h2>
-							</div>
-							<div class="panel-body">
-								#{texts.NoAccessContent}
-							</div>
-						</main>
-					</c:otherwise>
-				</c:choose>
-			</div>
-			<footer class="navbar navbar-default navbar-fixed-bottom">
+				</header>
 				<div class="container">
-					<p class="navbar-text">
-						&#169; 2015 #{texts.ApplicationCopyrightOwner}
-					</p>
-					<h:form id="navLoginForm" class="navbar-form navbar-right" rendered="#{empty loginBean.user}">
-						<div class="form-group form-group-sm">
-							<h:inputText id="loginField" class="form-control" value="#{loginBean.login}">
-								<f:passThroughAttribute name="placeholder" value="#{texts.LoginLoginPlaceholder}" />
-							</h:inputText>
-						</div>
-						<div class="form-group form-group-sm">
-							<h:inputSecret id="passwordField" class="form-control" value="#{loginBean.password}">
-								<f:passThroughAttribute name="placeholder" value="#{texts.LoginPasswordPlaceholder}" />
-							</h:inputSecret>
-						</div>
-						<div class="form-group">
-							<div class="btn-toolbar btn-group-sm">
-								<h:commandButton id="registerButton" action="/register.xhtml?faces-redirect=true" class="btn btn-default" value="#{texts.LoginRegisterButton}" />
-								<h:commandButton id="loginButton" action="#{loginBean.login}" class="btn btn-primary" value="#{texts.LoginLoginButton}" />
-							</div>
-						</div>
-					</h:form>
-					<h:form id="navLogoutForm" class="navbar-text navbar-right" rendered="#{not empty loginBean.user}">
-						logged in as #{loginBean.login} |
-						<h:commandLink id="logoutButton" action="#{loginBean.logout}" class="navbar-link" value="#{texts.LoginLogoutButton}" />
-					</h:form>
+					<c:choose>
+						<c:when test="#{loginBean.userHasAccessTo(navigationBean.currentPage)}">
+							<ui:insert name="content" />
+						</c:when>
+						<c:otherwise>
+							<main class="panel panel-danger">
+								<div class="panel-heading">
+									<h2 class="panel-title">#{texts.NoAccessTitle}</h2>
+								</div>
+								<div class="panel-body">
+									#{texts.NoAccessContent}
+								</div>
+							</main>
+						</c:otherwise>
+					</c:choose>
 				</div>
-			</footer>
+				<footer class="navbar navbar-default navbar-fixed-bottom">
+					<div class="container">
+						<p class="navbar-text">
+							&#169; 2015 #{texts.ApplicationCopyrightOwner}
+						</p>
+						<c:if test="#{navigationBean.showLoginRegister()}">
+							<c:choose>
+								<c:when test="#{empty loginBean.user}">
+									<div class="navbar-form navbar-right">
+										<div class="form-group form-group-sm">
+											<h:inputText class="form-control" value="#{loginBean.login}">
+												<f:passThroughAttribute name="placeholder" value="#{texts.LoginLoginPlaceholder}" />
+											</h:inputText>
+										</div>
+										<div class="form-group form-group-sm">
+											<h:inputSecret class="form-control" value="#{loginBean.password}">
+												<f:passThroughAttribute name="placeholder" value="#{texts.LoginPasswordPlaceholder}" />
+											</h:inputSecret>
+										</div>
+										<div class="form-group">
+											<div class="btn-toolbar btn-group-sm">
+												<h:commandButton action="#{navigationBean.getRedirectOutcome('/register.xhtml')}" class="btn btn-default" value="#{texts.LoginRegisterButton}" />
+												<h:commandButton action="#{loginBean.login}" class="btn btn-primary" value="#{texts.LoginLoginButton}" />
+											</div>
+										</div>
+									</div>
+								</c:when>
+								<c:otherwise>
+									<p class="navbar-text navbar-right">
+										logged in as #{loginBean.login} |
+										<h:commandLink action="#{loginBean.logout}" class="navbar-link" value="#{texts.LoginLogoutButton}" />
+									</p>
+								</c:otherwise>
+							</c:choose>
+						</c:if>
+					</div>
+				</footer>
+			</h:form>
 		</h:body>
 	</f:view>
 </html>

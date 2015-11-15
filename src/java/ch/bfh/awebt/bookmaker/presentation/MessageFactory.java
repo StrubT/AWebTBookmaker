@@ -27,7 +27,8 @@ public final class MessageFactory {
 	 */
 	public static void addMessage(String componentClientId, FacesMessage.Severity messageSeverity, String messageKey, Object... messageArguments) {
 
-		String summary, detail;
+		String summary = String.format("???%s???", messageKey);
+		String detail = null;
 
 		FacesContext context = FacesContext.getCurrentInstance();
 
@@ -36,11 +37,10 @@ public final class MessageFactory {
 																											 context.getViewRoot().getLocale());
 
 			summary = MessageFormat.format(bundle.getString(messageKey), messageArguments);
-			detail = MessageFormat.format(bundle.getString(messageKey + "_detail"), messageArguments);
+			detail = MessageFormat.format(bundle.getString(messageKey + "_DETAILS"), messageArguments);
 
 		} catch (MissingResourceException ex) {
-			summary = String.format("{%s}", messageKey);
-			detail = null;
+			//do nothing, simply show default values
 		}
 
 		context.addMessage(componentClientId, new FacesMessage(messageSeverity, summary, detail));

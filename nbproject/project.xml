@@ -7,27 +7,16 @@
             <minimum-ant-version>1.6.5</minimum-ant-version>
             <web-module-libraries>
                 <library dirs="200">
-                    <file>${libs.EclipseLink (JPA 2.1).classpath}</file>
-                    <path-in-war>WEB-INF/lib</path-in-war>
+                    <file>${libs.EclipseLink.classpath}</file>
                 </library>
                 <library dirs="200">
-                    <file>${libs.MyFaces (2.2.8).classpath}</file>
-                    <path-in-war>WEB-INF/lib</path-in-war>
+                    <file>${libs.MyFaces.classpath}</file>
                 </library>
                 <library dirs="200">
-                    <file>${libs.Tomahawk (1.1.14 for JSF 2.0).classpath}</file>
-                    <path-in-war>WEB-INF/lib</path-in-war>
+                    <file>${libs.MySQLJDBCDriver.classpath}</file>
                 </library>
                 <library dirs="200">
-                    <file>${libs.MySQL JDBC Driver.classpath}</file>
-                    <path-in-war>WEB-INF/lib</path-in-war>
-                </library>
-                <library dirs="200">
-                    <file>${libs.eclipselink.classpath}</file>
-                    <path-in-war>WEB-INF/lib</path-in-war>
-                </library>
-                <library dirs="200">
-                    <file>${libs.MyLibrary.classpath}</file>
+                    <file>${libs.Tomahawk.classpath}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
             </web-module-libraries>

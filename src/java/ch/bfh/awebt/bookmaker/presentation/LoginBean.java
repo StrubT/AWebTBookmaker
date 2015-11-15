@@ -42,7 +42,6 @@ public class LoginBean implements Serializable {
 	private Locale locale;
 	private ZoneId timeZone;
 
-	private transient User user;
 	private Integer userId;
 	private String userLogin;
 	private byte[] userPasswordHash;
@@ -119,21 +118,18 @@ public class LoginBean implements Serializable {
 	 * Sets the locale to show the application in.
 	 *
 	 * @param locale locale to show the application in
-	 *
-	 * @return outcome: identifier of the view to navigate to
 	 */
-	public String setLocale(Locale locale) {
+	public void setLocale(Locale locale) {
 
 		this.locale = locale;
 
 		if (getUser() != null) {
-			getUser().setLocale(locale); //remember the language for logged-in users
-			getUserDAO().merge(getUser());
+			User user = getUser();
+			user.setLocale(locale); //remember the language for logged-in users
+			getUserDAO().merge(user);
 		}
 
 		FacesContext.getCurrentInstance().getViewRoot().setLocale(locale); //change the locale of the web page
-
-		return navigationBean.getCurrentView(); //forces the application to reload the texts
 	}
 
 	/**
@@ -149,12 +145,10 @@ public class LoginBean implements Serializable {
 	 * Sets the language to show the application in.
 	 *
 	 * @param language language to show the application in
-	 *
-	 * @return outcome: identifier of the view to navigate to
 	 */
-	public String setLanguage(String language) {
+	public void setLanguage(String language) {
 
-		return setLocale(getRequestLocales().stream() //find the first requested locale with the selected language
+		setLocale(getRequestLocales().stream() //find the first requested locale with the selected language
 			.filter(r -> r.getLanguage().equalsIgnoreCase(language))
 			.sorted(this::compareLocalesPreferRegionalised) //prefer regionalised locales
 			.findFirst().orElse(new Locale(language))); //or use a non-regionalised locale instad
@@ -206,13 +200,14 @@ public class LoginBean implements Serializable {
 	/**
 	 * Formats a date/time according to the user settings.
 	 *
-	 * @param dateTime date time to format
+	 * @param dateTime        date time to format
+	 * @param includeTimeZone whether or not to include the time zone
 	 *
 	 * @return date/time formatted according to the user settings
 	 */
-	public String formatDateTimeUser(ZonedDateTime dateTime) {
+	public String formatDateTimeUser(ZonedDateTime dateTime, boolean includeTimeZone) {
 
-		return String.format("%s (%s)",
+		return String.format(includeTimeZone ? "%s (%s)" : "%s",
 												 dateTime.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.FULL, FormatStyle.SHORT).withZone(timeZone).withLocale(locale)),
 												 timeZone.getDisplayName(TextStyle.FULL, locale));
 	}
@@ -220,13 +215,14 @@ public class LoginBean implements Serializable {
 	/**
 	 * Formats a time zone according to the user settings.
 	 *
-	 * @param timeZone time zone to format
+	 * @param timeZone       time zone to format
+	 * @param includeDetails whether or not to include details such as offset and detailed location
 	 *
 	 * @return time zone formatted according to the user settings
 	 */
-	public String formatTimeZoneUser(ZoneId timeZone) {
+	public String formatTimeZoneUser(ZoneId timeZone, boolean includeDetails) {
 
-		return String.format("(%s) %s - %s",
+		return String.format(includeDetails ? "(%s) %s - %s" : "%3$s",
 												 timeZone.getRules().getOffset(LocalDateTime.now()),
 												 timeZone.toString(),
 												 timeZone.getDisplayName(TextStyle.FULL, locale));
@@ -262,24 +258,19 @@ public class LoginBean implements Serializable {
 	 */
 	public User getUser() {
 
-		if (user == null && userId != null)
-			user = getUserDAO().find(userId);
-
-		return user;
+		return getUserDAO().find(userId);
 	}
 
 	private void setUser(User user) {
 
-		this.user = user;
 		userId = user != null ? user.getId() : null;
+		userPasswordHash = null;
 
 		if (user != null) {
 			userLogin = user.getLogin();
 			locale = user.getLocale();
 			timeZone = user.getTimeZone();
 		}
-
-		userPasswordHash = null;
 	}
 
 	/**
@@ -379,7 +370,7 @@ public class LoginBean implements Serializable {
 				return getUser() != null && getUser().isManager();
 
 			default:
-				return true;
+				return false;
 		}
 	}
 
@@ -401,7 +392,7 @@ public class LoginBean implements Serializable {
 					getUserDAO().persist(user);
 
 					setUser(user); //log in
-					return "secret?faces-redirect=true";
+					return navigationBean.getRedirectOutcome("/players/account.xhtml");
 
 				} catch (PersistenceException ex) {
 					MessageFactory.addWarning("ch.bfh.awebt.bookmaker.PERSISTENCE_ERROR");
@@ -410,7 +401,7 @@ public class LoginBean implements Serializable {
 		else
 			MessageFactory.addWarning("ch.bfh.awebt.bookmaker.LOGIN_ERROR_MISSING_INFORMATION");
 
-		return "register?faces-redirect=true";
+		return navigationBean.getRedirectOutcome(navigationBean.getRegisterPage());
 	}
 
 	/**
@@ -424,7 +415,7 @@ public class LoginBean implements Serializable {
 			User user = getUserDAO().findByLogin(userLogin);
 			if (user != null && user.validatePassword(userPasswordHash)) {
 				setUser(user);
-				return "secret?faces-redirect=true";
+				return !navigationBean.showLoginRegister() ? navigationBean.getRedirectOutcome(navigationBean.getHomePage()) : null;
 
 			} else
 				MessageFactory.addWarning("ch.bfh.awebt.bookmaker.LOGIN_ERROR_INCORRECT_INFORMATION");
@@ -433,7 +424,7 @@ public class LoginBean implements Serializable {
 			MessageFactory.addWarning("ch.bfh.awebt.bookmaker.PERSISTENCE_ERROR");
 		}
 
-		return "login?faces-redirect=true";
+		return navigationBean.getRedirectOutcome(navigationBean.getLoginPage());
 	}
 
 	/**
@@ -444,11 +435,6 @@ public class LoginBean implements Serializable {
 	public String logout() {
 
 		setUser(null);
-
-		if (userHasAccessTo(navigationBean.getCurrentPage()))
-			return navigationBean.getCurrentView(); //forces the application to reload
-
-		else
-			return "home?faces-redirect=true";
+		return !userHasAccessTo(navigationBean.getCurrentPage()) ? navigationBean.getRedirectOutcome(navigationBean.getHomePage()) : null;
 	}
 }

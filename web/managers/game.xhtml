@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ui:composition template="../_template-default.xhtml"
+								xmlns="http://www.w3.org/1999/xhtml"
+								xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+								xmlns:f="http://java.sun.com/jsf/core"
+								xmlns:h="http://java.sun.com/jsf/html"
+								xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+								xmlns:t="http://myfaces.apache.org/tomahawk">
+	<f:metadata>
+    <f:viewParam name="id" value="#{gameBean.gameId}" />
+	</f:metadata>
+	<ui:define name="main">
+		<c:choose>
+			<c:when test="#{empty gameBean.gameId}">
+				<h2>#{texts.GameCreateTitle}</h2>
+			</c:when>
+			<c:otherwise>
+				<h2>
+					#{texts.GameEditTitle} |
+					<h:outputFormat value="#{texts.GameName}">
+						<f:param value="#{teams[gameBean.gameTeam1]}" />
+						<f:param value="#{teams[gameBean.gameTeam2]}" />
+					</h:outputFormat>
+				</h2>
+			</c:otherwise>
+		</c:choose>
+		<div class="form-horizontal">
+			<div class="form-group">
+				<label for="selectTeam1" class="col-sm-2 control-label">#{texts.GameTeam1Label}</label>
+				<div class="col-sm-10">
+					<h:selectOneListbox id="selectTeam1" size="1" value="#{gameBean.gameTeam1}" class="form-control">
+						<f:selectItems value="#{gameBean.teams}" var="team" itemValue="#{team.code}" itemLabel="#{teams[team.code]}" />
+					</h:selectOneListbox>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="selectTeam2" class="col-sm-2 control-label">#{texts.GameTeam2Label}</label>
+				<div class="col-sm-10">
+					<h:selectOneListbox id="selectTeam2" size="1" value="#{gameBean.gameTeam2}" class="form-control">
+						<f:selectItems value="#{gameBean.teams}" var="team" itemValue="#{team.code}" itemLabel="#{teams[team.code]}" />
+					</h:selectOneListbox>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="inputStartTime" class="col-sm-2 control-label">#{texts.GameStartTimeLabel}</label>
+				<div class="col-sm-10">
+					<h:inputText id="inputStartTime" value="#{gameBean.gameStartTime}" class="form-control">
+						<f:passThroughAttribute name="type" value="datetime-local" />
+						<f:passThroughAttribute name="placeholder" value="yyyy-MM-dd HH:mm" />
+					</h:inputText>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="selectTimeZone" class="col-sm-2 control-label">#{texts.GameTimeZoneLabel}</label>
+				<div class="col-sm-10">
+					<h:selectOneListbox id="selectTimeZone" size="1" value="#{gameBean.gameTimeZone}" class="form-control" converter="ch.bfh.awebt.bookmaker.ZONE_ID_CONVERTER">
+						<f:selectItems value="#{loginBean.timeZones}" var="timeZone" itemValue="#{timeZone}" itemLabel="#{loginBean.formatTimeZoneUser(timeZone, true)}" />
+					</h:selectOneListbox>
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-10 btn-group">
+					<h:commandButton id="saveButton" action="#{gameBean.save}" class="btn btn-primary" value="#{texts.FormSaveButton}" />
+					<h:commandButton id="deleteButton" action="#{gameBean.delete}" class="btn btn-warning" value="#{texts.FormDeleteButton}" />
+					<h:link outcome="/players/game.xhtml?id=#{gameBean.gameId}" class="btn btn-default" value="#{texts.FormCancelButton}" />
+				</div>
+			</div>
+		</div>
+	</ui:define>
+</ui:composition>

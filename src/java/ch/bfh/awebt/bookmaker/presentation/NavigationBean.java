@@ -20,19 +20,20 @@ public class NavigationBean implements Serializable {
 
 	private static final long serialVersionUID = -1616488627854886893L;
 
-	private final List<NavigationPage> PAGES = Arrays.asList(new NavigationPage("/home.xhtml", "Home"),
-																													 new NavigationPage("/secret.xhtml", "Secret", AccessCondition.PLAYER),
-																													 new NavigationPage("/login.xhtml", "Login", AccessCondition.ALWAYS, AccessCondition.NEVER),
-																													 new NavigationPage("/register.xhtml", "LoginRegister", AccessCondition.ALWAYS, AccessCondition.NEVER));
+	private final NavigationPage PAGE_HOME, PAGE_LOGIN, PAGE_REGISTER;
+	private final List<NavigationPage> PAGES;
 
-	/**
-	 * Gets a {@link List} of all the pages in this web site.
-	 *
-	 * @return {@link List} of all the pages in this web site
-	 */
-	public List<NavigationPage> getPages() {
+	public NavigationBean() {
 
-		return Collections.unmodifiableList(PAGES);
+		PAGES = Arrays.asList(PAGE_HOME = new NavigationPage("/home.xhtml", "Home"),
+													PAGE_LOGIN = new NavigationPage("/login.xhtml", "Login", AccessCondition.ALWAYS, AccessCondition.NEVER), //show in footer
+													PAGE_REGISTER = new NavigationPage("/register.xhtml", "LoginRegister", AccessCondition.ALWAYS, AccessCondition.NEVER), //show in footer
+													new NavigationPage("/players/account.xhtml", "GameAccount", AccessCondition.PLAYER),
+													new NavigationPage("/players/upcoming-games.xhtml", "GameUpcoming", AccessCondition.ALWAYS),
+													new NavigationPage("/players/game.xhtml", "GameDetails", AccessCondition.ALWAYS, AccessCondition.NEVER), //access via in-page links
+													new NavigationPage("/managers/game.xhtml", "GameCreate", AccessCondition.MANAGER),
+													new NavigationPage("/managers/upcoming-games.xhtml", "GameUpcoming", AccessCondition.MANAGER),
+													new NavigationPage("/managers/past-games.xhtml", "GamePast", AccessCondition.MANAGER));
 	}
 
 	/**
@@ -43,6 +44,77 @@ public class NavigationBean implements Serializable {
 	public String getCurrentView() {
 
 		return FacesContext.getCurrentInstance().getViewRoot().getViewId();
+	}
+
+	/**
+	 * Gets the outcome to use when redirecting to a new view.
+	 *
+	 * @param page page to redirect to
+	 *
+	 * @return outcome to use when redirecting to a new view
+	 */
+	public String getRedirectOutcome(NavigationPage page) {
+		return getRedirectOutcome(page.getView());
+	}
+
+	/**
+	 * Gets the outcome to use when redirecting to a new view.
+	 *
+	 * @param view view to redirect to
+	 *
+	 * @return outcome to use when redirecting to a new view
+	 */
+	public String getRedirectOutcome(String view) {
+
+		return String.format("%s?faces-redirect=true", view);
+	}
+
+	/**
+	 * Gets the home page.
+	 *
+	 * @return home page
+	 */
+	public NavigationPage getHomePage() {
+		return PAGE_HOME;
+	}
+
+	/**
+	 * Gets the login/logout page.
+	 *
+	 * @return login/logout page
+	 */
+	public NavigationPage getLoginPage() {
+		return PAGE_LOGIN;
+	}
+
+	/**
+	 * Gets the registration page.
+	 *
+	 * @return registration page
+	 */
+	public NavigationPage getRegisterPage() {
+		return PAGE_REGISTER;
+	}
+
+	/**
+	 * Gets whether or not to show a login/register option in the template.
+	 *
+	 * @return whether or not to show a login/register option in the template
+	 */
+	public boolean showLoginRegister() {
+
+		NavigationPage page = getCurrentPage();
+		return page != null && !page.getView().equals(PAGE_LOGIN.getView()) && !page.getView().equals(PAGE_REGISTER.getView());
+	}
+
+	/**
+	 * Gets a {@link List} of all the pages in this web site.
+	 *
+	 * @return {@link List} of all the pages in this web site
+	 */
+	public List<NavigationPage> getPages() {
+
+		return Collections.unmodifiableList(PAGES);
 	}
 
 	/**

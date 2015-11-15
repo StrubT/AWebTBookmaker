@@ -77,7 +77,7 @@ public class LocalDateTimeConverter implements Converter, AttributeConverter<Loc
 			return dateTime != null ? LocalDateTime.parse(dateTime, FORMAT) : null;
 
 		} catch (DateTimeParseException ex) {
-			throw new ConverterException("Format is not valid for LocalDate.");
+			throw new ConverterException("Format is not valid for LocalDateTime.", ex);
 		}
 	}
 
