@@ -22,8 +22,15 @@ GRANT USAGE ON *.* TO 'bookmaker'@'localhost' IDENTIFIED BY PASSWORD '*85A1E8C55
 GRANT ALL PRIVILEGES ON `bookmaker`.* TO 'bookmaker'@'localhost' WITH GRANT OPTION;
 
 USE `bookmaker`;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `bets`
+--
+
 DROP TABLE IF EXISTS `bets`;
-CREATE TABLE `bets` (
+CREATE TABLE IF NOT EXISTS `bets` (
 `id` int(11) NOT NULL,
   `game` int(11) NOT NULL,
   `type` char(3) NOT NULL,
@@ -57,7 +64,7 @@ INSERT INTO `bets` (`id`, `game`, `type`, `odds`, `occurred`, `team`, `time`, `g
 --
 
 DROP TABLE IF EXISTS `games`;
-CREATE TABLE `games` (
+CREATE TABLE IF NOT EXISTS `games` (
 `id` int(11) NOT NULL,
   `team1` varchar(10) NOT NULL,
   `team2` varchar(10) NOT NULL,
@@ -69,7 +76,7 @@ CREATE TABLE `games` (
 --
 
 INSERT INTO `games` (`id`, `team1`, `team2`, `starttime`) VALUES
-(1, 'SUI', 'ESP', '2015-11-05 20:30:00');
+(1, 'SUI', 'ESP', '2015-11-20 20:30:00');
 
 -- --------------------------------------------------------
 
@@ -78,7 +85,7 @@ INSERT INTO `games` (`id`, `team1`, `team2`, `starttime`) VALUES
 --
 
 DROP TABLE IF EXISTS `teams`;
-CREATE TABLE `teams` (
+CREATE TABLE IF NOT EXISTS `teams` (
   `code` varchar(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -321,13 +328,15 @@ INSERT INTO `teams` (`code`) VALUES
 --
 
 DROP TABLE IF EXISTS `users`;
-CREATE TABLE `users` (
+CREATE TABLE IF NOT EXISTS `users` (
 `id` int(11) NOT NULL,
+  `version` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `login` varchar(25) NOT NULL,
   `password` binary(16) NOT NULL,
   `manager` bit(1) NOT NULL DEFAULT b'0',
   `locale` varchar(10) NOT NULL,
-  `balance` decimal(10,3) NOT NULL DEFAULT '0',
+  `timezone` varchar(25) NOT NULL,
+  `balance` decimal(10,3) NOT NULL DEFAULT '0.000',
   `cardnumber` char(16) DEFAULT NULL,
   `cardexpiration` date DEFAULT NULL,
   `cardcode` char(3) DEFAULT NULL
@@ -337,10 +346,10 @@ CREATE TABLE `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `login`, `password`, `manager`, `locale`, `balance`, `cardnumber`, `cardexpiration`, `cardcode`) VALUES
-(1, 'strut1', 0x69384e2f74dcbf163ca1a2f7ba12fb9b, b'1', 'en', '0', NULL, NULL, NULL),
-(2, 'touwm1', 0x69384e2f74dcbf163ca1a2f7ba12fb9b, b'1', 'de', '0', NULL, NULL, NULL),
-(4, 'player', 0x6f8548ca26a842f4e08fb2257bce5a4d, b'0', 'de', '0', NULL, NULL, NULL);
+INSERT INTO `users` (`id`, `version`, `login`, `password`, `manager`, `locale`, `timezone`, `balance`, `cardnumber`, `cardexpiration`, `cardcode`) VALUES
+(1, '2015-11-15 22:38:20', 'strut1', 0x69384e2f74dcbf163ca1a2f7ba12fb9b, b'1', 'en_GB', 'Europe/Zurich', '0.000', NULL, NULL, NULL), -- password: bookmaker
+(2, '2015-11-10 13:22:08', 'touwm1', 0x69384e2f74dcbf163ca1a2f7ba12fb9b, b'1', 'de', 'Europe/Berlin', '0.000', NULL, NULL, NULL), -- password: bookmaker
+(4, '2015-11-10 13:22:08', 'player', 0x6f8548ca26a842f4e08fb2257bce5a4d, b'0', 'de', 'UTC', '0.000', NULL, NULL, NULL); -- password: player
 
 -- --------------------------------------------------------
 
@@ -349,7 +358,7 @@ INSERT INTO `users` (`id`, `login`, `password`, `manager`, `locale`, `balance`, 
 --
 
 DROP TABLE IF EXISTS `users_bets`;
-CREATE TABLE `users_bets` (
+CREATE TABLE IF NOT EXISTS `users_bets` (
   `user` int(11) NOT NULL,
   `bet` int(11) NOT NULL,
   `stake` decimal(10,3) NOT NULL
@@ -417,7 +426,7 @@ MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=5;
 --
 ALTER TABLE `bets`
 ADD CONSTRAINT `bets_ibfk_1` FOREIGN KEY (`game`) REFERENCES `games` (`id`),
-ADD CONSTRAINT `bets_ibfk_2` FOREIGN KEY (`team`) REFERENCES `teams` (`code`);
+ADD CONSTRAINT `bets_ibfk_3` FOREIGN KEY (`team`) REFERENCES `teams` (`code`);
 
 --
 -- Constraints for table `games`
@@ -432,11 +441,3 @@ ADD CONSTRAINT `games_ibfk_2` FOREIGN KEY (`team2`) REFERENCES `teams` (`code`);
 ALTER TABLE `users_bets`
 ADD CONSTRAINT `users_bets_ibfk_1` FOREIGN KEY (`user`) REFERENCES `users` (`id`),
 ADD CONSTRAINT `users_bets_ibfk_2` FOREIGN KEY (`bet`) REFERENCES `bets` (`id`);
-
-
-------------------
---- 2015-11-09 ---
-------------------
-
-ALTER TABLE `users` ADD `version` TIMESTAMP NOT NULL AFTER `id`;
-ALTER TABLE `users` ADD `timezone` VARCHAR(25) NOT NULL AFTER `locale`;
