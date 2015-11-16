@@ -359,15 +359,20 @@ public class LoginBean implements Serializable {
 	 */
 	public boolean userHasAccess(AccessCondition accessCondition) {
 
+		User user;
+
 		switch (accessCondition) {
 			case ALWAYS:
 				return true;
 
-			case PLAYER:
+			case REGISTERED:
 				return getUser() != null;
 
+			case NON_MANAGER:
+				return (user = getUser()) == null || !user.isManager();
+
 			case MANAGER:
-				return getUser() != null && getUser().isManager();
+				return (user = getUser()) != null && user.isManager();
 
 			default:
 				return false;

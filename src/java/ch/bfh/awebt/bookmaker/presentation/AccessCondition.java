@@ -17,9 +17,15 @@ public enum AccessCondition {
 	MANAGER,
 
 	/**
+	 * This page is accessible by anonymous visitors or logged-in non-managers. <br>
+	 * This constant should only be used for navigation visibility, not access control.
+	 */
+	NON_MANAGER,
+
+	/**
 	 * This page is only accessible to logged-in users.
 	 */
-	PLAYER,
+	REGISTERED,
 
 	/**
 	 * This page is accessible to everyone (even anonymous visitors).

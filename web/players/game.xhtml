@@ -30,7 +30,7 @@
 				<f:facet name="header">#{texts.GameBetOddsLabel}</f:facet>
 				<data value="#{bet.odds}">#{bet.odds}</data>
 			</h:column>
-			<h:column rendered="#{loginBean.userHasAccess('PLAYER')}">
+			<h:column rendered="#{loginBean.userHasAccess('REGISTERED')}">
 				<f:facet name="header">#{texts.GameBetStakeLabel} (#{texts.Currency})</f:facet>
 				<h:inputText id="betStake" value="0.0" class="form-control input-sm">
 					<f:passThroughAttribute name="type" value="number" />
