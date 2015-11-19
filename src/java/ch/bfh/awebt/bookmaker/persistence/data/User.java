@@ -51,6 +51,8 @@ public class User extends PersistentObject<Integer> implements Serializable {
 	 */
 	public static final String HASH_ALGORITHM = "MD5";
 
+	public static final User ANONYMOUS = new User();
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", nullable = false, unique = true)

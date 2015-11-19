@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 /**
@@ -20,13 +21,16 @@ import javax.persistence.Table;
 @Entity
 @IdClass(UserBet.PK.class)
 @Table(name = "users_bets")
+@NamedQuery(name = UserBet.FIND_BY_USER_BET, query = "select c from UserBet c where c.betId = :betId and c.userId = :userId")
 public class UserBet extends PersistentObject<UserBet.PK> implements Serializable {
 
 	private static final long serialVersionUID = 5153932768816522284L;
 
+	public static final String FIND_BY_USER_BET = "UserBet.FIND_BY_USER_BET";
+
 	@Id
 	@Column(name = "user", nullable = false, insertable = false, updatable = false)
-	private int userId;
+	private Integer userId;
 
 	@ManyToOne(optional = false, fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
 	@JoinColumn(name = "user", nullable = false)
@@ -34,7 +38,7 @@ public class UserBet extends PersistentObject<UserBet.PK> implements Serializabl
 
 	@Id
 	@Column(name = "bet", nullable = false, insertable = false, updatable = false)
-	private int betId;
+	private Integer betId;
 
 	@ManyToOne(optional = false, fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
 	@JoinColumn(name = "bet", nullable = false)

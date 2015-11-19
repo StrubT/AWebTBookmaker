@@ -17,22 +17,22 @@
 				<f:param value="#{teams[gameBean.gameTeam2]}" />
 			</h:outputFormat>
 		</h2>
-		<h:dataTable value="#{gameBean.game.bets}" var="bet" class="table table-condensed table-striped">
+		<h:dataTable value="#{gameBean.gameBets}" var="bet" class="table table-condensed table-striped">
 			<h:column>
 				<f:facet name="header">#{texts.GameBetDescriptionLabel}</f:facet>
-				<h:outputFormat value="#{bets[bet.type.code]}">
-					<f:param value="#{teams[bet.team.code]}" />
-					<f:param value="#{bet.time}" />
-					<f:param value="#{bet.goals}" />
+				<h:outputFormat value="#{bets[bet.generic.type.code]}">
+					<f:param value="#{teams[bet.generic.team.code]}" />
+					<f:param value="#{bet.generic.time}" />
+					<f:param value="#{bet.generic.goals}" />
 				</h:outputFormat>
 			</h:column>
 			<h:column>
 				<f:facet name="header">#{texts.GameBetOddsLabel}</f:facet>
-				<data value="#{bet.odds}">#{bet.odds}</data>
+				<data value="#{bet.generic.odds}">#{bet.generic.odds}</data>
 			</h:column>
 			<h:column rendered="#{loginBean.userHasAccess('REGISTERED')}">
 				<f:facet name="header">#{texts.GameBetStakeLabel} (#{texts.Currency})</f:facet>
-				<h:inputText id="betStake" value="0.0" class="form-control input-sm">
+				<h:inputText id="betStake" value="#{bet.typed.stake}" class="form-control input-sm">
 					<f:passThroughAttribute name="type" value="number" />
 				</h:inputText>
 			</h:column>

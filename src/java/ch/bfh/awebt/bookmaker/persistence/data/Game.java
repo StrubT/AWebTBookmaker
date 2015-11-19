@@ -189,7 +189,7 @@ public class Game extends PersistentObject<Integer> implements Serializable {
 	 * @return unmodifiable {@link List} of the bets available for the game
 	 */
 	public List<Bet> getBets() {
-		return Collections.unmodifiableList(bets);
+		return Collections.unmodifiableList(new ArrayList<>(bets)); //BUGFIX: new ArrayList<>(...) needed in eclipselink 2.6.*
 	}
 
 	/**

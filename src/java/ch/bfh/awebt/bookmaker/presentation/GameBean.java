@@ -1,17 +1,23 @@
 package ch.bfh.awebt.bookmaker.presentation;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import ch.bfh.awebt.bookmaker.persistence.GameDAO;
 import ch.bfh.awebt.bookmaker.persistence.TeamDAO;
+import ch.bfh.awebt.bookmaker.persistence.UserBetDAO;
 import ch.bfh.awebt.bookmaker.persistence.data.Game;
 import ch.bfh.awebt.bookmaker.persistence.data.Team;
+import ch.bfh.awebt.bookmaker.persistence.data.User;
+import ch.bfh.awebt.bookmaker.persistence.data.UserBet;
 
 /**
  * Represents a {@link ViewScoped} {@link ManagedBean} providing bookmaker game helpers.
@@ -29,12 +35,14 @@ public class GameBean implements Serializable {
 
 	private transient GameDAO gameDAO;
 	private transient TeamDAO teamDAO;
+	private transient UserBetDAO userBetDAO;
 
 	private Integer gameId;
 	private String gameTeam1;
 	private String gameTeam2;
 	private LocalDateTime gameStartTime;
 	private ZoneId gameTimeZone;
+	private List<UserTypedBet> gameBets;
 
 	@PostConstruct
 	public void init() {
@@ -68,6 +76,14 @@ public class GameBean implements Serializable {
 		return teamDAO;
 	}
 
+	private UserBetDAO getUserBetDAO() {
+
+		if (userBetDAO == null)
+			userBetDAO = new UserBetDAO();
+
+		return userBetDAO;
+	}
+
 	/**
 	 * Gets the unique identifier of the game.
 	 *
@@ -87,12 +103,19 @@ public class GameBean implements Serializable {
 
 		this.gameId = gameId;
 
-		if (gameId != null) {
-			Game game = getGame();
-			gameTeam1 = game != null ? game.getTeam1().getCode() : null;
-			gameTeam2 = game != null ? game.getTeam2().getCode() : null;
-			gameStartTime = game != null ? game.getStartTimeZoned().withZoneSameInstant(gameTimeZone).toLocalDateTime() : null;
-		}
+		Game game = gameId != null ? getGame() : null;
+
+		gameTeam1 = game != null ? game.getTeam1().getCode() : null;
+		gameTeam2 = game != null ? game.getTeam2().getCode() : null;
+		gameStartTime = game != null ? game.getStartTimeZoned().withZoneSameInstant(gameTimeZone).toLocalDateTime() : null;
+
+		User u = loginBean.getUser();
+		gameBets = game != null ? game.getBets().stream().map(b -> {
+			UserBet c = u != null ? getUserBetDAO().findByUserAndBet(u, b) : null;
+			if (c == null)
+				c = new UserBet(u != null ? u : User.ANONYMOUS, b, BigDecimal.ZERO);
+			return new UserTypedBet(b, c);
+		}).collect(Collectors.toList()) : Arrays.asList();
 	}
 
 	/**
@@ -145,6 +168,14 @@ public class GameBean implements Serializable {
 
 	public void setGameTimeZone(ZoneId gameTimeZone) {
 		this.gameTimeZone = gameTimeZone;
+	}
+
+	public List<UserTypedBet> getGameBets() {
+		return gameBets;
+	}
+
+	public void setGameBets(List<UserTypedBet> gameBets) {
+		this.gameBets = gameBets;
 	}
 
 	/**

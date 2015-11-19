@@ -46,7 +46,7 @@ public class Bet extends PersistentObject<Integer> implements Serializable {
 	@Column(name = "occurred")
 	private Boolean occurred;
 
-	@ManyToOne(optional = false)
+	@ManyToOne
 	@JoinColumn(name = "team")
 	private Team team;
 
