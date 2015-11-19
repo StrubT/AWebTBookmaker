@@ -18,7 +18,12 @@ public class UserBetDAO extends GenericDAO<UserBet> implements Serializable {
 
 	public UserBet findByUserAndBet(User user, Bet bet) {
 
-		return findByQuery(UserBet.FIND_BY_USER_BET, MapBuilder.first("userId", user.getId()).last("betId", bet.getId()))
+		return findByUserAndBet(user.getId(), bet.getId());
+	}
+
+	public UserBet findByUserAndBet(Integer userId, Integer betId) {
+
+		return findByQuery(UserBet.FIND_BY_USER_BET, MapBuilder.first("userId", userId).last("betId", betId))
 			.stream().collect(Streams.nullableSingleCollector());
 	}
 }

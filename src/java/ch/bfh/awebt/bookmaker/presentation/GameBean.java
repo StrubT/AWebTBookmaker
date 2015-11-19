@@ -11,9 +11,11 @@ import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
+import ch.bfh.awebt.bookmaker.persistence.BetDAO;
 import ch.bfh.awebt.bookmaker.persistence.GameDAO;
 import ch.bfh.awebt.bookmaker.persistence.TeamDAO;
 import ch.bfh.awebt.bookmaker.persistence.UserBetDAO;
+import ch.bfh.awebt.bookmaker.persistence.data.Bet;
 import ch.bfh.awebt.bookmaker.persistence.data.Game;
 import ch.bfh.awebt.bookmaker.persistence.data.Team;
 import ch.bfh.awebt.bookmaker.persistence.data.User;
@@ -33,16 +35,17 @@ public class GameBean implements Serializable {
 	@ManagedProperty("#{loginBean}")
 	private LoginBean loginBean;
 
-	private transient GameDAO gameDAO;
 	private transient TeamDAO teamDAO;
+	private transient GameDAO gameDAO;
 	private transient UserBetDAO userBetDAO;
+	private transient BetDAO betDAO;
 
 	private Integer gameId;
 	private String gameTeam1;
 	private String gameTeam2;
 	private LocalDateTime gameStartTime;
 	private ZoneId gameTimeZone;
-	private List<UserTypedBet> gameBets;
+	private List<BetDTO> gameBets;
 
 	@PostConstruct
 	public void init() {
@@ -60,6 +63,14 @@ public class GameBean implements Serializable {
 		this.loginBean = loginBean;
 	}
 
+	private TeamDAO getTeamDAO() {
+
+		if (teamDAO == null)
+			teamDAO = new TeamDAO();
+
+		return teamDAO;
+	}
+
 	private GameDAO getGameDAO() {
 
 		if (gameDAO == null)
@@ -68,12 +79,12 @@ public class GameBean implements Serializable {
 		return gameDAO;
 	}
 
-	private TeamDAO getTeamDAO() {
+	private BetDAO getBetDAO() {
 
-		if (teamDAO == null)
-			teamDAO = new TeamDAO();
+		if (betDAO == null)
+			betDAO = new BetDAO();
 
-		return teamDAO;
+		return betDAO;
 	}
 
 	private UserBetDAO getUserBetDAO() {
@@ -114,7 +125,7 @@ public class GameBean implements Serializable {
 			UserBet c = u != null ? getUserBetDAO().findByUserAndBet(u, b) : null;
 			if (c == null)
 				c = new UserBet(u != null ? u : User.ANONYMOUS, b, BigDecimal.ZERO);
-			return new UserTypedBet(b, c);
+			return c != null ? new BetDTO(b, c) : new BetDTO(b);
 		}).collect(Collectors.toList()) : Arrays.asList();
 	}
 
@@ -170,12 +181,22 @@ public class GameBean implements Serializable {
 		this.gameTimeZone = gameTimeZone;
 	}
 
-	public List<UserTypedBet> getGameBets() {
+	public List<BetDTO> getGameBets() {
 		return gameBets;
 	}
 
-	public void setGameBets(List<UserTypedBet> gameBets) {
+	public void setGameBets(List<BetDTO> gameBets) {
 		this.gameBets = gameBets;
+	}
+
+	/**
+	 * Gets a {@link List} of all teams.
+	 *
+	 * @return {@link List} of all teams
+	 */
+	public List<Team> getTeams() {
+
+		return getTeamDAO().findAll();
 	}
 
 	/**
@@ -218,13 +239,26 @@ public class GameBean implements Serializable {
 		return getGameDAO().find(gameId);
 	}
 
-	/**
-	 * Gets a {@link List} of all teams.
-	 *
-	 * @return {@link List} of all teams
-	 */
-	public List<Team> getTeams() {
+	public void saveUserBets() {
 
-		return getTeamDAO().findAll();
+		User user = loginBean.getUser();
+		BetDAO betDAO = getBetDAO();
+		UserBetDAO userBetDAO = getUserBetDAO();
+
+		for (BetDTO betDTO: gameBets) {
+			Bet bet = betDAO.find(betDTO.getId());
+			UserBet userBet = userBetDAO.findByUserAndBet(user, bet);
+			boolean persist = betDTO.getStake().compareTo(BigDecimal.ZERO) > 0;
+
+			if (userBet != null)
+				if (persist) {
+					userBet.setStake(betDTO.getStake());
+					userBetDAO.merge(userBet);
+				} else
+					userBetDAO.remove(userBet);
+
+			else if (persist)
+				userBetDAO.persist(new UserBet(user, bet, betDTO.getStake()));
+		}
 	}
 }

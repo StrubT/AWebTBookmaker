@@ -273,6 +273,10 @@ public class LoginBean implements Serializable {
 		}
 	}
 
+	public Integer getUserId() {
+		return userId;
+	}
+
 	/**
 	 * Gets the login of the user to log in OR already logged in.
 	 *
