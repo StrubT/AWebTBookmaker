@@ -20,21 +20,26 @@
 		<h:dataTable value="#{gameBean.gameBets}" var="bet" class="table table-condensed table-striped">
 			<h:column>
 				<f:facet name="header">#{texts.GameBetDescriptionLabel}</f:facet>
-				<h:outputFormat value="#{bets[bet.generic.type.code]}">
-					<f:param value="#{teams[bet.generic.team.code]}" />
-					<f:param value="#{bet.generic.time}" />
-					<f:param value="#{bet.generic.goals}" />
+				<h:outputFormat value="#{bets[bet.type.code]}">
+					<f:param value="#{teams[bet.team]}" />
+					<f:param value="#{bet.time}" />
+					<f:param value="#{bet.goals}" />
 				</h:outputFormat>
 			</h:column>
 			<h:column>
 				<f:facet name="header">#{texts.GameBetOddsLabel}</f:facet>
-				<data value="#{bet.generic.odds}">#{bet.generic.odds}</data>
+				<data value="#{bet.odds}">#{bet.odds}</data>
 			</h:column>
 			<h:column rendered="#{loginBean.userHasAccess('REGISTERED')}">
 				<f:facet name="header">#{texts.GameBetStakeLabel} (#{texts.Currency})</f:facet>
-				<h:inputText id="betStake" value="#{bet.typed.stake}" class="form-control input-sm">
+				<h:inputText id="betStake" value="#{bet.stake}" class="form-control input-sm">
 					<f:passThroughAttribute name="type" value="number" />
+					<f:validateDoubleRange minimum="0.0" />
 				</h:inputText>
+				<h:message for="betStake" infoClass="text-info" warnClass="text-warning" errorClass="text-danger" fatalClass="text-danger bg-danger" />
+				<f:facet name="footer">
+					<h:commandButton id="saveUserBetsButton" action="#{gameBean.saveUserBets}" class="btn btn-default" value="#{texts.GameUserBetsSaveButton}" />
+				</f:facet>
 			</h:column>
 		</h:dataTable>
 	</ui:define>
