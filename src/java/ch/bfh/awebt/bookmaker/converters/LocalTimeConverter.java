@@ -10,6 +10,7 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.ConverterException;
 import javax.faces.convert.FacesConverter;
 import javax.persistence.AttributeConverter;
+import ch.bfh.awebt.bookmaker.presentation.MessageFactory;
 
 /**
  * Represents a converter for {@link LocalTime}s.
@@ -37,10 +38,10 @@ public class LocalTimeConverter implements Converter, AttributeConverter<LocalTi
 	 * @throws ConverterException if the {@link LocalTime} could not be converted
 	 */
 	@Override
-	public String getAsString(FacesContext context, UIComponent component, Object time) throws ConverterException {
+	public String getAsString(FacesContext context, UIComponent component, Object time) {
 
 		if (!(time == null || time instanceof LocalTime))
-			throw new ConverterException("Object is not a LocalTime.");
+			throw new ConverterException(MessageFactory.getError("ch.bfh.awebt.bookmaker.CONVERTER_ERROR"), new ClassCastException());
 
 		return time != null ? ((LocalTime)time).format(FORMAT) : null;
 	}
@@ -70,13 +71,13 @@ public class LocalTimeConverter implements Converter, AttributeConverter<LocalTi
 	 * @throws ConverterException if the {@link String} could not be converted
 	 */
 	@Override
-	public LocalTime getAsObject(FacesContext context, UIComponent component, String time) throws ConverterException {
+	public LocalTime getAsObject(FacesContext context, UIComponent component, String time) {
 
 		try {
 			return time != null ? LocalTime.parse(time, FORMAT) : null;
 
 		} catch (DateTimeParseException ex) {
-			throw new ConverterException("Format is not valid for LocalTime.", ex);
+			throw new ConverterException(MessageFactory.getWarning("ch.bfh.awebt.bookmaker.DATETIME_FORMAT_ERROR"), ex);
 		}
 	}
 

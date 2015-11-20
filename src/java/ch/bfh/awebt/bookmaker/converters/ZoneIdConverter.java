@@ -8,6 +8,7 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.ConverterException;
 import javax.faces.convert.FacesConverter;
 import javax.persistence.AttributeConverter;
+import ch.bfh.awebt.bookmaker.presentation.MessageFactory;
 
 /**
  * Represents a converter for {@link ZoneId}s.
@@ -30,12 +31,12 @@ public class ZoneIdConverter implements Converter, AttributeConverter<ZoneId, St
 	 * @throws ConverterException if the {@link ZoneId} could not be converted
 	 */
 	@Override
-	public String getAsString(FacesContext context, UIComponent component, Object zoneId) throws ConverterException {
+	public String getAsString(FacesContext context, UIComponent component, Object zoneId) {
 
 		if (!(zoneId == null || zoneId instanceof ZoneId))
-			throw new ConverterException("Object is not a ZoneId.");
+			throw new ConverterException(MessageFactory.getError("ch.bfh.awebt.bookmaker.CONVERTER_ERROR"), new ClassCastException());
 
-		return zoneId != null ? ((ZoneId)zoneId).getId() : null;
+		return convertToDatabaseColumn((ZoneId)zoneId);
 	}
 
 	/**
@@ -63,14 +64,9 @@ public class ZoneIdConverter implements Converter, AttributeConverter<ZoneId, St
 	 * @throws ConverterException if the {@link String} could not be converted
 	 */
 	@Override
-	public ZoneId getAsObject(FacesContext context, UIComponent component, String zoneId) throws ConverterException {
+	public ZoneId getAsObject(FacesContext context, UIComponent component, String zoneId) {
 
-		try {
-			return zoneId != null ? ZoneId.of(zoneId) : null;
-
-		} catch (DateTimeException ex) {
-			throw new ConverterException("Text is not a valid ZoneId.", ex);
-		}
+		return convertToEntityAttribute(zoneId);
 	}
 
 	/**
@@ -87,7 +83,7 @@ public class ZoneIdConverter implements Converter, AttributeConverter<ZoneId, St
 			return zoneId != null ? ZoneId.of(zoneId) : null;
 
 		} catch (DateTimeException ex) {
-			throw new ConverterException("Value is not a valid ZoneId.", ex);
+			throw new ConverterException(MessageFactory.getWarning("ch.bfh.awebt.bookmaker.CONVERTER_ERROR"), ex);
 		}
 	}
 }

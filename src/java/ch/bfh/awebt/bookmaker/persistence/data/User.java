@@ -13,7 +13,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
@@ -92,7 +91,7 @@ public class User extends PersistentObject<Integer> implements Serializable {
 	@Column(name = "cardcode", length = 3)
 	private String creditCardValidationCode;
 
-	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
 	private List<UserBet> bets;
 
 	/**

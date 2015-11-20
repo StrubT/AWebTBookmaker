@@ -3,11 +3,15 @@ package ch.bfh.awebt.bookmaker.presentation;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
 import javax.faces.context.FacesContext;
 import ch.bfh.awebt.bookmaker.Streams;
+import ch.bfh.awebt.bookmaker.presentation.data.AccessCondition;
+import ch.bfh.awebt.bookmaker.presentation.data.NavigationPage;
 
 /**
  * Represents a {@link ApplicationScoped} {@link ManagedBean} providing navigation helpers.
@@ -44,29 +48,6 @@ public class NavigationBean implements Serializable {
 	public String getCurrentView() {
 
 		return FacesContext.getCurrentInstance().getViewRoot().getViewId();
-	}
-
-	/**
-	 * Gets the outcome to use when redirecting to a new view.
-	 *
-	 * @param page page to redirect to
-	 *
-	 * @return outcome to use when redirecting to a new view
-	 */
-	public String getRedirectOutcome(NavigationPage page) {
-		return getRedirectOutcome(page.getView());
-	}
-
-	/**
-	 * Gets the outcome to use when redirecting to a new view.
-	 *
-	 * @param view view to redirect to
-	 *
-	 * @return outcome to use when redirecting to a new view
-	 */
-	public String getRedirectOutcome(String view) {
-
-		return String.format("%s?faces-redirect=true", view);
 	}
 
 	/**
@@ -128,5 +109,48 @@ public class NavigationBean implements Serializable {
 		return PAGES.stream()
 			.filter(p -> view.equals(p.getView()))
 			.collect(Streams.nullableSingleCollector());
+	}
+
+	public boolean hasMessage(Iterator<FacesMessage> messages, FacesMessage.Severity severity) {
+
+		return Streams.iteratorStream(messages)
+			.anyMatch(m -> m.getSeverity().compareTo(severity) >= 0);
+	}
+
+	public boolean hasMessage(FacesMessage.Severity severity) {
+
+		return hasMessage(FacesContext.getCurrentInstance().getMessages(), severity);
+	}
+
+	public boolean hasMessage(String componentClientId, FacesMessage.Severity severity) {
+
+		if (componentClientId == null || componentClientId.length() == 0)
+			return hasMessage(severity);
+
+		return hasMessage(FacesContext.getCurrentInstance().getMessages(componentClientId), severity);
+	}
+
+	public boolean hasInformation() {
+		return hasMessage(FacesMessage.SEVERITY_INFO);
+	}
+
+	public boolean hasInformation(String componentClientId) {
+		return hasMessage(componentClientId, FacesMessage.SEVERITY_INFO);
+	}
+
+	public boolean hasWarning() {
+		return hasMessage(FacesMessage.SEVERITY_WARN);
+	}
+
+	public boolean hasWarning(String componentClientId) {
+		return hasMessage(componentClientId, FacesMessage.SEVERITY_WARN);
+	}
+
+	public boolean hasError() {
+		return hasMessage(FacesMessage.SEVERITY_ERROR);
+	}
+
+	public boolean hasError(String componentClientId) {
+		return hasMessage(componentClientId, FacesMessage.SEVERITY_ERROR);
 	}
 }

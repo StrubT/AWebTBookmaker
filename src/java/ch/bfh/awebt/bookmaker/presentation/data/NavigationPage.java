@@ -1,4 +1,4 @@
-package ch.bfh.awebt.bookmaker.presentation;
+package ch.bfh.awebt.bookmaker.presentation.data;
 
 import java.io.Serializable;
 
@@ -95,5 +95,20 @@ public class NavigationPage implements Serializable {
 	public String getTitle() {
 
 		return String.format("%sTitle", name);
+	}
+
+	@Override
+	public int hashCode() {
+		return (17 + view.hashCode()) * 31;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return obj != null && obj.getClass() == getClass() && ((NavigationPage)obj).view.equals(view);
+	}
+
+	@Override
+	public String toString() {
+		return String.format("%s[view=%s]", getClass().getName(), view);
 	}
 }

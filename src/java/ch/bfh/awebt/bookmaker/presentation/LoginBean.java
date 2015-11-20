@@ -22,6 +22,8 @@ import javax.persistence.PersistenceException;
 import ch.bfh.awebt.bookmaker.Streams;
 import ch.bfh.awebt.bookmaker.persistence.UserDAO;
 import ch.bfh.awebt.bookmaker.persistence.data.User;
+import ch.bfh.awebt.bookmaker.presentation.data.AccessCondition;
+import ch.bfh.awebt.bookmaker.presentation.data.NavigationPage;
 
 /**
  * Represents a {@link SessionScoped} {@link ManagedBean} providing login and localisation helpers.
@@ -326,7 +328,7 @@ public class LoginBean implements Serializable {
 			userPasswordHash = User.hashPassword(password.toCharArray());
 
 		} catch (NoSuchAlgorithmException ex) {
-			MessageFactory.addWarning("ch.bfh.awebt.bookmaker.SECURITY_ERROR");
+			MessageFactory.addError("ch.bfh.awebt.bookmaker.SECURITY_ERROR");
 		}
 	}
 
@@ -393,7 +395,7 @@ public class LoginBean implements Serializable {
 		if (userLogin != null && userLogin.length() > 0 && userPasswordHash != null)
 
 			if (getUserDAO().findByLogin(userLogin) != null)
-				MessageFactory.addWarning("ch.bfh.awebt.bookmaker.LOGIN_REGISTER_LOGIN_TAKEN");
+				MessageFactory.addError("loginField", "ch.bfh.awebt.bookmaker.LOGIN_REGISTER_LOGIN_TAKEN");
 
 			else
 				try {
@@ -401,16 +403,19 @@ public class LoginBean implements Serializable {
 					getUserDAO().persist(user);
 
 					setUser(user); //log in
-					return navigationBean.getRedirectOutcome("/players/account.xhtml");
+					return "/players/account.xhtml?faces-redirect=true";
 
 				} catch (PersistenceException ex) {
-					MessageFactory.addWarning("ch.bfh.awebt.bookmaker.PERSISTENCE_ERROR");
+					MessageFactory.addError("ch.bfh.awebt.bookmaker.PERSISTENCE_ERROR");
 				}
 
 		else
-			MessageFactory.addWarning("ch.bfh.awebt.bookmaker.LOGIN_ERROR_MISSING_INFORMATION");
+			MessageFactory.addError("ch.bfh.awebt.bookmaker.LOGIN_ERROR_MISSING_INFORMATION");
 
-		return navigationBean.getRedirectOutcome(navigationBean.getRegisterPage());
+		if (navigationBean.showLoginRegister())
+			return navigationBean.getRegisterPage().getView();
+
+		return null;
 	}
 
 	/**
@@ -424,16 +429,22 @@ public class LoginBean implements Serializable {
 			User user = getUserDAO().findByLogin(userLogin);
 			if (user != null && user.validatePassword(userPasswordHash)) {
 				setUser(user);
-				return !navigationBean.showLoginRegister() ? navigationBean.getRedirectOutcome(navigationBean.getHomePage()) : null;
+				if (!navigationBean.showLoginRegister())
+					return String.format("%s?faces-redirect=true", navigationBean.getHomePage());
 
-			} else
-				MessageFactory.addWarning("ch.bfh.awebt.bookmaker.LOGIN_ERROR_INCORRECT_INFORMATION");
+			} else {
+				MessageFactory.addWarning("loginField", "ch.bfh.awebt.bookmaker.LOGIN_ERROR_INCORRECT_INFORMATION");
+				MessageFactory.addWarning("passwordField", "ch.bfh.awebt.bookmaker.LOGIN_ERROR_INCORRECT_INFORMATION");
+			}
 
 		} catch (PersistenceException ex) {
-			MessageFactory.addWarning("ch.bfh.awebt.bookmaker.PERSISTENCE_ERROR");
+			MessageFactory.addError("ch.bfh.awebt.bookmaker.PERSISTENCE_ERROR");
 		}
 
-		return navigationBean.getRedirectOutcome(navigationBean.getLoginPage());
+		if (navigationBean.showLoginRegister())
+			return navigationBean.getLoginPage().getView();
+
+		return null;
 	}
 
 	/**
@@ -444,6 +455,9 @@ public class LoginBean implements Serializable {
 	public String logout() {
 
 		setUser(null);
-		return !userHasAccessTo(navigationBean.getCurrentPage()) ? navigationBean.getRedirectOutcome(navigationBean.getHomePage()) : null;
+		if (!userHasAccessTo(navigationBean.getCurrentPage()))
+			return String.format("%s?faces-redirect=true", navigationBean.getHomePage().getView());
+
+		return null;
 	}
 }

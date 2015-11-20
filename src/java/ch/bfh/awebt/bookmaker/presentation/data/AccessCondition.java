@@ -1,4 +1,4 @@
-package ch.bfh.awebt.bookmaker.presentation;
+package ch.bfh.awebt.bookmaker.presentation.data;
 
 /**
  * Represents the conditions under which a page can be accessed.

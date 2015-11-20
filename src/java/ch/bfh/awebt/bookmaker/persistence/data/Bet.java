@@ -6,7 +6,6 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
@@ -32,7 +31,7 @@ public class Bet extends PersistentObject<Integer> implements Serializable {
 	@Column(name = "id", nullable = false, unique = true)
 	private Integer id;
 
-	@ManyToOne(optional = false, fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+	@ManyToOne(optional = false, fetch = FetchType.EAGER)
 	@JoinColumn(name = "game", nullable = false)
 	private Game game;
 
@@ -57,7 +56,7 @@ public class Bet extends PersistentObject<Integer> implements Serializable {
 	@Column(name = "goals")
 	private Integer goals;
 
-	@OneToMany(mappedBy = "bet", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "bet", fetch = FetchType.LAZY)
 	private List<UserBet> userBets;
 
 	/**

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,6 +21,7 @@ import ch.bfh.awebt.bookmaker.persistence.data.Game;
 import ch.bfh.awebt.bookmaker.persistence.data.Team;
 import ch.bfh.awebt.bookmaker.persistence.data.User;
 import ch.bfh.awebt.bookmaker.persistence.data.UserBet;
+import ch.bfh.awebt.bookmaker.presentation.data.BetDTO;
 
 /**
  * Represents a {@link ViewScoped} {@link ManagedBean} providing bookmaker game helpers.
@@ -112,21 +114,27 @@ public class GameBean implements Serializable {
 	 */
 	public void setGameId(Integer gameId) {
 
-		this.gameId = gameId;
+		if (this.gameId == null || !this.gameId.equals(gameId)) {
+			this.gameId = gameId;
 
-		Game game = gameId != null ? getGame() : null;
+			Game game = gameId != null ? getGame() : null;
+			if (game != null) {
+				gameTeam1 = game.getTeam1().getCode();
+				gameTeam2 = game.getTeam2().getCode();
+				gameStartTime = game.getStartTimeZoned().withZoneSameInstant(gameTimeZone).toLocalDateTime();
 
-		gameTeam1 = game != null ? game.getTeam1().getCode() : null;
-		gameTeam2 = game != null ? game.getTeam2().getCode() : null;
-		gameStartTime = game != null ? game.getStartTimeZoned().withZoneSameInstant(gameTimeZone).toLocalDateTime() : null;
+				User u = loginBean.getUser();
+				gameBets = new ArrayList<>(game.getBets()).stream().map(b -> { //BUGFIX: new ArrayList<>(...) needed in eclipselink < 2.7
+					UserBet c = u != null ? getUserBetDAO().findByUserAndBet(u, b) : null;
+					return new BetDTO(b, c != null ? c : new UserBet(u != null ? u : User.ANONYMOUS, b, BigDecimal.ZERO));
+				}).collect(Collectors.toList());
 
-		User u = loginBean.getUser();
-		gameBets = game != null ? game.getBets().stream().map(b -> {
-			UserBet c = u != null ? getUserBetDAO().findByUserAndBet(u, b) : null;
-			if (c == null)
-				c = new UserBet(u != null ? u : User.ANONYMOUS, b, BigDecimal.ZERO);
-			return c != null ? new BetDTO(b, c) : new BetDTO(b);
-		}).collect(Collectors.toList()) : Arrays.asList();
+			} else {
+				gameTeam1 = gameTeam2 = null;
+				gameStartTime = null;
+				gameBets = Arrays.asList();
+			}
+		}
 	}
 
 	/**

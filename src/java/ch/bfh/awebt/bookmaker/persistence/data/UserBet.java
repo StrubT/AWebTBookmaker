@@ -2,7 +2,6 @@ package ch.bfh.awebt.bookmaker.persistence.data;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -32,16 +31,16 @@ public class UserBet extends PersistentObject<UserBet.PK> implements Serializabl
 	@Column(name = "user", nullable = false, insertable = false, updatable = false)
 	private Integer userId;
 
-	@ManyToOne(optional = false, fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
-	@JoinColumn(name = "user", nullable = false)
+	@ManyToOne(optional = false, fetch = FetchType.EAGER)
+	@JoinColumn(name = "user")
 	private User user;
 
 	@Id
 	@Column(name = "bet", nullable = false, insertable = false, updatable = false)
 	private Integer betId;
 
-	@ManyToOne(optional = false, fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
-	@JoinColumn(name = "bet", nullable = false)
+	@ManyToOne(optional = false, fetch = FetchType.EAGER)
+	@JoinColumn(name = "bet")
 	private Bet bet;
 
 	@Column(name = "stake", nullable = false, precision = 10, scale = 3)
@@ -143,8 +142,7 @@ public class UserBet extends PersistentObject<UserBet.PK> implements Serializabl
 
 		private static final long serialVersionUID = -7560859734270886323L;
 
-		private int userId;
-		private int betId;
+		private Integer userId, betId;
 
 		/**
 		 * Constructs an empty primary key.
@@ -158,7 +156,7 @@ public class UserBet extends PersistentObject<UserBet.PK> implements Serializabl
 		 * @param userId {@link User} key part
 		 * @param betId  {@link Bet} key part
 		 */
-		protected PK(int userId, int betId) {
+		protected PK(Integer userId, Integer betId) {
 			this();
 
 			this.userId = userId;
@@ -170,7 +168,7 @@ public class UserBet extends PersistentObject<UserBet.PK> implements Serializabl
 		 *
 		 * @return {@link User} key part
 		 */
-		public int getUserId() {
+		public Integer getUserId() {
 			return userId;
 		}
 
@@ -188,7 +186,7 @@ public class UserBet extends PersistentObject<UserBet.PK> implements Serializabl
 		 *
 		 * @return {@link Bet} key part
 		 */
-		public int getBetId() {
+		public Integer getBetId() {
 			return betId;
 		}
 
@@ -225,7 +223,7 @@ public class UserBet extends PersistentObject<UserBet.PK> implements Serializabl
 				return false;
 
 			PK key = (PK)obj;
-			return userId == key.userId && betId == key.betId;
+			return userId.equals(key.userId) && betId.equals(key.betId);
 		}
 
 		/**

@@ -11,6 +11,7 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.ConverterException;
 import javax.faces.convert.FacesConverter;
 import javax.persistence.AttributeConverter;
+import ch.bfh.awebt.bookmaker.presentation.MessageFactory;
 
 /**
  * Represents a converter for {@link LocalDate}s.
@@ -38,10 +39,10 @@ public class LocalDateConverter implements Converter, AttributeConverter<LocalDa
 	 * @throws ConverterException if the {@link LocalDate} could not be converted
 	 */
 	@Override
-	public String getAsString(FacesContext context, UIComponent component, Object date) throws ConverterException {
+	public String getAsString(FacesContext context, UIComponent component, Object date) {
 
 		if (!(date == null || date instanceof LocalDate))
-			throw new ConverterException("Object is not a LocalDate.");
+			throw new ConverterException(MessageFactory.getError("ch.bfh.awebt.bookmaker.CONVERTER_ERROR"), new ClassCastException());
 
 		return date != null ? ((ChronoLocalDate)date).format(FORMAT) : null;
 	}
@@ -71,13 +72,13 @@ public class LocalDateConverter implements Converter, AttributeConverter<LocalDa
 	 * @throws ConverterException if the {@link String} could not be converted
 	 */
 	@Override
-	public LocalDate getAsObject(FacesContext context, UIComponent component, String date) throws ConverterException {
+	public LocalDate getAsObject(FacesContext context, UIComponent component, String date) {
 
 		try {
 			return date != null ? LocalDate.parse(date, FORMAT) : null;
 
 		} catch (DateTimeParseException ex) {
-			throw new ConverterException("Format is not valid for LocalDate.", ex);
+			throw new ConverterException(MessageFactory.getWarning("ch.bfh.awebt.bookmaker.DATETIME_FORMAT_ERROR"), ex);
 		}
 	}
 

@@ -7,7 +7,6 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
@@ -57,11 +56,11 @@ public class Game extends PersistentObject<Integer> implements Serializable {
 	@Column(name = "id", nullable = false, unique = true)
 	private Integer id;
 
-	@ManyToOne(optional = false, fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+	@ManyToOne(optional = false, fetch = FetchType.EAGER)
 	@JoinColumn(name = "team1", nullable = false)
 	private Team team1;
 
-	@ManyToOne(optional = false, fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+	@ManyToOne(optional = false, fetch = FetchType.EAGER)
 	@JoinColumn(name = "team2", nullable = false)
 	private Team team2;
 
@@ -69,7 +68,7 @@ public class Game extends PersistentObject<Integer> implements Serializable {
 	@Convert(converter = LocalDateTimeConverter.class)
 	private LocalDateTime startTimeUTC;
 
-	@OneToMany(mappedBy = "game", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "game", fetch = FetchType.LAZY)
 	private List<Bet> bets;
 
 	/**
@@ -189,7 +188,7 @@ public class Game extends PersistentObject<Integer> implements Serializable {
 	 * @return unmodifiable {@link List} of the bets available for the game
 	 */
 	public List<Bet> getBets() {
-		return Collections.unmodifiableList(new ArrayList<>(bets)); //BUGFIX: new ArrayList<>(...) needed in eclipselink 2.6.*
+		return Collections.unmodifiableList(bets);
 	}
 
 	/**

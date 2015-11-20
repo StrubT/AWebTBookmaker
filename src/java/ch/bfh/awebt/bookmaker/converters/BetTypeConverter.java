@@ -10,6 +10,7 @@ import javax.faces.convert.FacesConverter;
 import javax.persistence.AttributeConverter;
 import ch.bfh.awebt.bookmaker.TooManyElementsException;
 import ch.bfh.awebt.bookmaker.persistence.data.BetType;
+import ch.bfh.awebt.bookmaker.presentation.MessageFactory;
 
 /**
  * Represents a converter for {@link LocalDate}s.
@@ -32,10 +33,10 @@ public class BetTypeConverter implements Converter, AttributeConverter<BetType, 
 	 * @throws ConverterException if the {@link BetType} could not be converted
 	 */
 	@Override
-	public String getAsString(FacesContext context, UIComponent component, Object betType) throws ConverterException {
+	public String getAsString(FacesContext context, UIComponent component, Object betType) {
 
 		if (!(betType == null || betType instanceof BetType))
-			throw new ConverterException("Object is not a BetType.");
+			throw new ConverterException(MessageFactory.getError("ch.bfh.awebt.bookmaker.CONVERTER_ERROR"), new ClassCastException());
 
 		return convertToDatabaseColumn((BetType)betType);
 	}
@@ -65,7 +66,7 @@ public class BetTypeConverter implements Converter, AttributeConverter<BetType, 
 	 * @throws ConverterException if the {@link String} could not be converted
 	 */
 	@Override
-	public BetType getAsObject(FacesContext context, UIComponent component, String betType) throws ConverterException {
+	public BetType getAsObject(FacesContext context, UIComponent component, String betType) {
 
 		return convertToEntityAttribute(betType);
 	}
@@ -84,7 +85,7 @@ public class BetTypeConverter implements Converter, AttributeConverter<BetType, 
 			return betType != null ? BetType.getByCode(betType) : null;
 
 		} catch (NoSuchElementException | TooManyElementsException ex) {
-			throw new ConverterException("Value is not a valid BetType.", ex);
+			throw new ConverterException(MessageFactory.getWarning("ch.bfh.awebt.bookmaker.CONVERTER_ERROR"), ex);
 		}
 	}
 }

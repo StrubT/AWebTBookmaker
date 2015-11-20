@@ -18,32 +18,56 @@ public final class MessageFactory {
 	}
 
 	/**
-	 * Adds a message to the {@link FacesContext}.
+	 * Creates a {@link FacesMessage}.
 	 *
-	 * @param componentClientId client identifier of the JSF component to add the message to (may be null)
-	 * @param messageSeverity   severity of the message to add
-	 * @param messageKey        message bundle key of the message to add
-	 * @param messageArguments  arguments to pass to the {@link MessageFormat}
+	 * @param severity  severity of the message to add
+	 * @param key       message bundle key of the message to add
+	 * @param arguments arguments to pass to the {@link MessageFormat}
+	 *
+	 * @return a {@link FacesMessage} with the specified severity and formatted message
 	 */
-	public static void addMessage(String componentClientId, FacesMessage.Severity messageSeverity, String messageKey, Object... messageArguments) {
+	public static FacesMessage getMessage(FacesMessage.Severity severity, String key, Object... arguments) {
 
-		String summary = String.format("???%s???", messageKey);
+		String summary = String.format("???%s???", key);
 		String detail = null;
 
 		FacesContext context = FacesContext.getCurrentInstance();
 
 		try {
-			ResourceBundle bundle = ResourceBundle.getBundle(context.getApplication().getMessageBundle(),
-																											 context.getViewRoot().getLocale());
+			ResourceBundle bundle = ResourceBundle.getBundle(context.getApplication().getMessageBundle(), context.getViewRoot().getLocale());
 
-			summary = MessageFormat.format(bundle.getString(messageKey), messageArguments);
-			detail = MessageFormat.format(bundle.getString(messageKey + "_DETAILS"), messageArguments);
+			summary = MessageFormat.format(bundle.getString(key), arguments);
+			detail = MessageFormat.format(bundle.getString(key + "_DETAILS"), arguments);
 
 		} catch (MissingResourceException ex) {
 			//do nothing, simply show default values
 		}
 
-		context.addMessage(componentClientId, new FacesMessage(messageSeverity, summary, detail));
+		return new FacesMessage(severity, summary, detail);
+	}
+
+	/**
+	 * Adds a message to the {@link FacesContext}.
+	 *
+	 * @param componentClientId client identifier of the JSF component to add the message to (may be null)
+	 * @param message           message to add
+	 */
+	public static void addMessage(String componentClientId, FacesMessage message) {
+
+		FacesContext.getCurrentInstance().addMessage(componentClientId, message);
+	}
+
+	/**
+	 * Creates a {@link FacesMessage}.
+	 *
+	 * @param key       message bundle key of the message to add
+	 * @param arguments arguments to pass to the {@link MessageFormat}
+	 *
+	 * @return a {@link FacesMessage} with the severity {@link FacesMessage#SEVERITY_INFO} and formatted message
+	 */
+	public static FacesMessage getInformation(String key, Object... arguments) {
+
+		return getMessage(FacesMessage.SEVERITY_INFO, key, arguments);
 	}
 
 	/**
@@ -66,7 +90,20 @@ public final class MessageFactory {
 	 */
 	public static void addInformation(String componentClientId, String messageKey, Object... messageArguments) {
 
-		addMessage(componentClientId, FacesMessage.SEVERITY_INFO, messageKey, messageArguments);
+		addMessage(componentClientId, getInformation(messageKey, messageArguments));
+	}
+
+	/**
+	 * Creates a {@link FacesMessage}.
+	 *
+	 * @param key       message bundle key of the message to add
+	 * @param arguments arguments to pass to the {@link MessageFormat}
+	 *
+	 * @return a {@link FacesMessage} with the severity {@link FacesMessage#SEVERITY_WARN} and formatted message
+	 */
+	public static FacesMessage getWarning(String key, Object... arguments) {
+
+		return getMessage(FacesMessage.SEVERITY_WARN, key, arguments);
 	}
 
 	/**
@@ -89,7 +126,20 @@ public final class MessageFactory {
 	 */
 	public static void addWarning(String componentClientId, String messageKey, Object... messageArguments) {
 
-		addMessage(componentClientId, FacesMessage.SEVERITY_WARN, messageKey, messageArguments);
+		addMessage(componentClientId, getWarning(messageKey, messageArguments));
+	}
+
+	/**
+	 * Creates a {@link FacesMessage}.
+	 *
+	 * @param key       message bundle key of the message to add
+	 * @param arguments arguments to pass to the {@link MessageFormat}
+	 *
+	 * @return a {@link FacesMessage} with the severity {@link FacesMessage#SEVERITY_ERROR} and formatted message
+	 */
+	public static FacesMessage getError(String key, Object... arguments) {
+
+		return getMessage(FacesMessage.SEVERITY_ERROR, key, arguments);
 	}
 
 	/**
@@ -112,6 +162,6 @@ public final class MessageFactory {
 	 */
 	public static void addError(String componentClientId, String messageKey, Object... messageArguments) {
 
-		addMessage(componentClientId, FacesMessage.SEVERITY_ERROR, messageKey, messageArguments);
+		addMessage(componentClientId, getError(messageKey, messageArguments));
 	}
 }

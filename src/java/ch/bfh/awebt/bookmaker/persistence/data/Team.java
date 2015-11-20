@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -27,7 +26,7 @@ public class Team extends PersistentObject<String> implements Serializable {
 	@Column(name = "code", nullable = false, length = 10, unique = true)
 	private String id;
 
-	@OneToMany(mappedBy = "team", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "team", fetch = FetchType.LAZY)
 	private List<Bet> bets;
 
 	/**

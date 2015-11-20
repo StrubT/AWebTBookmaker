@@ -60,8 +60,8 @@
 			</div>
 			<div class="form-group">
 				<div class="col-sm-offset-2 col-sm-10 btn-group">
-					<h:commandButton id="saveButton" action="#{gameBean.save}" class="btn btn-primary" value="#{texts.FormSaveButton}" />
-					<h:commandButton id="deleteButton" action="#{gameBean.delete}" class="btn btn-warning" value="#{texts.FormDeleteButton}" />
+					<h:commandButton id="saveButton" action="#{gameBean.saveGame}" class="btn btn-primary" value="#{texts.FormSaveButton}" />
+					<h:commandButton id="deleteButton" action="#{gameBean.deleteGame}" class="btn btn-warning" value="#{texts.FormDeleteButton}" />
 					<h:link outcome="/players/game.xhtml?id=#{gameBean.gameId}" class="btn btn-default" value="#{texts.FormCancelButton}" />
 				</div>
 			</div>

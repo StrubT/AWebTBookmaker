@@ -7,6 +7,7 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.ConverterException;
 import javax.faces.convert.FacesConverter;
 import javax.persistence.AttributeConverter;
+import ch.bfh.awebt.bookmaker.presentation.MessageFactory;
 
 /**
  * Represents a converter for {@link Locale}s.
@@ -29,10 +30,10 @@ public class LocaleConverter implements Converter, AttributeConverter<Locale, St
 	 * @throws ConverterException if the {@link Locale} could not be converted
 	 */
 	@Override
-	public String getAsString(FacesContext context, UIComponent component, Object locale) throws ConverterException {
+	public String getAsString(FacesContext context, UIComponent component, Object locale) {
 
 		if (!(locale == null || locale instanceof Locale))
-			throw new ConverterException("Object is not a Locale.");
+			throw new ConverterException(MessageFactory.getError("ch.bfh.awebt.bookmaker.CONVERTER_ERROR"), new ClassCastException());
 
 		return convertToDatabaseColumn((Locale)locale);
 	}
@@ -70,7 +71,7 @@ public class LocaleConverter implements Converter, AttributeConverter<Locale, St
 	 * @throws ConverterException if the {@link String} could not be converted
 	 */
 	@Override
-	public Locale getAsObject(FacesContext context, UIComponent component, String locale) throws ConverterException {
+	public Locale getAsObject(FacesContext context, UIComponent component, String locale) {
 
 		return convertToEntityAttribute(locale);
 	}
