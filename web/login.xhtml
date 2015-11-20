@@ -5,26 +5,27 @@
 								xmlns:f="http://java.sun.com/jsf/core"
 								xmlns:h="http://java.sun.com/jsf/html"
 								xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-								xmlns:t="http://myfaces.apache.org/tomahawk">
+								xmlns:t="http://myfaces.apache.org/tomahawk"
+								xmlns:cc="http://java.sun.com/jsf/composite/custom-components">
 	<ui:define name="main">
 		<h2>#{texts.LoginTitle}</h2>
 		<c:choose>
 			<c:when test="#{empty loginBean.user}">
 				<div class="form-horizontal">
-					<div class="form-group#{navigationBean.hasError('loginField') ? ' has-error' : navigationBean.hasWarning('loginField') ? ' has-warning' : null}">
+					<cc:form-group component="loginField">
 						<h:outputLabel for="loginField" class="col-sm-2 control-label">#{texts.LoginLoginLabel}</h:outputLabel>
 						<div class="col-sm-10">
-							<h:inputText id="loginField" class="form-control" value="#{loginBean.login}" />
-							<h:message for="loginField" infoClass="text-info" warnClass="text-warning" errorClass="text-danger" fatalClass="text-danger bg-danger" />
+							<h:inputText id="loginField" class="form-control" value="#{loginBean.login}" binding="#{loginBean.loginField}" />
+							<cc:message component="loginField" />
 						</div>
-					</div>
-					<div class="form-group#{navigationBean.hasError('passwordField') ? ' has-error' : navigationBean.hasWarning('passwordField') ? ' has-warning' : null}">
+					</cc:form-group>
+					<cc:form-group component="passwordField">
 						<h:outputLabel for="passwordField" class="col-sm-2 control-label">#{texts.LoginPasswordLabel}</h:outputLabel>
 						<div class="col-sm-10">
-							<h:inputSecret id="passwordField" class="form-control" value="#{loginBean.password}" />
-							<h:message for="passwordField" infoClass="text-info" warnClass="text-warning" errorClass="text-danger" fatalClass="text-danger bg-danger" />
+							<h:inputSecret id="passwordField" class="form-control" value="#{loginBean.password}" binding="#{loginBean.passwordField}" />
+							<cc:message component="passwordField" />
 						</div>
-					</div>
+					</cc:form-group>
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
 							<div class="btn-toolbar">
@@ -34,7 +35,7 @@
 						</div>
 					</div>
 				</div>
-				<h:messages globalOnly="true" infoClass="text-info" warnClass="text-warning" errorClass="text-danger" fatalClass="text-danger bg-danger" />
+				<cc:messages />
 			</c:when>
 			<c:otherwise>
 				<p>

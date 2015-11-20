@@ -55,6 +55,10 @@ public class GameBean implements Serializable {
 		gameTimeZone = loginBean.getTimeZone();
 	}
 
+	public LoginBean getLoginBean() {
+		return loginBean;
+	}
+
 	/**
 	 * Sets the {@link LoginBean}. <br>
 	 * This method is not to be called by client code, the framework automatically sets the bean instance.

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+			xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+			xmlns:f="http://java.sun.com/jsf/core"
+			xmlns:h="http://java.sun.com/jsf/html"
+			xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+			xmlns:t="http://myfaces.apache.org/tomahawk"
+			xmlns:cc="http://java.sun.com/jsf/composite">
+	<h:body>
+		<cc:interface>
+			<cc:attribute name="component" default="#{null}" />
+		</cc:interface>
+		<cc:implementation>
+			<div class="form-group#{navigationBean.hasError(cc.attrs.component) ? ' has-error' : navigationBean.hasWarning(cc.attrs.component) ? ' has-warning' : navigationBean.hasInformation(cc.attrs.component) ? ' has-success' : null}">
+				<cc:insertChildren />
+			</div>
+		</cc:implementation>
+	</h:body>
+</html>

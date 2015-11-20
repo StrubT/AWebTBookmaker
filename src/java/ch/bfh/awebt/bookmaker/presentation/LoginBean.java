@@ -17,6 +17,7 @@ import javax.faces.application.Application;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
+import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.persistence.PersistenceException;
 import ch.bfh.awebt.bookmaker.Streams;
@@ -38,6 +39,8 @@ public class LoginBean implements Serializable {
 
 	@ManagedProperty("#{navigationBean}")
 	private NavigationBean navigationBean;
+
+	private transient UIComponent loginField, passwordField;
 
 	private transient UserDAO userDAO;
 
@@ -71,6 +74,10 @@ public class LoginBean implements Serializable {
 		return (regionalised2 ? 1 : 0) - (regionalised1 ? 1 : 0);
 	}
 
+	public NavigationBean getNavigationBean() {
+		return navigationBean;
+	}
+
 	/**
 	 * Sets the {@link NavigationBean}. <br>
 	 * This method is not to be called by client code, the framework automatically sets the bean instance.
@@ -79,6 +86,22 @@ public class LoginBean implements Serializable {
 	 */
 	public void setNavigationBean(NavigationBean navigationBean) {
 		this.navigationBean = navigationBean;
+	}
+
+	public UIComponent getLoginField() {
+		return loginField;
+	}
+
+	public void setLoginField(UIComponent loginField) {
+		this.loginField = loginField;
+	}
+
+	public UIComponent getPasswordField() {
+		return passwordField;
+	}
+
+	public void setPasswordField(UIComponent passwordField) {
+		this.passwordField = passwordField;
 	}
 
 	/**
@@ -395,7 +418,7 @@ public class LoginBean implements Serializable {
 		if (userLogin != null && userLogin.length() > 0 && userPasswordHash != null)
 
 			if (getUserDAO().findByLogin(userLogin) != null)
-				MessageFactory.addError("loginField", "ch.bfh.awebt.bookmaker.LOGIN_REGISTER_LOGIN_TAKEN");
+				MessageFactory.addError(loginField, "ch.bfh.awebt.bookmaker.LOGIN_REGISTER_LOGIN_TAKEN");
 
 			else
 				try {
@@ -433,8 +456,8 @@ public class LoginBean implements Serializable {
 					return String.format("%s?faces-redirect=true", navigationBean.getHomePage());
 
 			} else {
-				MessageFactory.addWarning("loginField", "ch.bfh.awebt.bookmaker.LOGIN_ERROR_INCORRECT_INFORMATION");
-				MessageFactory.addWarning("passwordField", "ch.bfh.awebt.bookmaker.LOGIN_ERROR_INCORRECT_INFORMATION");
+				MessageFactory.addWarning(loginField, "ch.bfh.awebt.bookmaker.LOGIN_ERROR_INCORRECT_INFORMATION");
+				MessageFactory.addWarning(passwordField, "ch.bfh.awebt.bookmaker.LOGIN_ERROR_INCORRECT_INFORMATION");
 			}
 
 		} catch (PersistenceException ex) {

@@ -8,6 +8,7 @@ import java.util.List;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
+import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import ch.bfh.awebt.bookmaker.Streams;
 import ch.bfh.awebt.bookmaker.presentation.data.AccessCondition;
@@ -122,35 +123,36 @@ public class NavigationBean implements Serializable {
 		return hasMessage(FacesContext.getCurrentInstance().getMessages(), severity);
 	}
 
-	public boolean hasMessage(String componentClientId, FacesMessage.Severity severity) {
+	public boolean hasMessage(UIComponent component, FacesMessage.Severity severity) {
 
-		if (componentClientId == null || componentClientId.length() == 0)
+		if (component == null)
 			return hasMessage(severity);
 
-		return hasMessage(FacesContext.getCurrentInstance().getMessages(componentClientId), severity);
+		FacesContext context = FacesContext.getCurrentInstance();
+		return hasMessage(context.getMessages(component.getClientId(context)), severity);
 	}
 
 	public boolean hasInformation() {
 		return hasMessage(FacesMessage.SEVERITY_INFO);
 	}
 
-	public boolean hasInformation(String componentClientId) {
-		return hasMessage(componentClientId, FacesMessage.SEVERITY_INFO);
+	public boolean hasInformation(UIComponent component) {
+		return hasMessage(component, FacesMessage.SEVERITY_INFO);
 	}
 
 	public boolean hasWarning() {
 		return hasMessage(FacesMessage.SEVERITY_WARN);
 	}
 
-	public boolean hasWarning(String componentClientId) {
-		return hasMessage(componentClientId, FacesMessage.SEVERITY_WARN);
+	public boolean hasWarning(UIComponent component) {
+		return hasMessage(component, FacesMessage.SEVERITY_WARN);
 	}
 
 	public boolean hasError() {
 		return hasMessage(FacesMessage.SEVERITY_ERROR);
 	}
 
-	public boolean hasError(String componentClientId) {
-		return hasMessage(componentClientId, FacesMessage.SEVERITY_ERROR);
+	public boolean hasError(UIComponent component) {
+		return hasMessage(component, FacesMessage.SEVERITY_ERROR);
 	}
 }

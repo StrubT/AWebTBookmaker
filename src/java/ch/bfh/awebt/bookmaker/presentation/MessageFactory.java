@@ -4,6 +4,7 @@ import java.text.MessageFormat;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import javax.faces.application.FacesMessage;
+import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 
 /**
@@ -49,12 +50,13 @@ public final class MessageFactory {
 	/**
 	 * Adds a message to the {@link FacesContext}.
 	 *
-	 * @param componentClientId client identifier of the JSF component to add the message to (may be null)
-	 * @param message           message to add
+	 * @param component JSF component to add the message to (may be null)
+	 * @param message   message to add
 	 */
-	public static void addMessage(String componentClientId, FacesMessage message) {
+	public static void addMessage(UIComponent component, FacesMessage message) {
 
-		FacesContext.getCurrentInstance().addMessage(componentClientId, message);
+		FacesContext context = FacesContext.getCurrentInstance();
+		context.addMessage(component.getClientId(context), message);
 	}
 
 	/**
@@ -84,13 +86,13 @@ public final class MessageFactory {
 	/**
 	 * Adds an information message to the {@link FacesContext}.
 	 *
-	 * @param componentClientId client identifier of the JSF component to add the message to (may be null)
-	 * @param messageKey        message bundle key of the message to add
-	 * @param messageArguments  arguments to pass to the {@link MessageFormat}
+	 * @param component        JSF component to add the message to (may be null)
+	 * @param messageKey       message bundle key of the message to add
+	 * @param messageArguments arguments to pass to the {@link MessageFormat}
 	 */
-	public static void addInformation(String componentClientId, String messageKey, Object... messageArguments) {
+	public static void addInformation(UIComponent component, String messageKey, Object... messageArguments) {
 
-		addMessage(componentClientId, getInformation(messageKey, messageArguments));
+		addMessage(component, getInformation(messageKey, messageArguments));
 	}
 
 	/**
@@ -120,13 +122,13 @@ public final class MessageFactory {
 	/**
 	 * Adds a warning message to the {@link FacesContext}.
 	 *
-	 * @param componentClientId client identifier of the JSF component to add the message to (may be null)
-	 * @param messageKey        message bundle key of the message to add
-	 * @param messageArguments  arguments to pass to the {@link MessageFormat}
+	 * @param component        JSF component to add the message to (may be null)
+	 * @param messageKey       message bundle key of the message to add
+	 * @param messageArguments arguments to pass to the {@link MessageFormat}
 	 */
-	public static void addWarning(String componentClientId, String messageKey, Object... messageArguments) {
+	public static void addWarning(UIComponent component, String messageKey, Object... messageArguments) {
 
-		addMessage(componentClientId, getWarning(messageKey, messageArguments));
+		addMessage(component, getWarning(messageKey, messageArguments));
 	}
 
 	/**
@@ -156,12 +158,12 @@ public final class MessageFactory {
 	/**
 	 * Adds an error message to the {@link FacesContext}.
 	 *
-	 * @param componentClientId client identifier of the JSF component to add the message to (may be null)
-	 * @param messageKey        message bundle key of the message to add
-	 * @param messageArguments  arguments to pass to the {@link MessageFormat}
+	 * @param component        JSF component to add the message to (may be null)
+	 * @param messageKey       message bundle key of the message to add
+	 * @param messageArguments arguments to pass to the {@link MessageFormat}
 	 */
-	public static void addError(String componentClientId, String messageKey, Object... messageArguments) {
+	public static void addError(UIComponent component, String messageKey, Object... messageArguments) {
 
-		addMessage(componentClientId, getError(messageKey, messageArguments));
+		addMessage(component, getError(messageKey, messageArguments));
 	}
 }
