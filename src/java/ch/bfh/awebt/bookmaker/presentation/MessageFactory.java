@@ -56,7 +56,7 @@ public final class MessageFactory {
 	public static void addMessage(UIComponent component, FacesMessage message) {
 
 		FacesContext context = FacesContext.getCurrentInstance();
-		context.addMessage(component.getClientId(context), message);
+		context.addMessage(component != null ? component.getClientId(context) : null, message);
 	}
 
 	/**

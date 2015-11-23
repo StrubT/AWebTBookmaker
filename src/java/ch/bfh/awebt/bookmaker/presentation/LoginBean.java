@@ -479,14 +479,12 @@ public class LoginBean implements Serializable {
 			if (user != null && user.validatePassword(userPasswordHash)) {
 				setUser(user);
 				if (!navigationBean.showLoginRegister())
-					return String.format("%s?faces-redirect=true", navigationBean.getHomePage());
+					return String.format("%s?faces-redirect=true", navigationBean.getHomePage().getView());
 				else
 					return null;
 
-			} else {
-				MessageFactory.addWarning(loginField, "ch.bfh.awebt.bookmaker.LOGIN_ERROR_INCORRECT_INFORMATION");
-				MessageFactory.addWarning(passwordField, "ch.bfh.awebt.bookmaker.LOGIN_ERROR_INCORRECT_INFORMATION");
-			}
+			} else
+				MessageFactory.addWarning("ch.bfh.awebt.bookmaker.LOGIN_ERROR_INCORRECT_INFORMATION");
 
 		} catch (PersistenceException ex) {
 			MessageFactory.addError("ch.bfh.awebt.bookmaker.PERSISTENCE_ERROR");
