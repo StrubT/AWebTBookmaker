@@ -15,7 +15,7 @@ public class NavigationPage implements Serializable {
 	private final AccessCondition accessCondition, navigationCondition;
 
 	/**
-	 * Construct a new page object accessible to everyone.
+	 * Constructs a new page object accessible to everyone.
 	 *
 	 * @param view identifier of the view to show
 	 * @param name name of the page (used for the internationalised title)
@@ -25,7 +25,7 @@ public class NavigationPage implements Serializable {
 	}
 
 	/**
-	 * Construct a new page object that will only be accessible under a certain condition.
+	 * Construcst a new page object that will only be accessible under a certain condition.
 	 *
 	 * @param view            identifier of the view to show
 	 * @param name            name of the page (used for the internationalised title)
@@ -36,7 +36,7 @@ public class NavigationPage implements Serializable {
 	}
 
 	/**
-	 * Construct a new page object that will only be shown under a certain condition.
+	 * Constructs a new page object that will only be shown under a certain condition.
 	 *
 	 * @param view                identifier of the view to show
 	 * @param name                name of the page (used for the internationalised title)
@@ -52,7 +52,7 @@ public class NavigationPage implements Serializable {
 	}
 
 	/**
-	 * Get the identifier of the view to show.
+	 * Gets the identifier of the view to show.
 	 *
 	 * @return identifier of the view to show
 	 */
@@ -97,18 +97,25 @@ public class NavigationPage implements Serializable {
 		return String.format("%sTitle", name);
 	}
 
+	/**
+	 * Gets a hash code for the navigation page.
+	 *
+	 * @return hash code for the navigation page
+	 */
 	@Override
 	public int hashCode() {
 		return (17 + view.hashCode()) * 31;
 	}
 
+	/**
+	 * Compares a second object with the current one and determines whether or not they are equal.
+	 *
+	 * @param obj object to compare to
+	 *
+	 * @return whether or not the two objects are equal
+	 */
 	@Override
 	public boolean equals(Object obj) {
 		return obj != null && obj.getClass() == getClass() && ((NavigationPage)obj).view.equals(view);
-	}
-
-	@Override
-	public String toString() {
-		return String.format("%s[view=%s]", getClass().getName(), view);
 	}
 }

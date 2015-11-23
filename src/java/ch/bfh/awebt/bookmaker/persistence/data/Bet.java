@@ -20,6 +20,11 @@ import javax.persistence.Table;
 import ch.bfh.awebt.bookmaker.converters.BetTypeConverter;
 import ch.bfh.awebt.bookmaker.converters.LocalTimeConverter;
 
+/**
+ * Represents a bet on a {@link Game}.
+ *
+ * @author strut1 &amp; touwm1
+ */
 @Entity
 @Table(name = "bets")
 public class Bet extends PersistentObject<Integer> implements Serializable {
@@ -67,26 +72,80 @@ public class Bet extends PersistentObject<Integer> implements Serializable {
 		userBets = new ArrayList<>();
 	}
 
+	/**
+	 * Constructs a bet on a game of a specific type and known odds.
+	 *
+	 * @param game game this bet refers to
+	 * @param type type of the bet
+	 * @param odds odds for this bet
+	 */
 	public Bet(Game game, BetType type, BigDecimal odds) {
 		this(game, type, odds, null, null, null, null);
 	}
 
+	/**
+	 * Constructs a bet on a game of a specific type and known odds and outcome.
+	 *
+	 * @param game     game this bet refers to
+	 * @param type     type of the bet
+	 * @param odds     odds for this bet
+	 * @param occurred whether or not this the situation this bet refers to actually occurred
+	 */
 	public Bet(Game game, BetType type, BigDecimal odds, Boolean occurred) {
 		this(game, type, odds, occurred, null, null, null);
 	}
 
+	/**
+	 * Constructs a bet on a game of a specific type and known odds, outcome and parameters.
+	 *
+	 * @param game     game this bet refers to
+	 * @param type     type of the bet
+	 * @param odds     odds for this bet
+	 * @param occurred whether or not this the situation this bet refers to actually occurred
+	 * @param team     team this bet refers to
+	 */
 	public Bet(Game game, BetType type, BigDecimal odds, Boolean occurred, Team team) {
 		this(game, type, odds, occurred, team, null, null);
 	}
 
+	/**
+	 * Constructs a bet on a game of a specific type and known odds, outcome and parameters.
+	 *
+	 * @param game     game this bet refers to
+	 * @param type     type of the bet
+	 * @param odds     odds for this bet
+	 * @param occurred whether or not this the situation this bet refers to actually occurred
+	 * @param time     playing time this bet refers to
+	 */
 	public Bet(Game game, BetType type, BigDecimal odds, Boolean occurred, LocalTime time) {
 		this(game, type, odds, occurred, null, time, null);
 	}
 
+	/**
+	 * Constructs a bet on a game of a specific type and known odds, outcome and parameters.
+	 *
+	 * @param game     game this bet refers to
+	 * @param type     type of the bet
+	 * @param odds     odds for this bet
+	 * @param occurred whether or not this the situation this bet refers to actually occurred
+	 * @param team     team this bet refers to
+	 * @param time     playing time this bet refers to
+	 */
 	public Bet(Game game, BetType type, BigDecimal odds, Boolean occurred, Team team, LocalTime time) {
 		this(game, type, odds, occurred, team, time, null);
 	}
 
+	/**
+	 * Constructs a bet on a game of a specific type and known odds, outcome and parameters.
+	 *
+	 * @param game     game this bet refers to
+	 * @param type     type of the bet
+	 * @param odds     odds for this bet
+	 * @param occurred whether or not this the situation this bet refers to actually occurred
+	 * @param team     team this bet refers to
+	 * @param time     playing time this bet refers to
+	 * @param goals    number of goals this bet refers to
+	 */
 	public Bet(Game game, BetType type, BigDecimal odds, Boolean occurred, Team team, LocalTime time, Integer goals) {
 		this();
 
@@ -106,70 +165,157 @@ public class Bet extends PersistentObject<Integer> implements Serializable {
 		return id;
 	}
 
+	/**
+	 * Sets the unique identifier of the bet.
+	 *
+	 * @param id unique identifier of the bet
+	 */
 	public void setId(int id) {
 		this.id = id;
 	}
 
+	/**
+	 * Gets the game this bet refers to.
+	 *
+	 * @return game this bet refers to
+	 */
 	public Game getGame() {
 		return game;
 	}
 
+	/**
+	 * Sets the game this bet refers to.
+	 *
+	 * @param game game this bet refers to
+	 */
 	public void setGame(Game game) {
 		this.game = game;
 	}
 
+	/**
+	 * Gets the type of the bet.
+	 *
+	 * @return type of the bet
+	 */
 	public BetType getType() {
 		return type;
 	}
 
+	/**
+	 * Sets the type of the bet.
+	 *
+	 * @param type type of the bet
+	 */
 	public void setType(BetType type) {
 		this.type = type;
 	}
 
+	/**
+	 * Gets the odds for this bet.
+	 *
+	 * @return odds for this bet
+	 */
 	public BigDecimal getOdds() {
 		return odds;
 	}
 
+	/**
+	 * Sets the odds for this bet.
+	 *
+	 * @param odds odds for this bet
+	 */
 	public void setOdds(BigDecimal odds) {
 		this.odds = odds;
 	}
 
+	/**
+	 * Gets whether or not this the situation this bet refers to actually occurred.
+	 *
+	 * @return whether or not this the situation this bet refers to actually occurred
+	 */
 	public Boolean getOccurred() {
 		return occurred;
 	}
 
+	/**
+	 * Sets whether or not this the situation this bet refers to actually occurred.
+	 *
+	 * @param occurred whether or not this the situation this bet refers to actually occurred
+	 */
 	public void setOccurred(Boolean occurred) {
 		this.occurred = occurred;
 	}
 
+	/**
+	 * Gets the team this bet refers to, if any.
+	 *
+	 * @return team this bet refers to, or {@code null} if none
+	 */
 	public Team getTeam() {
 		return team;
 	}
 
+	/**
+	 * Sets the team this bet refers to, if any.
+	 *
+	 * @param team team this bet refers to, or {@code null} if none
+	 */
 	public void setTeam(Team team) {
 		this.team = team;
 	}
 
+	/**
+	 * Gets the playing time this bet refers to, if any.
+	 *
+	 * @return playing time this bet refers to, or {@code null} if none
+	 */
 	public LocalTime getTime() {
 		return time;
 	}
 
+	/**
+	 * Sets the playing time this bet refers to, if any.
+	 *
+	 * @param time playing time this bet refers to, or {@code null} if none
+	 */
 	public void setTime(LocalTime time) {
 		this.time = time;
 	}
 
+	/**
+	 * Gets the number of goals this bet refers to, if any.
+	 *
+	 * @return number of goals this bet refers to, or {@code null} if none
+	 */
 	public Integer getGoals() {
 		return goals;
 	}
 
+	/**
+	 * Sets the number of goals this bet refers to, if any.
+	 *
+	 * @param goals number of goals this bet refers to, or {@code null} if none
+	 */
 	public void setGoals(Integer goals) {
 		this.goals = goals;
 	}
 
+	/**
+	 * Gets the actual bets user placed with the bookmaker.
+	 *
+	 * @return an unmodifiable {@link List} actual bets placed by user
+	 */
 	public List<UserBet> getUserBets() {
 		return Collections.unmodifiableList(userBets);
 	}
 
+	/**
+	 * Add an actual bet placed by a user
+	 *
+	 * @param userBet actual bet placed by a user
+	 *
+	 * @return whether or not the bet was added to the list
+	 */
 	boolean addUserBet(UserBet userBet) {
 		return userBets.add(userBet);
 	}

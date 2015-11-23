@@ -88,6 +88,11 @@ public abstract class GenericDAO<T extends PersistentObject<?>> {
 		return getEntityManager().find(getEntityClass(), id);
 	}
 
+	/**
+	 * <strong>R</strong>ead: finds all entities in the data source.
+	 *
+	 * @return {@link List} of all entities
+	 */
 	public List<T> findAll() {
 
 		CriteriaQuery<T> criteriaQuery = getEntityManager().getCriteriaBuilder().createQuery(getEntityClass());

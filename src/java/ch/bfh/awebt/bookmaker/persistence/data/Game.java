@@ -84,7 +84,7 @@ public class Game extends PersistentObject<Integer> implements Serializable {
 	 *
 	 * @param team1        first (home) team to compete in the game
 	 * @param team2        second (away) team to compete in the game
-	 * @param startTimeUTC date &amp; time of the game is scheduled to start in UTC (Coordinated Universal Time)
+	 * @param startTimeUTC date &amp; time the game is scheduled to start in UTC (Coordinated Universal Time)
 	 */
 	public Game(Team team1, Team team2, LocalDateTime startTimeUTC) {
 		this();
@@ -145,27 +145,27 @@ public class Game extends PersistentObject<Integer> implements Serializable {
 	}
 
 	/**
-	 * Gets the date &amp; time of the game is scheduled to start in UTC (Coordinated Universal Time).
+	 * Gets the date &amp; time the game is scheduled to start in UTC (Coordinated Universal Time).
 	 *
-	 * @return date &amp; time of the game is scheduled to start in UTC (Coordinated Universal Time)
+	 * @return date &amp; time the game is scheduled to start in UTC (Coordinated Universal Time)
 	 */
 	public LocalDateTime getStartTimeUTC() {
 		return startTimeUTC;
 	}
 
 	/**
-	 * Sets the date &amp; time of the game is scheduled to start in UTC (Coordinated Universal Time).
+	 * Sets the date &amp; time the game is scheduled to start in UTC (Coordinated Universal Time).
 	 *
-	 * @param startTimeUTC date &amp; time of the game is scheduled to start in UTC (Coordinated Universal Time)
+	 * @param startTimeUTC date &amp; time the game is scheduled to start in UTC (Coordinated Universal Time)
 	 */
 	public void setStartTimeUTC(LocalDateTime startTimeUTC) {
 		this.startTimeUTC = startTimeUTC;
 	}
 
 	/**
-	 * Gets the date &amp; time of the game is scheduled to start.
+	 * Gets the date &amp; time the game is scheduled to start.
 	 *
-	 * @return date &amp; time of the game is scheduled to start
+	 * @return date &amp; time the game is scheduled to start
 	 */
 	public ZonedDateTime getStartTimeZoned() {
 
@@ -173,9 +173,9 @@ public class Game extends PersistentObject<Integer> implements Serializable {
 	}
 
 	/**
-	 * Sets the date &amp; time of the game is scheduled to start.
+	 * Sets the date &amp; time the game is scheduled to start.
 	 *
-	 * @param startTimeZoned date &amp; time of the game is scheduled to start
+	 * @param startTimeZoned date &amp; time the game is scheduled to start
 	 */
 	public void setStartTimeZoned(ZonedDateTime startTimeZoned) {
 

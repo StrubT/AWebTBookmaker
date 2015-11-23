@@ -112,17 +112,32 @@ public class NavigationBean implements Serializable {
 			.collect(Streams.nullableSingleCollector());
 	}
 
-	public boolean hasMessage(Iterator<FacesMessage> messages, FacesMessage.Severity severity) {
+	private boolean hasMessage(Iterator<FacesMessage> messages, FacesMessage.Severity severity) {
 
 		return Streams.iteratorStream(messages)
 			.anyMatch(m -> m.getSeverity().compareTo(severity) >= 0);
 	}
 
+	/**
+	 * Checks whether or not the {@link FacesContext} has a message of at least the specified severity.
+	 *
+	 * @param severity minimal severity to search for
+	 *
+	 * @return whether or not there is a message of at least the specified severity
+	 */
 	public boolean hasMessage(FacesMessage.Severity severity) {
 
 		return hasMessage(FacesContext.getCurrentInstance().getMessages(), severity);
 	}
 
+	/**
+	 * Checks whether or not a {@link UIComponent} has a message of at least the specified severity.
+	 *
+	 * @param component component to search for messages on
+	 * @param severity  minimal severity to search for
+	 *
+	 * @return whether or not there is a message on the component of at least the specified severity
+	 */
 	public boolean hasMessage(UIComponent component, FacesMessage.Severity severity) {
 
 		if (component == null)
@@ -132,26 +147,62 @@ public class NavigationBean implements Serializable {
 		return hasMessage(context.getMessages(component.getClientId(context)), severity);
 	}
 
+	/**
+	 * Checks whether or not the {@link FacesContext} has a message of at least {@link FacesMessage#SEVERITY_INFO}.
+	 *
+	 * @return whether or not there is a message of at least {@link FacesMessage#SEVERITY_INFO}
+	 */
 	public boolean hasInformation() {
 		return hasMessage(FacesMessage.SEVERITY_INFO);
 	}
 
+	/**
+	 * Checks whether or not a {@link UIComponent} has a message of at least {@link FacesMessage#SEVERITY_INFO}.
+	 *
+	 * @param component component to search for messages on
+	 *
+	 * @return whether or not there is a message on the component of at least {@link FacesMessage#SEVERITY_INFO}
+	 */
 	public boolean hasInformation(UIComponent component) {
 		return hasMessage(component, FacesMessage.SEVERITY_INFO);
 	}
 
+	/**
+	 * Checks whether or not the {@link FacesContext} has a message of at least {@link FacesMessage#SEVERITY_WARN}.
+	 *
+	 * @return whether or not there is a message of at least {@link FacesMessage#SEVERITY_WARN}
+	 */
 	public boolean hasWarning() {
 		return hasMessage(FacesMessage.SEVERITY_WARN);
 	}
 
+	/**
+	 * Checks whether or not a {@link UIComponent} has a message of at least {@link FacesMessage#SEVERITY_WARN}.
+	 *
+	 * @param component component to search for messages on
+	 *
+	 * @return whether or not there is a message on the component of at least {@link FacesMessage#SEVERITY_WARN}
+	 */
 	public boolean hasWarning(UIComponent component) {
 		return hasMessage(component, FacesMessage.SEVERITY_WARN);
 	}
 
+	/**
+	 * Checks whether or not the {@link FacesContext} has a message of at least {@link FacesMessage#SEVERITY_ERROR}.
+	 *
+	 * @return whether or not there is a message of at least {@link FacesMessage#SEVERITY_ERROR}
+	 */
 	public boolean hasError() {
 		return hasMessage(FacesMessage.SEVERITY_ERROR);
 	}
 
+	/**
+	 * Checks whether or not a {@link UIComponent} has a message of at least {@link FacesMessage#SEVERITY_ERROR}.
+	 *
+	 * @param component component to search for messages on
+	 *
+	 * @return whether or not there is a message on the component of at least {@link FacesMessage#SEVERITY_ERROR}
+	 */
 	public boolean hasError(UIComponent component) {
 		return hasMessage(component, FacesMessage.SEVERITY_ERROR);
 	}

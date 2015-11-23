@@ -49,12 +49,21 @@ public class GameBean implements Serializable {
 	private ZoneId gameTimeZone;
 	private List<BetDTO> gameBets;
 
+	/**
+	 * Initialises the managed bean.
+	 */
 	@PostConstruct
 	public void init() {
 
 		gameTimeZone = loginBean.getTimeZone();
 	}
 
+	/**
+	 * Gets the {@link LoginBean}. <br>
+	 * This method is not to be called by client code, the framework automatically sets the bean instance.
+	 *
+	 * @return the {@link LoginBean} to use
+	 */
 	public LoginBean getLoginBean() {
 		return loginBean;
 	}
@@ -63,7 +72,7 @@ public class GameBean implements Serializable {
 	 * Sets the {@link LoginBean}. <br>
 	 * This method is not to be called by client code, the framework automatically sets the bean instance.
 	 *
-	 * @param loginBean the bean to use
+	 * @param loginBean the {@link LoginBean} to use
 	 */
 	public void setLoginBean(LoginBean loginBean) {
 		this.loginBean = loginBean;
@@ -177,26 +186,60 @@ public class GameBean implements Serializable {
 		this.gameTeam2 = gameTeam2;
 	}
 
+	/**
+	 * Gets the date &amp; time the game is scheduled to start.
+	 *
+	 * @return date &amp; time the game is scheduled to start
+	 */
 	public LocalDateTime getGameStartTime() {
 		return gameStartTime;
 	}
 
+	/**
+	 * Sets the date &amp; time the game is scheduled to start.
+	 *
+	 * @param gameStartTime date &amp; time the game is scheduled to start
+	 */
 	public void setGameStartTime(LocalDateTime gameStartTime) {
 		this.gameStartTime = gameStartTime;
 	}
 
+	/**
+	 * Gets the time zone the game's scheduled start date &amp; time.
+	 *
+	 * @return time zone the game's scheduled start date &amp; time
+	 */
 	public ZoneId getGameTimeZone() {
 		return gameTimeZone;
 	}
 
+	/**
+	 * Sets the time zone the game's scheduled start date &amp; time.
+	 *
+	 * @param gameTimeZone time zone the game's scheduled start date &amp; time
+	 */
 	public void setGameTimeZone(ZoneId gameTimeZone) {
+
+		if (gameStartTime != null)
+			gameStartTime = gameStartTime.atZone(this.gameTimeZone).withZoneSameInstant(gameTimeZone).toLocalDateTime();
+
 		this.gameTimeZone = gameTimeZone;
 	}
 
+	/**
+	 * Gets the bets associated with the game.
+	 *
+	 * @return bets associated with the game
+	 */
 	public List<BetDTO> getGameBets() {
 		return gameBets;
 	}
 
+	/**
+	 * Sets the bets associated with the game.
+	 *
+	 * @param gameBets bets associated with the game
+	 */
 	public void setGameBets(List<BetDTO> gameBets) {
 		this.gameBets = gameBets;
 	}
@@ -251,6 +294,9 @@ public class GameBean implements Serializable {
 		return getGameDAO().find(gameId);
 	}
 
+	/**
+	 * Saves the stakes the user put on the bets.
+	 */
 	public void saveUserBets() {
 
 		User user = loginBean.getUser();

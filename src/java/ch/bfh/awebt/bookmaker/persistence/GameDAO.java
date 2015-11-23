@@ -6,6 +6,11 @@ import java.util.List;
 import ch.bfh.awebt.bookmaker.MapBuilder;
 import ch.bfh.awebt.bookmaker.persistence.data.Game;
 
+/**
+ * Represents a data access object for {@link Game} entities.
+ *
+ * @author strut1 &amp; touwm1
+ */
 public class GameDAO extends GenericDAO<Game> implements Serializable {
 
 	private static final long serialVersionUID = -5138682905529615638L;

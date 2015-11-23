@@ -74,6 +74,12 @@ public class LoginBean implements Serializable {
 		return (regionalised2 ? 1 : 0) - (regionalised1 ? 1 : 0);
 	}
 
+	/**
+	 * Gets the {@link NavigationBean}. <br>
+	 * This method is not to be called by client code, the framework automatically sets the bean instance.
+	 *
+	 * @return the {@link NavigationBean} to use
+	 */
 	public NavigationBean getNavigationBean() {
 		return navigationBean;
 	}
@@ -82,24 +88,44 @@ public class LoginBean implements Serializable {
 	 * Sets the {@link NavigationBean}. <br>
 	 * This method is not to be called by client code, the framework automatically sets the bean instance.
 	 *
-	 * @param navigationBean the bean to use
+	 * @param navigationBean the {@link NavigationBean} to use
 	 */
 	public void setNavigationBean(NavigationBean navigationBean) {
 		this.navigationBean = navigationBean;
 	}
 
+	/**
+	 * Gets the login (user name) field of the current view.
+	 *
+	 * @returnlogin (user name) field of the current view
+	 */
 	public UIComponent getLoginField() {
 		return loginField;
 	}
 
+	/**
+	 * Sets the login (user name) field of the current view.
+	 *
+	 * @param loginField login (user name) field of the current view
+	 */
 	public void setLoginField(UIComponent loginField) {
 		this.loginField = loginField;
 	}
 
+	/**
+	 * Gets the password field of the current view.
+	 *
+	 * @return password field of the current view
+	 */
 	public UIComponent getPasswordField() {
 		return passwordField;
 	}
 
+	/**
+	 * Sets the password field of the current view.
+	 *
+	 * @param passwordField password field of the current view
+	 */
 	public void setPasswordField(UIComponent passwordField) {
 		this.passwordField = passwordField;
 	}
