@@ -12,18 +12,18 @@
 		<c:choose>
 			<c:when test="#{empty loginBean.user}">
 				<div class="form-horizontal">
-					<cc:form-group component="loginField">
+					<cc:form-group component="#{loginBean.loginField}">
 						<h:outputLabel for="loginField" class="col-sm-2 control-label">#{texts.LoginLoginLabel}</h:outputLabel>
 						<div class="col-sm-10">
 							<h:inputText id="loginField" class="form-control" value="#{loginBean.login}" binding="#{loginBean.loginField}" />
-							<cc:message component="loginField" />
+							<cc:message component="#{loginBean.loginField}" />
 						</div>
 					</cc:form-group>
-					<cc:form-group component="passwordField">
+					<cc:form-group component="#{loginBean.passwordField}">
 						<h:outputLabel for="passwordField" class="col-sm-2 control-label">#{texts.LoginPasswordLabel}</h:outputLabel>
 						<div class="col-sm-10">
 							<h:inputSecret id="passwordField" class="form-control" value="#{loginBean.password}" binding="#{loginBean.passwordField}" />
-							<cc:message component="passwordField" />
+							<cc:message component="#{loginBean.passwordField}" />
 						</div>
 					</cc:form-group>
 					<div class="form-group">
@@ -38,9 +38,7 @@
 				<cc:messages />
 			</c:when>
 			<c:otherwise>
-				<p>
-					You are already logged in as #{loginBean.login}.
-				</p>
+				<p>You are already logged in as #{loginBean.login}.</p>
 				<h:commandButton id="logoutButton" action="#{loginBean.logout}" class="btn btn-default" value="#{texts.LoginLogoutButton}" />
 			</c:otherwise>
 		</c:choose>

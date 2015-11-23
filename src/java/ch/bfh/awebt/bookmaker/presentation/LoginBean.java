@@ -480,6 +480,8 @@ public class LoginBean implements Serializable {
 				setUser(user);
 				if (!navigationBean.showLoginRegister())
 					return String.format("%s?faces-redirect=true", navigationBean.getHomePage());
+				else
+					return null;
 
 			} else {
 				MessageFactory.addWarning(loginField, "ch.bfh.awebt.bookmaker.LOGIN_ERROR_INCORRECT_INFORMATION");

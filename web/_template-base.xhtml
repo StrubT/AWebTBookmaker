@@ -91,7 +91,7 @@
 										</div>
 										<div class="form-group">
 											<div class="btn-toolbar btn-group-sm">
-												<h:commandButton action="#{navigationBean.getRedirectOutcome('/register.xhtml')}" class="btn btn-default" value="#{texts.LoginRegisterButton}" />
+												<h:commandButton action="/register.xhtml?faces-redirect=true" class="btn btn-default" value="#{texts.LoginRegisterButton}" />
 												<h:commandButton action="#{loginBean.login}" class="btn btn-primary" value="#{texts.LoginLoginButton}" />
 											</div>
 										</div>
