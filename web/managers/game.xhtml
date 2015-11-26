@@ -45,7 +45,7 @@
 			<div class="form-group">
 				<label for="inputStartTime" class="col-sm-2 control-label">#{texts.GameStartTimeLabel}</label>
 				<div class="col-sm-10">
-					<h:inputText id="inputStartTime" value="#{gameBean.gameStartTime}" class="form-control">
+					<h:inputText id="inputStartTime" value="#{gameBean.gameStartTime}" class="form-control" converter="ch.bfh.awebt.bookmaker.LOCAL_DATE_TIME_CONVERTER">
 						<f:passThroughAttribute name="type" value="datetime-local" />
 						<f:passThroughAttribute name="placeholder" value="yyyy-MM-dd HH:mm" />
 					</h:inputText>

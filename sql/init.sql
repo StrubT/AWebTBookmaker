@@ -76,7 +76,11 @@ CREATE TABLE IF NOT EXISTS `games` (
 --
 
 INSERT INTO `games` (`id`, `team1`, `team2`, `starttime`) VALUES
-(1, 'SUI', 'ESP', '2015-11-20 20:30:00');
+(1, 'SUI', 'ESP', '2015-12-16 20:30:00'),
+(2, 'AUS', 'NZL', '2015-12-16 19:00:00'),
+(3, 'AUT', 'GER', '2016-04-21 20:35:00'),
+(4, 'CAN', 'CRC', '2015-12-21 02:20:00'),
+(5, 'AUT', 'AUS', '2016-05-02 10:00:00');
 
 -- --------------------------------------------------------
 
@@ -336,20 +340,17 @@ CREATE TABLE IF NOT EXISTS `users` (
   `manager` bit(1) NOT NULL DEFAULT b'0',
   `locale` varchar(10) NOT NULL,
   `timezone` varchar(25) NOT NULL,
-  `balance` decimal(10,3) NOT NULL DEFAULT '0.000',
-  `cardnumber` char(16) DEFAULT NULL,
-  `cardexpiration` date DEFAULT NULL,
-  `cardcode` char(3) DEFAULT NULL
+  `balance` decimal(10,3) NOT NULL DEFAULT '0.000'
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `version`, `login`, `password`, `manager`, `locale`, `timezone`, `balance`, `cardnumber`, `cardexpiration`, `cardcode`) VALUES
-(1, '2015-11-15 22:38:20', 'strut1', 0x69384e2f74dcbf163ca1a2f7ba12fb9b, b'1', 'en_GB', 'Europe/Zurich', '0.000', NULL, NULL, NULL), -- password: bookmaker
-(2, '2015-11-10 13:22:08', 'touwm1', 0x69384e2f74dcbf163ca1a2f7ba12fb9b, b'1', 'de', 'Europe/Berlin', '0.000', NULL, NULL, NULL), -- password: bookmaker
-(4, '2015-11-10 13:22:08', 'player', 0x6f8548ca26a842f4e08fb2257bce5a4d, b'0', 'de', 'UTC', '0.000', NULL, NULL, NULL); -- password: player
+INSERT INTO `users` (`id`, `version`, `login`, `password`, `manager`, `locale`, `timezone`, `balance`) VALUES
+(1, '2015-11-15 22:38:20', 'strut1', 0x69384e2f74dcbf163ca1a2f7ba12fb9b, b'1', 'en_GB', 'Europe/Zurich', '0.000'), -- password: bookmaker
+(2, '2015-11-10 13:22:08', 'touwm1', 0x69384e2f74dcbf163ca1a2f7ba12fb9b, b'1', 'de', 'Europe/Berlin', '0.000'), -- password: bookmaker
+(4, '2015-11-10 13:22:08', 'player', 0x6f8548ca26a842f4e08fb2257bce5a4d, b'0', 'de', 'UTC', '0.000'); -- password: player
 
 -- --------------------------------------------------------
 
@@ -363,6 +364,15 @@ CREATE TABLE IF NOT EXISTS `users_bets` (
   `bet` int(11) NOT NULL,
   `stake` decimal(10,3) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Daten für Tabelle `users_bets`
+--
+
+INSERT INTO `users_bets` (`user`, `bet`, `stake`) VALUES
+(1, 3, '5.000'),
+(2, 3, '2.000'),
+(2, 6, '3.000');
 
 --
 -- Indexes for dumped tables

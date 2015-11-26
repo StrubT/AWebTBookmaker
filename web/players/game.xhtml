@@ -17,6 +17,7 @@
 				<f:param value="#{teams[gameBean.gameTeam1]}" />
 				<f:param value="#{teams[gameBean.gameTeam2]}" />
 			</h:outputFormat>
+			<small>#{loginBean.formatDateTimeUser(gameBean.gameStartTimeZoned, true)}</small>
 		</h2>
 		<h:dataTable value="#{gameBean.gameBets}" var="bet" class="table table-condensed table-striped">
 			<h:column>

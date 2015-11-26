@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -226,6 +227,11 @@ public class GameBean implements Serializable {
 		this.gameTimeZone = gameTimeZone;
 	}
 
+	public ZonedDateTime getGameStartTimeZoned() {
+
+		return ZonedDateTime.of(gameStartTime, gameTimeZone);
+	}
+
 	/**
 	 * Gets the bets associated with the game.
 	 *
@@ -292,6 +298,27 @@ public class GameBean implements Serializable {
 	public Game getGame() {
 
 		return getGameDAO().find(gameId);
+	}
+
+	public String saveGame() {
+
+		Team team1 = getTeamDAO().findById(gameTeam1);
+		Team team2 = getTeamDAO().findById(gameTeam2);
+		ZonedDateTime startTimeZoned = ZonedDateTime.of(gameStartTime, gameTimeZone);
+
+		Game saveGame = gameId != null ? getGameDAO().find(gameId) : null;
+		if (saveGame != null) {
+			saveGame.setTeam1(team1);
+			saveGame.setTeam2(team2);
+			saveGame.setStartTimeZoned(startTimeZoned);
+			getGameDAO().merge(saveGame);
+
+		} else {
+			saveGame = new Game(team1, team2, startTimeZoned);
+			getGameDAO().persist(saveGame);
+		}
+
+		return String.format("/players/game.xhtml?id=%d&faces-redirect=true", saveGame.getId());
 	}
 
 	/**
