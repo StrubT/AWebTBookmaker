@@ -76,7 +76,11 @@ CREATE TABLE IF NOT EXISTS `games` (
 --
 
 INSERT INTO `games` (`id`, `team1`, `team2`, `starttime`) VALUES
-(1, 'SUI', 'ESP', '2015-11-20 20:30:00');
+(1, 'SUI', 'ESP', '2015-12-16 20:30:00'),
+(2, 'AUS', 'NZL', '2015-12-16 19:00:00'),
+(3, 'AUT', 'GER', '2016-04-21 20:35:00'),
+(4, 'CAN', 'CRC', '2015-12-21 02:20:00'),
+(5, 'AUT', 'AUS', '2016-05-02 10:00:00');
 
 -- --------------------------------------------------------
 
@@ -360,6 +364,15 @@ CREATE TABLE IF NOT EXISTS `users_bets` (
   `bet` int(11) NOT NULL,
   `stake` decimal(10,3) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Daten für Tabelle `users_bets`
+--
+
+INSERT INTO `users_bets` (`user`, `bet`, `stake`) VALUES
+(1, 3, '5.000'),
+(2, 3, '2.000'),
+(2, 6, '3.000');
 
 --
 -- Indexes for dumped tables

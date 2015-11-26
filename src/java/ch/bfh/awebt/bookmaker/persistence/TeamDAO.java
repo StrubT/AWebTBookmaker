@@ -1,6 +1,8 @@
 package ch.bfh.awebt.bookmaker.persistence;
 
 import java.io.Serializable;
+import ch.bfh.awebt.bookmaker.MapBuilder;
+import ch.bfh.awebt.bookmaker.Streams;
 import ch.bfh.awebt.bookmaker.persistence.data.Team;
 
 /**
@@ -15,5 +17,11 @@ public class TeamDAO extends GenericDAO<Team> implements Serializable {
 	@Override
 	protected Class<Team> getEntityClass() {
 		return Team.class;
+	}
+
+	public Team findById(String id) {
+
+		return findByQuery(Team.FIND_BY_ID_QUERY, MapBuilder.single("id", id))
+			.stream().collect(Streams.nullableSingleCollector());
 	}
 }

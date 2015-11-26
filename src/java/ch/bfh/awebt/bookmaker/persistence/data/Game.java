@@ -94,6 +94,10 @@ public class Game extends PersistentObject<Integer> implements Serializable {
 		this.startTimeUTC = startTimeUTC;
 	}
 
+	public Game(Team team1, Team team2, ZonedDateTime startTimeZoned) {
+		this(team1, team2, startTimeZoned.withZoneSameInstant(ZONE_UTC).toLocalDateTime());
+	}
+
 	@Override
 	public Integer getId() {
 		return id;
