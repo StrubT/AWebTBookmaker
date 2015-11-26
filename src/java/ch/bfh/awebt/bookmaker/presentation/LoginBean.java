@@ -49,7 +49,7 @@ public class LoginBean implements Serializable {
 
 	private Integer userId;
 	private String userLogin;
-	private byte[] userPasswordHash;
+	private char[] userPassword;
 
 	/**
 	 * Initialises the managed bean.
@@ -315,7 +315,7 @@ public class LoginBean implements Serializable {
 	private void setUser(User user) {
 
 		userId = user != null ? user.getId() : null;
-		userPasswordHash = null;
+		userPassword = null;
 
 		if (user != null) {
 			userLogin = user.getLogin();
@@ -363,7 +363,7 @@ public class LoginBean implements Serializable {
 	 * @return whether or not the password of the user to log in has already been entered
 	 */
 	public boolean hasPassword() {
-		return userPasswordHash != null;
+		return userPassword != null;
 	}
 
 	/**
@@ -373,12 +373,7 @@ public class LoginBean implements Serializable {
 	 */
 	public void setPassword(String password) {
 
-		try {
-			userPasswordHash = User.hashPassword(password.toCharArray());
-
-		} catch (NoSuchAlgorithmException ex) {
-			MessageFactory.addError("ch.bfh.awebt.bookmaker.SECURITY_ERROR");
-		}
+		userPassword = password.toCharArray();
 	}
 
 	/**
@@ -441,18 +436,21 @@ public class LoginBean implements Serializable {
 	 */
 	public String register() {
 
-		if (userLogin != null && userLogin.length() > 0 && userPasswordHash != null)
+		if (userLogin != null && userLogin.length() > 0 && userPassword != null)
 
 			if (getUserDAO().findByLogin(userLogin) != null)
 				MessageFactory.addError(loginField, "ch.bfh.awebt.bookmaker.LOGIN_REGISTER_LOGIN_TAKEN");
 
 			else
 				try {
-					User user = new User(userLogin, locale, timeZone, userPasswordHash);
+					User user = new User(userLogin, locale, timeZone, userPassword);
 					getUserDAO().persist(user);
 
 					setUser(user); //log in
 					return "/players/account.xhtml?faces-redirect=true";
+
+				} catch (NoSuchAlgorithmException ex) {
+					MessageFactory.addError("ch.bfh.awebt.bookmaker.SECURITY_ERROR");
 
 				} catch (PersistenceException ex) {
 					MessageFactory.addError("ch.bfh.awebt.bookmaker.PERSISTENCE_ERROR");
@@ -476,7 +474,7 @@ public class LoginBean implements Serializable {
 
 		try {
 			User user = getUserDAO().findByLogin(userLogin);
-			if (user != null && user.validatePassword(userPasswordHash)) {
+			if (user != null && user.validatePassword(userPassword)) {
 				setUser(user);
 				if (!navigationBean.showLoginRegister())
 					return String.format("%s?faces-redirect=true", navigationBean.getHomePage().getView());
@@ -485,6 +483,9 @@ public class LoginBean implements Serializable {
 
 			} else
 				MessageFactory.addWarning("ch.bfh.awebt.bookmaker.LOGIN_ERROR_INCORRECT_INFORMATION");
+
+		} catch (NoSuchAlgorithmException ex) {
+			MessageFactory.addError("ch.bfh.awebt.bookmaker.SECURITY_ERROR");
 
 		} catch (PersistenceException ex) {
 			MessageFactory.addError("ch.bfh.awebt.bookmaker.PERSISTENCE_ERROR");

@@ -6,7 +6,6 @@ import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
-import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,7 +23,6 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Version;
-import ch.bfh.awebt.bookmaker.converters.LocalDateConverter;
 import ch.bfh.awebt.bookmaker.converters.LocaleConverter;
 import ch.bfh.awebt.bookmaker.converters.ZoneIdConverter;
 
@@ -81,16 +79,6 @@ public class User extends PersistentObject<Integer> implements Serializable {
 	@Column(name = "balance", nullable = false, precision = 10, scale = 3)
 	private BigDecimal balance = BigDecimal.ZERO;
 
-	@Column(name = "cardnumber", length = 16)
-	private String creditCardNumber;
-
-	@Column(name = "cardexpiration")
-	@Convert(converter = LocalDateConverter.class)
-	private LocalDate creditCardExpirationDate;
-
-	@Column(name = "cardcode", length = 3)
-	private String creditCardValidationCode;
-
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
 	private List<UserBet> bets;
 
@@ -135,7 +123,7 @@ public class User extends PersistentObject<Integer> implements Serializable {
 	 * @throws NoSuchAlgorithmException if the password could not be hashed
 	 */
 	public User(String login, Locale locale, ZoneId timeZone, char[] password) throws NoSuchAlgorithmException {
-		this(login, locale, timeZone, hashPassword(password));
+		this(login, locale, timeZone, hashPassword(login, password));
 	}
 
 	@Override
@@ -180,15 +168,6 @@ public class User extends PersistentObject<Integer> implements Serializable {
 	}
 
 	/**
-	 * Sets the unique login of the user.
-	 *
-	 * @param login unique login of the user
-	 */
-	public void setLogin(String login) {
-		this.login = login;
-	}
-
-	/**
 	 * Gets the hashed password of the user.
 	 *
 	 * @return hashed password of the user
@@ -207,7 +186,7 @@ public class User extends PersistentObject<Integer> implements Serializable {
 	 */
 	public void setPassword(char[] password) throws NoSuchAlgorithmException {
 
-		passwordHash = hashPassword(password);
+		passwordHash = hashPassword(login, password);
 	}
 
 	/**
@@ -221,7 +200,7 @@ public class User extends PersistentObject<Integer> implements Serializable {
 	 */
 	public boolean validatePassword(char[] password) throws NoSuchAlgorithmException {
 
-		return MessageDigest.isEqual(passwordHash, hashPassword(password));
+		return validatePassword(hashPassword(login, password));
 	}
 
 	/**
@@ -333,60 +312,6 @@ public class User extends PersistentObject<Integer> implements Serializable {
 	}
 
 	/**
-	 * Gets the number of the user's credit card registered with the bookmaker.
-	 *
-	 * @return number of the user's credit card
-	 */
-	public String getCreditCardNumber() {
-		return creditCardNumber;
-	}
-
-	/**
-	 * Sets the number of the user's credit card registered with the bookmaker.
-	 *
-	 * @param creditCardNumber number of the user's credit card
-	 */
-	public void setCreditCardNumber(String creditCardNumber) {
-		this.creditCardNumber = creditCardNumber;
-	}
-
-	/**
-	 * Gets the expiration date of the user's credit card registered with the bookmaker.
-	 *
-	 * @return expiration date of the user's credit card
-	 */
-	public LocalDate getCreditCardExpirationDate() {
-		return creditCardExpirationDate;
-	}
-
-	/**
-	 * Sets the expiration date of the user's credit card registered with the bookmaker.
-	 *
-	 * @param creditCardExpirationDate expiration date of the user's credit card
-	 */
-	public void setCreditCardExpirationDate(LocalDate creditCardExpirationDate) {
-		this.creditCardExpirationDate = creditCardExpirationDate;
-	}
-
-	/**
-	 * Gets the validation code of the user's credit card registered with the bookmaker.
-	 *
-	 * @return validation code of the user's credit card
-	 */
-	public String getCreditCardValidationCode() {
-		return creditCardValidationCode;
-	}
-
-	/**
-	 * Sets the validation code of the user's credit card registered with the bookmaker.
-	 *
-	 * @param creditCardValidationCode validation code of the user's credit card
-	 */
-	public void setCreditCardValidationCode(String creditCardValidationCode) {
-		this.creditCardValidationCode = creditCardValidationCode;
-	}
-
-	/**
 	 * Gets the bets placed by the user with the bookmaker.
 	 *
 	 * @return unmodifiable {@link List} of the user's bets
@@ -409,19 +334,25 @@ public class User extends PersistentObject<Integer> implements Serializable {
 	/**
 	 * Generate a hash for a given password.
 	 *
+	 * @param login    login of the user to generate password for
 	 * @param password password to generate hash for
 	 *
 	 * @return hash for the specified password
 	 *
 	 * @throws NoSuchAlgorithmException if the password could not be hashed
 	 */
-	public static byte[] hashPassword(char[] password) throws NoSuchAlgorithmException {
+	public static byte[] hashPassword(String login, char[] password) throws NoSuchAlgorithmException {
 
 		try {
+			byte[] loginBytes = login.getBytes();
+
 			byte[] passwordBytes = new byte[password.length * 2];
 			ByteBuffer.wrap(passwordBytes).asCharBuffer().put(password);
 
-			return MessageDigest.getInstance(User.HASH_ALGORITHM).digest(passwordBytes);
+			MessageDigest md = MessageDigest.getInstance(User.HASH_ALGORITHM);
+			md.update(loginBytes);
+			md.update(passwordBytes);
+			return md.digest();
 
 		} catch (NullPointerException | NoSuchAlgorithmException ex) {
 			throw new NoSuchAlgorithmException("Could not hash password.", ex);

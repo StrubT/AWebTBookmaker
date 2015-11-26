@@ -336,20 +336,17 @@ CREATE TABLE IF NOT EXISTS `users` (
   `manager` bit(1) NOT NULL DEFAULT b'0',
   `locale` varchar(10) NOT NULL,
   `timezone` varchar(25) NOT NULL,
-  `balance` decimal(10,3) NOT NULL DEFAULT '0.000',
-  `cardnumber` char(16) DEFAULT NULL,
-  `cardexpiration` date DEFAULT NULL,
-  `cardcode` char(3) DEFAULT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+  `balance` decimal(10,3) NOT NULL DEFAULT '0.000'
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `version`, `login`, `password`, `manager`, `locale`, `timezone`, `balance`, `cardnumber`, `cardexpiration`, `cardcode`) VALUES
-(1, '2015-11-15 22:38:20', 'strut1', 0x69384e2f74dcbf163ca1a2f7ba12fb9b, b'1', 'en_GB', 'Europe/Zurich', '0.000', NULL, NULL, NULL), -- password: bookmaker
-(2, '2015-11-10 13:22:08', 'touwm1', 0x69384e2f74dcbf163ca1a2f7ba12fb9b, b'1', 'de', 'Europe/Berlin', '0.000', NULL, NULL, NULL), -- password: bookmaker
-(4, '2015-11-10 13:22:08', 'player', 0x6f8548ca26a842f4e08fb2257bce5a4d, b'0', 'de', 'UTC', '0.000', NULL, NULL, NULL); -- password: player
+INSERT INTO `users` (`id`, `version`, `login`, `password`, `manager`, `locale`, `timezone`, `balance`) VALUES
+(1, '2015-11-15 22:38:20', 'strut1', 0x5026ccd9d129de23ebccbcb96ce3565d, b'1', 'en_GB', 'Europe/Zurich', '0.000'), -- password: bookmaker
+(2, '2015-11-10 13:22:08', 'touwm1', 0x13e62baf0d4febee424c9c709c1cdbfe, b'1', 'de', 'Europe/Berlin', '0.000'), -- password: bookmaker
+(3, '2015-11-10 13:22:08', 'player', 0x5c2809d7a6852462c344f4e5cc8721b1, b'0', 'de', 'UTC', '0.000'); -- password: player
 
 -- --------------------------------------------------------
 
