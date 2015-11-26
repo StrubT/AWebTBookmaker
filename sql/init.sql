@@ -349,7 +349,7 @@ CREATE TABLE IF NOT EXISTS `users` (
 
 INSERT INTO `users` (`id`, `version`, `login`, `password`, `manager`, `locale`, `timezone`, `balance`) VALUES
 (1, '2015-11-15 22:38:20', 'strut1', 0x5026ccd9d129de23ebccbcb96ce3565d, b'1', 'en_GB', 'Europe/Zurich', '0.000'), -- password: bookmaker
-(2, '2015-11-10 13:22:08', 'touwm1', 0x13e62baf0d4febee424c9c709c1cdbfe, b'1', 'de', 'Europe/Berlin', '0.000'), -- password: bookmaker
+(2, '2015-11-10 13:22:08', 'touwm1', 0x20ead0f27dbfa657f8a6a24e445ae7b0, b'1', 'de', 'Europe/Berlin', '0.000'), -- password: bookmaker
 (3, '2015-11-10 13:22:08', 'player', 0x5c2809d7a6852462c344f4e5cc8721b1, b'0', 'de', 'UTC', '0.000'); -- password: player
 
 -- --------------------------------------------------------
