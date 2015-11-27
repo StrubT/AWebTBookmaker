@@ -4,6 +4,7 @@ import java.sql.Time;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
@@ -24,7 +25,7 @@ public class LocalTimeConverter implements Converter, AttributeConverter<LocalTi
 	/**
 	 * Gets the format used to represent the time.
 	 */
-	public static final DateTimeFormatter FORMAT = DateTimeFormatter.ISO_LOCAL_TIME;
+	public static final DateTimeFormatter FORMAT = DateTimeFormatter.ISO_LOCAL_TIME.withResolverStyle(ResolverStyle.SMART);
 
 	/**
 	 * Converts the {@link LocalTime} to a {@link String} value.

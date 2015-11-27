@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.chrono.ChronoLocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -25,7 +26,8 @@ public class LocalDateTimeConverter implements Converter, AttributeConverter<Loc
 	/**
 	 * Gets the format used to represent the date/time.
 	 */
-	public static final DateTimeFormatter FORMAT = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+	public static final DateTimeFormatter FORMAT = new DateTimeFormatterBuilder() //DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+		.parseCaseInsensitive().append(LocalDateConverter.FORMAT).appendLiteral(' ').append(LocalTimeConverter.FORMAT).toFormatter();
 
 	/**
 	 * Converts the {@link LocalDateTime} to a {@link String} value.

@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.chrono.ChronoLocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
@@ -25,7 +26,7 @@ public class LocalDateConverter implements Converter, AttributeConverter<LocalDa
 	/**
 	 * Gets the format used to represent the date.
 	 */
-	public static final DateTimeFormatter FORMAT = DateTimeFormatter.ISO_LOCAL_DATE;
+	public static final DateTimeFormatter FORMAT = DateTimeFormatter.ISO_LOCAL_DATE.withResolverStyle(ResolverStyle.SMART);
 
 	/**
 	 * Converts the {@link LocalDate} to a {@link String} value.
