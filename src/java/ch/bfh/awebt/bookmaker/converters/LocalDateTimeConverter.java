@@ -24,9 +24,14 @@ import ch.bfh.awebt.bookmaker.presentation.MessageFactory;
 public class LocalDateTimeConverter implements Converter, AttributeConverter<LocalDateTime, Timestamp> {
 
 	/**
-	 * Gets the format used to represent the date/time.
+	 * Gets the technical format used to represent the date/time.
 	 */
-	public static final DateTimeFormatter FORMAT = new DateTimeFormatterBuilder() //DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+	public static final DateTimeFormatter FORMAT_ISO = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+
+	/**
+	 * Gets the human format used to represent the date/time.
+	 */
+	public static final DateTimeFormatter FORMAT_HUMAN = new DateTimeFormatterBuilder()
 		.parseCaseInsensitive().append(LocalDateConverter.FORMAT).appendLiteral(' ').append(LocalTimeConverter.FORMAT).toFormatter();
 
 	/**
@@ -46,7 +51,7 @@ public class LocalDateTimeConverter implements Converter, AttributeConverter<Loc
 		if (!(dateTime == null || dateTime instanceof LocalDateTime))
 			throw new ConverterException(MessageFactory.getError("ch.bfh.awebt.bookmaker.CONVERTER_ERROR"), new ClassCastException());
 
-		return dateTime != null ? ((ChronoLocalDateTime)dateTime).format(FORMAT) : null;
+		return dateTime != null ? ((ChronoLocalDateTime)dateTime).format(FORMAT_ISO) : null;
 	}
 
 	/**
@@ -77,10 +82,15 @@ public class LocalDateTimeConverter implements Converter, AttributeConverter<Loc
 	public LocalDateTime getAsObject(FacesContext context, UIComponent component, String dateTime) {
 
 		try {
-			return dateTime != null ? LocalDateTime.parse(dateTime, FORMAT) : null;
+			return dateTime != null ? LocalDateTime.parse(dateTime, FORMAT_ISO) : null;
 
-		} catch (DateTimeParseException ex) {
-			throw new ConverterException(MessageFactory.getWarning("ch.bfh.awebt.bookmaker.DATETIME_FORMAT_ERROR"), ex);
+		} catch (DateTimeParseException ex1) {
+			try {
+				return LocalDateTime.parse(dateTime, FORMAT_HUMAN);
+
+			} catch (DateTimeParseException ex2) {
+				throw new ConverterException(MessageFactory.getWarning("ch.bfh.awebt.bookmaker.DATETIME_FORMAT_ERROR"), ex2);
+			}
 		}
 	}
 
