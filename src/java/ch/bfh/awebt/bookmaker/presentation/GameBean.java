@@ -321,6 +321,16 @@ public class GameBean implements Serializable {
 		return String.format("/players/game.xhtml?id=%d&faces-redirect=true", saveGame.getId());
 	}
 
+	public String deleteGame() {
+
+		Game saveGame = gameId != null ? getGameDAO().find(gameId) : null;
+		if (saveGame != null) {
+			getGameDAO().remove(saveGame);
+			return "/home.xhtml"; //temporary
+		} else
+			return "Error no such Game"; //temporary     
+	}
+
 	/**
 	 * Saves the stakes the user put on the bets.
 	 */
