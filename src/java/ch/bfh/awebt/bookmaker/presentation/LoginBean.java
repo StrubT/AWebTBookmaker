@@ -23,7 +23,7 @@ import javax.persistence.PersistenceException;
 import ch.bfh.awebt.bookmaker.Streams;
 import ch.bfh.awebt.bookmaker.persistence.UserDAO;
 import ch.bfh.awebt.bookmaker.persistence.data.User;
-import ch.bfh.awebt.bookmaker.presentation.data.AccessCondition;
+import ch.bfh.awebt.bookmaker.presentation.data.AccessConditions;
 import ch.bfh.awebt.bookmaker.presentation.data.NavigationPage;
 
 /**
@@ -245,7 +245,7 @@ public class LoginBean implements Serializable {
 	 */
 	public String formatDateTimeISO(ZonedDateTime dateTime) {
 
-		return dateTime.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+		return dateTime != null ? dateTime.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME) : null;
 	}
 
 	/**
@@ -257,6 +257,9 @@ public class LoginBean implements Serializable {
 	 * @return date/time formatted according to the user settings
 	 */
 	public String formatDateTimeUser(ZonedDateTime dateTime, boolean includeTimeZone) {
+
+		if (dateTime == null)
+			return null;
 
 		return String.format(includeTimeZone ? "%s (%s)" : "%s",
 												 dateTime.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.FULL, FormatStyle.SHORT).withZone(timeZone).withLocale(locale)),
@@ -272,6 +275,9 @@ public class LoginBean implements Serializable {
 	 * @return time zone formatted according to the user settings
 	 */
 	public String formatTimeZoneUser(ZoneId timeZone, boolean includeDetails) {
+
+		if (timeZone == null)
+			return null;
 
 		return String.format(includeDetails ? "(%s) %s - %s" : "%3$s",
 												 timeZone.getRules().getOffset(LocalDateTime.now()),
@@ -385,7 +391,7 @@ public class LoginBean implements Serializable {
 	 */
 	public boolean showInNavigation(NavigationPage page) {
 
-		return userHasAccess(page != null ? page.getNavigationCondition() : AccessCondition.NEVER);
+		return (page != null ? page.getNavigationCondition() : AccessConditions.NEVER).hasAccess(getUser());
 	}
 
 	/**
@@ -397,7 +403,7 @@ public class LoginBean implements Serializable {
 	 */
 	public boolean userHasAccessTo(NavigationPage page) {
 
-		return userHasAccess(page != null ? page.getAccessCondition() : AccessCondition.NEVER);
+		return (page != null ? page.getAccessCondition() : AccessConditions.NEVER).hasAccess(getUser());
 	}
 
 	/**
@@ -407,26 +413,9 @@ public class LoginBean implements Serializable {
 	 *
 	 * @return whether or not the user matches the condition
 	 */
-	public boolean userHasAccess(AccessCondition accessCondition) {
+	public boolean userHasAccess(AccessConditions accessCondition) {
 
-		User user;
-
-		switch (accessCondition) {
-			case ALWAYS:
-				return true;
-
-			case REGISTERED:
-				return getUser() != null;
-
-			case NON_MANAGER:
-				return (user = getUser()) == null || !user.isManager();
-
-			case MANAGER:
-				return (user = getUser()) != null && user.isManager();
-
-			default:
-				return false;
-		}
+		return accessCondition.hasAccess(getUser());
 	}
 
 	/**

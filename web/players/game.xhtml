@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<ui:composition template="../_template-default.xhtml"
+<ui:composition template="/_template-default.xhtml"
 								xmlns="http://www.w3.org/1999/xhtml"
 								xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
 								xmlns:f="http://java.sun.com/jsf/core"
@@ -17,32 +17,95 @@
 				<f:param value="#{teams[gameBean.gameTeam1]}" />
 				<f:param value="#{teams[gameBean.gameTeam2]}" />
 			</h:outputFormat>
-			<small>#{loginBean.formatDateTimeUser(gameBean.gameStartTimeZoned, true)}</small>
 		</h2>
-		<h:dataTable value="#{gameBean.gameBets}" var="bet" class="table table-condensed table-striped">
-			<h:column>
-				<f:facet name="header">#{texts.GameBetDescriptionLabel}</f:facet>
-				<h:outputFormat value="#{bets[bet.type.code]}">
-					<f:param value="#{teams[bet.team]}" />
-					<f:param value="#{bet.time}" />
-					<f:param value="#{bet.goals}" />
-				</h:outputFormat>
-			</h:column>
-			<h:column>
-				<f:facet name="header">#{texts.GameBetOddsLabel}</f:facet>
-				<data value="#{bet.odds}">#{bet.odds}</data>
-			</h:column>
-			<h:column rendered="#{loginBean.userHasAccess('REGISTERED')}">
-				<f:facet name="header">#{texts.GameBetStakeLabel} (#{texts.Currency})</f:facet>
-				<h:inputText id="betStake" value="#{bet.stake}" class="form-control input-sm" converter="ch.bfh.awebt.bookmaker.CURRENCY_CONVERTER" validator="ch.bfh.awebt.bookmaker.CURRENCY_VALIDATOR">
-					<f:passThroughAttribute name="type" value="number" />
-					<f:passThroughAttribute name="min" value="0" />
-				</h:inputText>
-				<h:message for="betStake" infoClass="text-info" warnClass="text-warning" errorClass="text-danger" fatalClass="text-danger bg-danger" />
-				<f:facet name="footer">
-					<h:commandButton id="saveUserBetsButton" action="#{gameBean.saveUserBets}" class="btn btn-default" value="#{texts.GameUserBetsSaveButton}" />
-				</f:facet>
-			</h:column>
-		</h:dataTable>
+		<c:choose>
+			<c:when test="#{not gameBean.confirmation}">
+				<p><strong>#{texts.GameStartTimeLabel}:</strong> <time datetime="#{loginBean.formatDateTimeISO(gameBean.gameStartTimeZoned)}">#{loginBean.formatDateTimeUser(gameBean.gameStartTimeZoned, true)}</time></p>
+				<h3>#{texts.GameBetsLabel}</h3>
+				<c:choose>
+					<c:when test="#{not empty gameBean.gameBets}">
+						<h:dataTable value="#{gameBean.gameBets}" var="bet" class="table table-condensed table-striped">
+							<h:column>
+								<f:facet name="header">#{texts.GameBetDescriptionLabel}</f:facet>
+								<h:outputFormat value="#{bets[bet.type.code]}">
+									<f:param value="#{teams[bet.team]}" />
+									<f:param value="#{bet.time}" />
+									<f:param value="#{bet.goals}" />
+								</h:outputFormat>
+							</h:column>
+							<h:column>
+								<f:facet name="header">#{texts.GameBetOddsLabel}</f:facet>
+								<data value="#{bet.odds}">#{bet.odds}</data>
+							</h:column>
+							<h:column rendered="#{loginBean.userHasAccess('REGISTERED')}">
+								<f:facet name="header">#{texts.GameBetStakeLabel} (#{texts.Currency})</f:facet>
+								<h:inputText id="betStake" value="#{bet.stake}" class="form-control input-sm" converter="ch.bfh.awebt.bookmaker.CURRENCY_CONVERTER" validator="ch.bfh.awebt.bookmaker.CURRENCY_VALIDATOR">
+									<f:passThroughAttribute name="type" value="number" />
+									<f:passThroughAttribute name="min" value="0" />
+								</h:inputText>
+								<h:message for="betStake" infoClass="text-info" warnClass="text-warning" errorClass="text-danger" fatalClass="text-danger bg-danger" />
+								<f:facet name="footer">
+									<h:commandButton id="confirmUserBetsButton" action="#{gameBean.confirmUserBets}" class="btn btn-default" value="#{texts.GameBetSaveButton}" />
+								</f:facet>
+							</h:column>
+						</h:dataTable>
+					</c:when>
+					<c:otherwise>
+						<p class="text-muted">#{texts.NoItemsFound}</p>
+					</c:otherwise>
+				</c:choose>
+			</c:when>
+			<c:otherwise>
+				<p>
+					<div class="text-primary">#{texts.FormSaveConfirmation}</div>
+					<b>#{texts.GameBetStakeLabel}</b>: #{texts.Currency} #{gameBean.gameBetAmount}
+				</p>
+				<c:if test="#{gameBean.gamePaymentAmount gt 0.0}">
+					<h3>#{texts.GamePaymentDetailsLabel}</h3>
+					<div class="form-horizontal">
+						<div class="form-group">
+							<label for="inputAmount" class="col-sm-2 control-label">#{texts.GamePaymentAmountLabel} (#{texts.CurrencyLong})</label>
+							<div class="col-sm-10">
+								<h:inputText id="inputAmount" readonly="true" value="#{gameBean.gamePaymentAmount}" class="form-control" converter="ch.bfh.awebt.bookmaker.CURRENCY_CONVERTER" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="inputCCNumber" class="col-sm-2 control-label">#{texts.GamePaymentCreditCardNumberLabel}</label>
+							<div class="col-sm-10">
+								<h:inputText id="inputCCNumber" value="#{gameBean.gamePaymentCreditCardNumber}" required="true" class="form-control">
+									<t:validateCreditCard />
+								</h:inputText>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="inputCCCode" class="col-sm-2 control-label">#{texts.GamePaymentCreditCardCodeLabel}</label>
+							<div class="col-sm-10">
+								<h:inputText id="inputCCCode" value="#{gameBean.gamePaymentCreditCardCode}" required="true" class="form-control" />
+							</div>
+						</div>
+						<div class="form-group form-inline">
+							<label for="inputCCExpirationYear" class="col-sm-2 control-label">#{texts.GamePaymentCreditCardExpirationLabel}</label>
+							<div class="col-sm-10">
+								<h:inputText id="inputCCExpirationYear" value="#{gameBean.gamePaymentCreditCardExpirationYear}" required="true" class="form-control">
+									<f:passThroughAttribute name="type" value="number" />
+									<f:passThroughAttribute name="min" value="#{gameBean.gamePaymentCreditCardExpirationYearMinimum}" />
+									<f:passThroughAttribute name="max" value="#{gameBean.gamePaymentCreditCardExpirationYearMaximum}" />
+								</h:inputText>
+								<h:inputText id="inputCCExpirationMonth" value="#{gameBean.gamePaymentCreditCardExpirationMonth}" required="true" class="form-control">
+									<f:passThroughAttribute name="type" value="number" />
+									<f:passThroughAttribute name="min" value="1" />
+									<f:passThroughAttribute name="max" value="12" />
+								</h:inputText>
+								<div class="help-block">yyyy-MM</div>
+							</div>
+						</div>
+					</div>
+				</c:if>
+				<div class="btn-group">
+					<h:commandButton id="saveUserBetsButton" action="#{gameBean.saveUserBets}" class="btn btn-primary" value="#{texts.FormSaveButton}" />
+					<h:link outcome="/players/game.xhtml?id=#{gameBean.gameId}" class="btn btn-default" value="#{texts.FormCancelButton}" />
+				</div>
+			</c:otherwise>
+		</c:choose>
 	</ui:define>
 </ui:composition>

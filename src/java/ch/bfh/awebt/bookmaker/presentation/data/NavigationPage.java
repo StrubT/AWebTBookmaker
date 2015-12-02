@@ -21,7 +21,7 @@ public class NavigationPage implements Serializable {
 	 * @param name name of the page (used for the internationalised title)
 	 */
 	public NavigationPage(String view, String name) {
-		this(view, name, AccessCondition.ALWAYS);
+		this(view, name, AccessConditions.ALWAYS);
 	}
 
 	/**

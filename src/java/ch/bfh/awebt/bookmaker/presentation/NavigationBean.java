@@ -11,7 +11,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import ch.bfh.awebt.bookmaker.Streams;
-import ch.bfh.awebt.bookmaker.presentation.data.AccessCondition;
+import ch.bfh.awebt.bookmaker.presentation.data.AccessConditions;
 import ch.bfh.awebt.bookmaker.presentation.data.NavigationPage;
 
 /**
@@ -31,14 +31,15 @@ public class NavigationBean implements Serializable {
 	public NavigationBean() {
 
 		PAGES = Arrays.asList(PAGE_HOME = new NavigationPage("/home.xhtml", "Home"),
-													PAGE_LOGIN = new NavigationPage("/login.xhtml", "Login", AccessCondition.ALWAYS, AccessCondition.NEVER), //show in footer
-													PAGE_REGISTER = new NavigationPage("/register.xhtml", "LoginRegister", AccessCondition.ALWAYS, AccessCondition.NEVER), //show in footer
-													new NavigationPage("/players/account.xhtml", "GameAccount", AccessCondition.REGISTERED),
-													new NavigationPage("/players/upcoming-games.xhtml", "GameUpcoming", AccessCondition.ALWAYS, AccessCondition.NON_MANAGER),
-													new NavigationPage("/players/game.xhtml", "GameDetails", AccessCondition.ALWAYS, AccessCondition.NEVER), //access via in-page links
-													new NavigationPage("/managers/game.xhtml", "GameCreate", AccessCondition.MANAGER),
-													new NavigationPage("/managers/upcoming-games.xhtml", "GameUpcoming", AccessCondition.MANAGER),
-													new NavigationPage("/managers/past-games.xhtml", "GamePast", AccessCondition.MANAGER));
+													PAGE_LOGIN = new NavigationPage("/login.xhtml", "Login", AccessConditions.ALWAYS, AccessConditions.NEVER), //show in footer
+													PAGE_REGISTER = new NavigationPage("/register.xhtml", "LoginRegister", AccessConditions.ALWAYS, AccessConditions.NEVER), //show in footer
+													new NavigationPage("/players/account.xhtml", "GameAccount", AccessConditions.REGISTERED),
+													new NavigationPage("/players/upcoming-games.xhtml", "GameUpcoming", AccessConditions.ALWAYS, AccessConditions.MANAGER.not()),
+													new NavigationPage("/players/past-games.xhtml", "GamePast", AccessConditions.REGISTERED, AccessConditions.REGISTERED.and(AccessConditions.MANAGER.not())),
+													new NavigationPage("/players/game.xhtml", "GameDetails", AccessConditions.ALWAYS, AccessConditions.NEVER), //access via in-page links
+													new NavigationPage("/managers/game.xhtml", "GameCreate", AccessConditions.MANAGER),
+													new NavigationPage("/managers/upcoming-games.xhtml", "GameUpcoming", AccessConditions.MANAGER),
+													new NavigationPage("/managers/past-games.xhtml", "GamePast", AccessConditions.MANAGER));
 	}
 
 	/**

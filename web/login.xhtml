@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<ui:composition template="_template-default.xhtml"
+<ui:composition template="/_template-default.xhtml"
 								xmlns="http://www.w3.org/1999/xhtml"
 								xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
 								xmlns:f="http://java.sun.com/jsf/core"
@@ -15,13 +15,13 @@
 					<cc:form-group>
 						<h:outputLabel for="loginField" class="col-sm-2 control-label">#{texts.LoginLoginLabel}</h:outputLabel>
 						<div class="col-sm-10">
-							<h:inputText id="loginField" class="form-control" value="#{loginBean.login}" binding="#{loginBean.loginField}" />
+							<h:inputText id="loginField" class="form-control" value="#{loginBean.login}" binding="#{loginBean.loginField}" required="true" />
 						</div>
 					</cc:form-group>
 					<cc:form-group>
 						<h:outputLabel for="passwordField" class="col-sm-2 control-label">#{texts.LoginPasswordLabel}</h:outputLabel>
 						<div class="col-sm-10">
-							<h:inputSecret id="passwordField" class="form-control" value="#{loginBean.password}" binding="#{loginBean.passwordField}" />
+							<h:inputSecret id="passwordField" class="form-control" value="#{loginBean.password}" binding="#{loginBean.passwordField}" required="true" />
 						</div>
 					</cc:form-group>
 					<div class="form-group">
@@ -33,7 +33,6 @@
 						</div>
 					</div>
 				</div>
-				<cc:messages />
 			</c:when>
 			<c:otherwise>
 				<p>You are already logged in as #{loginBean.login}.</p>
