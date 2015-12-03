@@ -39,11 +39,11 @@
 							</h:column>
 							<h:column rendered="#{loginBean.userHasAccess('REGISTERED')}">
 								<f:facet name="header">#{texts.GameBetStakeLabel} (#{texts.Currency})</f:facet>
-								<h:inputText id="betStake" value="#{bet.stake}" class="form-control input-sm" converter="ch.bfh.awebt.bookmaker.CURRENCY_CONVERTER" validator="ch.bfh.awebt.bookmaker.CURRENCY_VALIDATOR">
+								<h:inputText id="betStakeField" value="#{bet.stake}" class="form-control input-sm" converter="ch.bfh.awebt.bookmaker.CURRENCY_CONVERTER" validator="ch.bfh.awebt.bookmaker.CURRENCY_VALIDATOR">
 									<f:passThroughAttribute name="type" value="number" />
 									<f:passThroughAttribute name="min" value="0" />
 								</h:inputText>
-								<h:message for="betStake" infoClass="text-info" warnClass="text-warning" errorClass="text-danger" fatalClass="text-danger bg-danger" />
+								<h:message for="betStakeField" infoClass="text-success" warnClass="text-warning" errorClass="text-danger" fatalClass="text-danger bg-danger" />
 								<f:facet name="footer">
 									<h:commandButton id="confirmUserBetsButton" action="#{gameBean.confirmUserBets}" class="btn btn-default" value="#{texts.GameBetSaveButton}" />
 								</f:facet>
@@ -64,39 +64,52 @@
 					<h3>#{texts.GamePaymentDetailsLabel}</h3>
 					<div class="form-horizontal">
 						<div class="form-group">
-							<label for="inputAmount" class="col-sm-2 control-label">#{texts.GamePaymentAmountLabel} (#{texts.CurrencyLong})</label>
+							<label for="amountField" class="col-sm-2 control-label">#{texts.GamePaymentAmountLabel} (#{texts.CurrencyLong})</label>
 							<div class="col-sm-10">
-								<h:inputText id="inputAmount" readonly="true" value="#{gameBean.gamePaymentAmount}" class="form-control" converter="ch.bfh.awebt.bookmaker.CURRENCY_CONVERTER" />
+								<h:inputText id="amountField" readonly="true" value="#{gameBean.gamePaymentAmount}" class="form-control" converter="ch.bfh.awebt.bookmaker.CURRENCY_CONVERTER" />
 							</div>
 						</div>
-						<div class="form-group">
-							<label for="inputCCNumber" class="col-sm-2 control-label">#{texts.GamePaymentCreditCardNumberLabel}</label>
+						<cc:form-group component="#{gameBean.creditCardNumberField}">
+							<label for="creditCardNumberField" class="col-sm-2 control-label">#{texts.GamePaymentCreditCardNumberLabel}</label>
 							<div class="col-sm-10">
-								<h:inputText id="inputCCNumber" value="#{gameBean.gamePaymentCreditCardNumber}" required="true" class="form-control">
+								<h:inputText id="creditCardNumberField" value="#{gameBean.gamePaymentCreditCardNumber}" binding="#{gameBean.creditCardNumberField}" required="true" class="form-control">
+									<f:passThroughAttribute name="required" value="required" />
+									<f:passThroughAttribute name="placeholder" value="1234 1234 1234 1234" />
 									<t:validateCreditCard />
 								</h:inputText>
+								<cc:message component="#{gameBean.creditCardNumberField}" />
 							</div>
-						</div>
+						</cc:form-group>
+						<cc:form-group component="#{gameBean.creditCardCodeField}">
+							<label for="creditCardCodeField" class="col-sm-2 control-label">#{texts.GamePaymentCreditCardCodeLabel}</label>
+							<div class="col-sm-10">
+								<h:inputText id="inputCreditCardCode" value="#{gameBean.gamePaymentCreditCardCode}" binding="#{gameBean.creditCardCodeField}" required="true" class="form-control">
+									<f:passThroughAttribute name="required" value="required" />
+									<f:passThroughAttribute name="placeholder" value="123" />
+									<f:passThroughAttribute name="pattern" value="\d{3,4}" />
+									<f:validateRegex pattern="\d{3,4}" />
+								</h:inputText>
+								<cc:message component="#{gameBean.creditCardCodeField}" />
+							</div>
+						</cc:form-group>
 						<div class="form-group">
-							<label for="inputCCCode" class="col-sm-2 control-label">#{texts.GamePaymentCreditCardCodeLabel}</label>
-							<div class="col-sm-10">
-								<h:inputText id="inputCCCode" value="#{gameBean.gamePaymentCreditCardCode}" required="true" class="form-control" />
-							</div>
-						</div>
-						<div class="form-group form-inline">
-							<label for="inputCCExpirationYear" class="col-sm-2 control-label">#{texts.GamePaymentCreditCardExpirationLabel}</label>
-							<div class="col-sm-10">
-								<h:inputText id="inputCCExpirationYear" value="#{gameBean.gamePaymentCreditCardExpirationYear}" required="true" class="form-control">
-									<f:passThroughAttribute name="type" value="number" />
-									<f:passThroughAttribute name="min" value="#{gameBean.gamePaymentCreditCardExpirationYearMinimum}" />
-									<f:passThroughAttribute name="max" value="#{gameBean.gamePaymentCreditCardExpirationYearMaximum}" />
-								</h:inputText>
-								<h:inputText id="inputCCExpirationMonth" value="#{gameBean.gamePaymentCreditCardExpirationMonth}" required="true" class="form-control">
-									<f:passThroughAttribute name="type" value="number" />
-									<f:passThroughAttribute name="min" value="1" />
-									<f:passThroughAttribute name="max" value="12" />
-								</h:inputText>
-								<div class="help-block">yyyy-MM</div>
+							<div class="form-inline">
+								<label for="creditCardExpirationYearField" class="col-sm-2 control-label">#{texts.GamePaymentCreditCardExpirationLabel}</label>
+								<div class="col-sm-10">
+									<h:inputText id="creditCardExpirationYearField" value="#{gameBean.gamePaymentCreditCardExpirationYear}" required="true" class="form-control">
+										<f:passThroughAttribute name="required" value="required" />
+										<f:passThroughAttribute name="type" value="number" />
+										<f:passThroughAttribute name="min" value="#{gameBean.gamePaymentCreditCardExpirationYearMinimum}" />
+										<f:passThroughAttribute name="max" value="#{gameBean.gamePaymentCreditCardExpirationYearMaximum}" />
+									</h:inputText>
+									<h:inputText id="creditCardExpirationMonthField" value="#{gameBean.gamePaymentCreditCardExpirationMonth}" required="true" class="form-control">
+										<f:passThroughAttribute name="required" value="required" />
+										<f:passThroughAttribute name="type" value="number" />
+										<f:passThroughAttribute name="min" value="1" />
+										<f:passThroughAttribute name="max" value="12" />
+									</h:inputText>
+									<div class="help-block">yyyy-MM</div>
+								</div>
 							</div>
 						</div>
 					</div>

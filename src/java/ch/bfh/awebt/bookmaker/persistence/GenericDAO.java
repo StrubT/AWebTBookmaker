@@ -83,7 +83,7 @@ public abstract class GenericDAO<T extends PersistentObject<?>> {
 	 *
 	 * @return entity with the specified unique identifier
 	 */
-	public T find(int id) {
+	public T find(Object id) {
 
 		return getEntityManager().find(getEntityClass(), id);
 	}

@@ -14,6 +14,7 @@ import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
+import javax.faces.component.UIComponent;
 import javax.persistence.PersistenceException;
 import ch.bfh.awebt.bookmaker.persistence.BetDAO;
 import ch.bfh.awebt.bookmaker.persistence.GameDAO;
@@ -40,6 +41,8 @@ public class GameBean implements Serializable {
 
 	@ManagedProperty("#{loginBean}")
 	private LoginBean loginBean;
+
+	private transient UIComponent creditCardNumberField, creditCardCodeField;
 
 	private transient TeamDAO teamDAO;
 	private transient GameDAO gameDAO;
@@ -85,6 +88,22 @@ public class GameBean implements Serializable {
 	 */
 	public void setLoginBean(LoginBean loginBean) {
 		this.loginBean = loginBean;
+	}
+
+	public UIComponent getCreditCardNumberField() {
+		return creditCardNumberField;
+	}
+
+	public void setCreditCardNumberField(UIComponent creditCardNumberField) {
+		this.creditCardNumberField = creditCardNumberField;
+	}
+
+	public UIComponent getCreditCardCodeField() {
+		return creditCardCodeField;
+	}
+
+	public void setCreditCardCodeField(UIComponent creditCardCodeField) {
+		this.creditCardCodeField = creditCardCodeField;
 	}
 
 	private TeamDAO getTeamDAO() {
@@ -467,8 +486,8 @@ public class GameBean implements Serializable {
 	public String saveGame() {
 
 		try {
-			Team team1 = getTeamDAO().findById(gameTeam1);
-			Team team2 = getTeamDAO().findById(gameTeam2);
+			Team team1 = getTeamDAO().find(gameTeam1);
+			Team team2 = getTeamDAO().find(gameTeam2);
 			ZonedDateTime startTimeZoned = ZonedDateTime.of(gameStartTime, gameTimeZone);
 
 			Game game = gameId != null ? getGameDAO().find(gameId) : null;

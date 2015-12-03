@@ -30,8 +30,8 @@ import ch.bfh.awebt.bookmaker.converters.LocalDateTimeConverter;
 @Entity
 @Table(name = "games")
 @NamedQueries({
-	@NamedQuery(name = Game.FIND_START_AFTER, query = "select g from Game g where g.startTimeUTC > :startTimeUTC"),
-	@NamedQuery(name = Game.FIND_START_BEFORE, query = "select g from Game g where g.startTimeUTC <= :startTimeUTC")})
+	@NamedQuery(name = Game.FIND_START_AFTER, query = "select g from Game g where g.startTimeUTC > :startTimeUTC order by g.startTimeUTC"),
+	@NamedQuery(name = Game.FIND_START_BEFORE, query = "select g from Game g where g.startTimeUTC <= :startTimeUTC order by g.startTimeUTC desc")})
 public class Game extends PersistentObject<Integer> implements Serializable {
 
 	private static final long serialVersionUID = 5535286169721878761L;

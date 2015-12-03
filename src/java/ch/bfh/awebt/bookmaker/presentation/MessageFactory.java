@@ -38,7 +38,7 @@ public final class MessageFactory {
 			ResourceBundle bundle = ResourceBundle.getBundle(context.getApplication().getMessageBundle(), context.getViewRoot().getLocale());
 
 			summary = MessageFormat.format(bundle.getString(key), arguments);
-			detail = MessageFormat.format(bundle.getString(key + "_DETAILS"), arguments);
+			detail = MessageFormat.format(bundle.getString(key + "_detail"), arguments);
 
 		} catch (MissingResourceException ex) {
 			//do nothing, simply show default values

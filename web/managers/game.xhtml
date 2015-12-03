@@ -27,34 +27,34 @@
 		</c:choose>
 		<div class="form-horizontal">
 			<div class="form-group">
-				<label for="selectTeam1" class="col-sm-2 control-label">#{texts.GameTeam1Label}</label>
+				<label for="team1Select" class="col-sm-2 control-label">#{texts.GameTeam1Label}</label>
 				<div class="col-sm-10">
-					<h:selectOneListbox id="selectTeam1" size="1" value="#{gameBean.gameTeam1}" class="form-control">
+					<h:selectOneListbox id="team1Select" size="1" value="#{gameBean.gameTeam1}" class="form-control">
 						<f:selectItems value="#{gameBean.teams}" var="team" itemValue="#{team.code}" itemLabel="#{teams[team.code]}" />
 					</h:selectOneListbox>
 				</div>
 			</div>
 			<div class="form-group">
-				<label for="selectTeam2" class="col-sm-2 control-label">#{texts.GameTeam2Label}</label>
+				<label for="team2Select" class="col-sm-2 control-label">#{texts.GameTeam2Label}</label>
 				<div class="col-sm-10">
-					<h:selectOneListbox id="selectTeam2" size="1" value="#{gameBean.gameTeam2}" class="form-control">
+					<h:selectOneListbox id="team2Select" size="1" value="#{gameBean.gameTeam2}" class="form-control">
 						<f:selectItems value="#{gameBean.teams}" var="team" itemValue="#{team.code}" itemLabel="#{teams[team.code]}" />
 					</h:selectOneListbox>
 				</div>
 			</div>
 			<div class="form-group">
-				<label for="inputStartTime" class="col-sm-2 control-label">#{texts.GameStartTimeLabel}</label>
+				<label for="startTimeField" class="col-sm-2 control-label">#{texts.GameStartTimeLabel}</label>
 				<div class="col-sm-10">
-					<h:inputText id="inputStartTime" value="#{gameBean.gameStartTime}" class="form-control" converter="ch.bfh.awebt.bookmaker.LOCAL_DATE_TIME_CONVERTER">
+					<h:inputText id="startTimeField" value="#{gameBean.gameStartTime}" class="form-control" converter="ch.bfh.awebt.bookmaker.LOCAL_DATE_TIME_CONVERTER">
 						<f:passThroughAttribute name="type" value="datetime-local" />
 						<f:passThroughAttribute name="placeholder" value="yyyy-MM-dd HH:mm" />
 					</h:inputText>
 				</div>
 			</div>
 			<div class="form-group">
-				<label for="selectTimeZone" class="col-sm-2 control-label">#{texts.GameTimeZoneLabel}</label>
+				<label for="timeZoneSelect" class="col-sm-2 control-label">#{texts.GameTimeZoneLabel}</label>
 				<div class="col-sm-10">
-					<h:selectOneListbox id="selectTimeZone" size="1" value="#{gameBean.gameTimeZone}" class="form-control" converter="ch.bfh.awebt.bookmaker.ZONE_ID_CONVERTER">
+					<h:selectOneListbox id="timeZoneSelect" size="1" value="#{gameBean.gameTimeZone}" class="form-control" converter="ch.bfh.awebt.bookmaker.ZONE_ID_CONVERTER">
 						<f:selectItems value="#{loginBean.timeZones}" var="timeZone" itemValue="#{timeZone}" itemLabel="#{loginBean.formatTimeZoneUser(timeZone, true)}" />
 					</h:selectOneListbox>
 				</div>

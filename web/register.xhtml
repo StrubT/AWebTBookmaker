@@ -13,7 +13,9 @@
 			<cc:form-group component="#{loginBean.loginField}">
 				<h:outputLabel for="loginField" class="col-sm-2 control-label">#{texts.LoginLoginLabel}</h:outputLabel>
 				<div class="col-sm-10">
-					<h:inputText id="loginField" class="form-control" value="#{loginBean.login}" binding="#{loginBean.loginField}" required="true" />
+					<h:inputText id="loginField" class="form-control" value="#{loginBean.login}" binding="#{loginBean.loginField}" required="true">
+						<f:passThroughAttribute name="required" value="required" />
+					</h:inputText>
 					<cc:message component="#{loginBean.loginField}" />
 				</div>
 			</cc:form-group>
@@ -21,7 +23,9 @@
 				<cc:form-group component="#{loginBean.passwordField}">
 					<h:outputLabel for="passwordField" class="col-sm-2 control-label">#{texts.LoginPasswordLabel}</h:outputLabel>
 					<div class="col-sm-10">
-						<h:inputSecret id="passwordField" class="form-control" value="#{loginBean.password}" binding="#{loginBean.passwordField}" required="true" />
+						<h:inputSecret id="passwordField" class="form-control" value="#{loginBean.password}" binding="#{loginBean.passwordField}" required="true">
+							<f:passThroughAttribute name="required" value="required" />
+						</h:inputSecret>
 						<cc:message component="#{loginBean.passwordField}" />
 					</div>
 				</cc:form-group>

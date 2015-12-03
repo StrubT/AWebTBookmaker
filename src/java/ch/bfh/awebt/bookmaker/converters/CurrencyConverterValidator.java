@@ -18,16 +18,6 @@ public class CurrencyConverterValidator implements Converter, Validator {
 	public static final int PRECISION = 10;
 	public static final int SCALE = 3;
 
-	/**
-	 *
-	 * @param context
-	 * @param component
-	 * @param value
-	 *
-	 * @return
-	 *
-	 * @throws ConverterException
-	 */
 	@Override
 	public String getAsString(FacesContext context, UIComponent component, Object value) {
 
@@ -37,16 +27,6 @@ public class CurrencyConverterValidator implements Converter, Validator {
 		return value != null ? value.toString() : null;
 	}
 
-	/**
-	 *
-	 * @param context
-	 * @param component
-	 * @param value
-	 *
-	 * @return
-	 *
-	 * @throws ConverterException
-	 */
 	@Override
 	public Object getAsObject(FacesContext context, UIComponent component, String value) {
 
@@ -54,18 +34,10 @@ public class CurrencyConverterValidator implements Converter, Validator {
 			return value != null ? new BigDecimal(value) : null;
 
 		} catch (NumberFormatException ex) {
-			throw new ConverterException(MessageFactory.getWarning("ch.bfh.awebt.bookmaker.CONVERTER_ERROR"), ex);
+			throw new ConverterException(MessageFactory.getWarning("ch.bfh.awebt.bookmaker.CURRENCY_FORMAT_ERROR"), ex);
 		}
 	}
 
-	/**
-	 *
-	 * @param context
-	 * @param component
-	 * @param value
-	 *
-	 * @throws ValidatorException
-	 */
 	@Override
 	public void validate(FacesContext context, UIComponent component, Object value) {
 
