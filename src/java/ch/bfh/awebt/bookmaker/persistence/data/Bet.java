@@ -19,6 +19,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import ch.bfh.awebt.bookmaker.converters.BetTypeConverter;
 import ch.bfh.awebt.bookmaker.converters.LocalTimeConverter;
+import ch.bfh.awebt.bookmaker.converters.OddsConverterValidator;
 
 /**
  * Represents a bet on a {@link Game}.
@@ -44,7 +45,7 @@ public class Bet extends PersistentObject<Integer> implements Serializable {
 	@Convert(converter = BetTypeConverter.class)
 	private BetType type;
 
-	@Column(name = "odds", nullable = false, precision = 10, scale = 3)
+	@Column(name = "odds", nullable = false, precision = OddsConverterValidator.PRECISION, scale = OddsConverterValidator.SCALE)
 	private BigDecimal odds;
 
 	@Column(name = "occurred")
@@ -156,8 +157,6 @@ public class Bet extends PersistentObject<Integer> implements Serializable {
 		this.team = team;
 		this.time = time;
 		this.goals = goals;
-
-		game.addBet(this);
 	}
 
 	@Override
@@ -307,16 +306,5 @@ public class Bet extends PersistentObject<Integer> implements Serializable {
 	 */
 	public List<UserBet> getUserBets() {
 		return Collections.unmodifiableList(userBets);
-	}
-
-	/**
-	 * Add an actual bet placed by a user
-	 *
-	 * @param userBet actual bet placed by a user
-	 *
-	 * @return whether or not the bet was added to the list
-	 */
-	boolean addUserBet(UserBet userBet) {
-		return userBets.add(userBet);
 	}
 }

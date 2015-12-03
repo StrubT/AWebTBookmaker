@@ -11,9 +11,9 @@ import javax.faces.validator.Validator;
 import javax.faces.validator.ValidatorException;
 import ch.bfh.awebt.bookmaker.presentation.MessageFactory;
 
-@FacesConverter("ch.bfh.awebt.bookmaker.CURRENCY_CONVERTER")
-@FacesValidator("ch.bfh.awebt.bookmaker.CURRENCY_VALIDATOR")
-public class CurrencyConverterValidator implements Converter, Validator {
+@FacesConverter("ch.bfh.awebt.bookmaker.ODDS_CONVERTER")
+@FacesValidator("ch.bfh.awebt.bookmaker.ODDS_VALIDATOR")
+public class OddsConverterValidator implements Converter, Validator {
 
 	public static final int PRECISION = 10;
 	public static final int SCALE = 3;
@@ -45,8 +45,8 @@ public class CurrencyConverterValidator implements Converter, Validator {
 			throw new ValidatorException(MessageFactory.getError("ch.bfh.awebt.bookmaker.CONVERTER_ERROR"));
 
 		BigDecimal bd = (BigDecimal)value;
-		if (bd == null || bd.compareTo(BigDecimal.ZERO) < 0)
-			throw new ValidatorException(MessageFactory.getWarning("ch.bfh.awebt.bookmaker.CURRENCY_NEGATIVE"));
+		if (bd == null || bd.compareTo(BigDecimal.ONE) <= 0)
+			throw new ValidatorException(MessageFactory.getWarning("ch.bfh.awebt.bookmaker.ODDS_NEGATIVE"));
 
 		if (bd.precision() > PRECISION || bd.scale() > SCALE)
 			throw new ValidatorException(MessageFactory.getWarning("ch.bfh.awebt.bookmaker.BIG_DECIMAL_PRECISION_ERROR"));

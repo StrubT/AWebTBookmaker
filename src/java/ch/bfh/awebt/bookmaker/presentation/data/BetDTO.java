@@ -21,8 +21,15 @@ public class BetDTO implements Serializable {
 	private String team;
 	private LocalTime time;
 	private Integer goals;
+
 	private Integer user;
 	private BigDecimal stake;
+
+	private boolean used;
+
+	public BetDTO() {
+
+	}
 
 	/**
 	 * Constructs a new data object from a specified {@link Bet} entity.
@@ -30,6 +37,7 @@ public class BetDTO implements Serializable {
 	 * @param bet {@link Bet} entity to take data from
 	 */
 	public BetDTO(Bet bet) {
+		this();
 
 		id = bet.getId();
 		type = bet.getType();
@@ -38,6 +46,8 @@ public class BetDTO implements Serializable {
 		team = bet.getTeam() != null ? bet.getTeam().getCode() : null;
 		time = bet.getTime();
 		goals = bet.getGoals();
+
+		used = !bet.getUserBets().isEmpty();
 	}
 
 	/**
@@ -184,7 +194,7 @@ public class BetDTO implements Serializable {
 	 *
 	 * @return unique identifier of the user placing the bet
 	 */
-	public Integer getUser() {
+	public Integer getUserId() {
 		return user;
 	}
 
@@ -213,5 +223,13 @@ public class BetDTO implements Serializable {
 	 */
 	public void setStake(BigDecimal stake) {
 		this.stake = stake;
+	}
+
+	public boolean isUsed() {
+		return used;
+	}
+
+	public void setUsed(boolean used) {
+		this.used = used;
 	}
 }

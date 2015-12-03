@@ -76,7 +76,7 @@ public class LocalDateConverter implements Converter, AttributeConverter<LocalDa
 	public LocalDate getAsObject(FacesContext context, UIComponent component, String date) {
 
 		try {
-			return date != null ? LocalDate.parse(date, FORMAT) : null;
+			return date != null && date.length() > 0 ? LocalDate.parse(date, FORMAT) : null;
 
 		} catch (DateTimeParseException ex) {
 			throw new ConverterException(MessageFactory.getWarning("ch.bfh.awebt.bookmaker.DATETIME_FORMAT_ERROR"), ex);

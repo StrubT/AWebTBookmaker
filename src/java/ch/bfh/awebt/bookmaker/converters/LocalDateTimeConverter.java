@@ -82,7 +82,7 @@ public class LocalDateTimeConverter implements Converter, AttributeConverter<Loc
 	public LocalDateTime getAsObject(FacesContext context, UIComponent component, String dateTime) {
 
 		try {
-			return dateTime != null ? LocalDateTime.parse(dateTime, FORMAT_ISO) : null;
+			return dateTime != null && dateTime.length() > 0 ? LocalDateTime.parse(dateTime, FORMAT_ISO) : null;
 
 		} catch (DateTimeParseException ex1) {
 			try {

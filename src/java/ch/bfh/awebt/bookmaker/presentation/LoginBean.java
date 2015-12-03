@@ -23,7 +23,7 @@ import javax.persistence.PersistenceException;
 import ch.bfh.awebt.bookmaker.Streams;
 import ch.bfh.awebt.bookmaker.persistence.UserDAO;
 import ch.bfh.awebt.bookmaker.persistence.data.User;
-import ch.bfh.awebt.bookmaker.presentation.data.AccessConditions;
+import ch.bfh.awebt.bookmaker.presentation.data.AccessCondition;
 import ch.bfh.awebt.bookmaker.presentation.data.NavigationPage;
 
 /**
@@ -173,14 +173,13 @@ public class LoginBean implements Serializable {
 	public void setLocale(Locale locale) {
 
 		this.locale = locale;
+		FacesContext.getCurrentInstance().getViewRoot().setLocale(locale); //change the locale of the web page
 
 		User user = getUser();
 		if (user != null) {
 			user.setLocale(locale); //remember the language for logged-in users
 			getUserDAO().merge(user);
 		}
-
-		FacesContext.getCurrentInstance().getViewRoot().setLocale(locale); //change the locale of the web page
 	}
 
 	/**
@@ -243,9 +242,36 @@ public class LoginBean implements Serializable {
 	 *
 	 * @return date/time formatted according to the ISO standard
 	 */
+	public String formatDateTimeISO(LocalDateTime dateTime) {
+
+		return dateTime != null ? dateTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) : null;
+	}
+
+	/**
+	 * Formats a date/time according to the ISO standard.
+	 *
+	 * @param dateTime date time to format
+	 *
+	 * @return date/time formatted according to the ISO standard
+	 */
 	public String formatDateTimeISO(ZonedDateTime dateTime) {
 
 		return dateTime != null ? dateTime.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME) : null;
+	}
+
+	/**
+	 * Formats a date/time according to the user settings.
+	 *
+	 * @param dateTime date time to format
+	 *
+	 * @return date/time formatted according to the user settings
+	 */
+	public String formatDateTimeUser(LocalDateTime dateTime) {
+
+		if (dateTime == null)
+			return null;
+
+		return dateTime.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.FULL, FormatStyle.SHORT).withLocale(locale));
 	}
 
 	/**
@@ -391,7 +417,7 @@ public class LoginBean implements Serializable {
 	 */
 	public boolean showInNavigation(NavigationPage page) {
 
-		return (page != null ? page.getNavigationCondition() : AccessConditions.NEVER).hasAccess(getUser());
+		return (page != null ? page.getNavigationCondition() : AccessCondition.NEVER).hasAccess(getUser());
 	}
 
 	/**
@@ -403,7 +429,7 @@ public class LoginBean implements Serializable {
 	 */
 	public boolean userHasAccessTo(NavigationPage page) {
 
-		return (page != null ? page.getAccessCondition() : AccessConditions.NEVER).hasAccess(getUser());
+		return (page != null ? page.getAccessCondition() : AccessCondition.NEVER).hasAccess(getUser());
 	}
 
 	/**
@@ -413,7 +439,7 @@ public class LoginBean implements Serializable {
 	 *
 	 * @return whether or not the user matches the condition
 	 */
-	public boolean userHasAccess(AccessConditions accessCondition) {
+	public boolean userHasAccess(AccessCondition accessCondition) {
 
 		return accessCondition.hasAccess(getUser());
 	}

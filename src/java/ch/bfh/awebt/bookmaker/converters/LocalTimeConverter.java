@@ -75,7 +75,7 @@ public class LocalTimeConverter implements Converter, AttributeConverter<LocalTi
 	public LocalTime getAsObject(FacesContext context, UIComponent component, String time) {
 
 		try {
-			return time != null ? LocalTime.parse(time, FORMAT) : null;
+			return time != null && time.length() > 0 ? LocalTime.parse(time, FORMAT) : null;
 
 		} catch (DateTimeParseException ex) {
 			throw new ConverterException(MessageFactory.getWarning("ch.bfh.awebt.bookmaker.DATETIME_FORMAT_ERROR"), ex);

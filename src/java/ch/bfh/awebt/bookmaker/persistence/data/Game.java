@@ -194,15 +194,4 @@ public class Game extends PersistentObject<Integer> implements Serializable {
 	public List<Bet> getBets() {
 		return Collections.unmodifiableList(bets);
 	}
-
-	/**
-	 * Adds a new available bet for the game.
-	 *
-	 * @param bet bet to add to the game
-	 *
-	 * @return whether or not the bet was added
-	 */
-	boolean addBet(Bet bet) {
-		return bets.add(bet);
-	}
 }

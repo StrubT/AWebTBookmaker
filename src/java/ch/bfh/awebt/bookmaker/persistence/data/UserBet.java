@@ -11,6 +11,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import ch.bfh.awebt.bookmaker.converters.CurrencyConverterValidator;
 
 /**
  * Represents a bet placed by user with the bookmaker.
@@ -43,7 +44,7 @@ public class UserBet extends PersistentObject<UserBet.PK> implements Serializabl
 	@JoinColumn(name = "bet")
 	private Bet bet;
 
-	@Column(name = "stake", nullable = false, precision = 10, scale = 3)
+	@Column(name = "stake", nullable = false, precision = CurrencyConverterValidator.PRECISION, scale = CurrencyConverterValidator.SCALE)
 	private BigDecimal stake;
 
 	/**
@@ -67,9 +68,6 @@ public class UserBet extends PersistentObject<UserBet.PK> implements Serializabl
 		this.userId = bet.getId();
 		this.bet = bet;
 		this.stake = stake;
-
-		user.addBet(this);
-		bet.addUserBet(this);
 	}
 
 	@Override
@@ -206,7 +204,12 @@ public class UserBet extends PersistentObject<UserBet.PK> implements Serializabl
 		 */
 		@Override
 		public int hashCode() {
-			return ((17 + userId) * 31 + betId) * 31;
+
+			int hash = 17;
+			hash = (hash + (userId != null ? (int)userId : 0)) * 31;
+			hash = (hash + (betId != null ? (int)betId : 0)) * 31;
+
+			return hash;
 		}
 
 		/**
@@ -223,7 +226,8 @@ public class UserBet extends PersistentObject<UserBet.PK> implements Serializabl
 				return false;
 
 			PK key = (PK)obj;
-			return userId.equals(key.userId) && betId.equals(key.betId);
+			return (userId == null ? userId.equals(key.userId) : key.userId == null)
+						 && (betId == null ? betId.equals(key.betId) : key.betId == null);
 		}
 
 		/**

@@ -16,12 +16,14 @@ import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.component.UIComponent;
 import javax.persistence.PersistenceException;
+import ch.bfh.awebt.bookmaker.Streams;
 import ch.bfh.awebt.bookmaker.persistence.BetDAO;
 import ch.bfh.awebt.bookmaker.persistence.GameDAO;
 import ch.bfh.awebt.bookmaker.persistence.TeamDAO;
 import ch.bfh.awebt.bookmaker.persistence.UserBetDAO;
 import ch.bfh.awebt.bookmaker.persistence.UserDAO;
 import ch.bfh.awebt.bookmaker.persistence.data.Bet;
+import ch.bfh.awebt.bookmaker.persistence.data.BetType;
 import ch.bfh.awebt.bookmaker.persistence.data.Game;
 import ch.bfh.awebt.bookmaker.persistence.data.Team;
 import ch.bfh.awebt.bookmaker.persistence.data.User;
@@ -42,7 +44,7 @@ public class GameBean implements Serializable {
 	@ManagedProperty("#{loginBean}")
 	private LoginBean loginBean;
 
-	private transient UIComponent creditCardNumberField, creditCardCodeField;
+	private transient UIComponent creditCardNumberField, creditCardCodeField, startTimeField;
 
 	private transient TeamDAO teamDAO;
 	private transient GameDAO gameDAO;
@@ -57,9 +59,11 @@ public class GameBean implements Serializable {
 	private LocalDateTime gameStartTime;
 	private ZoneId gameTimeZone;
 	private List<BetDTO> gameBets;
+	private boolean gameUsed;
+
 	private BigDecimal gameBetAmount, gamePaymentAmount;
 	private String gamePaymentCreditCardNumber, gamePaymentCreditCardCode;
-	private Integer gamePaymentCreditCardExpirationMonth, gamePaymentCreditCardExpirationYear, gamePaymentCreditCardExpirationYearMinimum, gamePaymentCreditCardExpirationYearMaximum;
+	private Integer gamePaymentCreditCardExpirationMonth, gamePaymentCreditCardExpirationYear;
 
 	/**
 	 * Initialises the managed bean.
@@ -104,6 +108,14 @@ public class GameBean implements Serializable {
 
 	public void setCreditCardCodeField(UIComponent creditCardCodeField) {
 		this.creditCardCodeField = creditCardCodeField;
+	}
+
+	public UIComponent getStartTimeField() {
+		return startTimeField;
+	}
+
+	public void setStartTimeField(UIComponent startTimeField) {
+		this.startTimeField = startTimeField;
 	}
 
 	private TeamDAO getTeamDAO() {
@@ -175,18 +187,20 @@ public class GameBean implements Serializable {
 		if (force || this.gameId == null || !this.gameId.equals(gameId)) {
 			this.gameId = gameId;
 
+			User u = loginBean.getUser();
+			gameBetsUserId = u != null ? u.getId() : null;
+
 			Game game = gameId != null ? getGame() : null;
 			if (game != null) {
 				gameTeam1 = game.getTeam1().getCode();
 				gameTeam2 = game.getTeam2().getCode();
 				gameStartTime = game.getStartTimeZoned().withZoneSameInstant(gameTimeZone).toLocalDateTime();
 
-				User u = loginBean.getUser();
-				gameBetsUserId = u != null ? u.getId() : null;
 				gameBets = new ArrayList<>(game.getBets()).stream().map(b -> { //BUGFIX: new ArrayList<>(...) needed in eclipselink < 2.7
 					UserBet c = u != null ? getUserBetDAO().findByUserAndBet(u, b) : null;
 					return new BetDTO(b, c != null ? c : new UserBet(u != null ? u : User.ANONYMOUS, b, BigDecimal.ZERO));
 				}).collect(Collectors.toList());
+				gameUsed = gameBets.stream().anyMatch(BetDTO::isUsed);
 
 			} else {
 				if (gameId != null)
@@ -194,7 +208,9 @@ public class GameBean implements Serializable {
 
 				gameTeam1 = gameTeam2 = null;
 				gameStartTime = null;
-				gameBets = Arrays.asList();
+
+				gameBets = new ArrayList<>();
+				gameUsed = false;
 			}
 		}
 	}
@@ -253,6 +269,11 @@ public class GameBean implements Serializable {
 		this.gameStartTime = gameStartTime;
 	}
 
+	public LocalDateTime getGameStartTimeMinimum() {
+
+		return LocalDate.now().atStartOfDay();
+	}
+
 	/**
 	 * Gets the time zone the game's scheduled start date &amp; time.
 	 *
@@ -280,6 +301,11 @@ public class GameBean implements Serializable {
 		return gameStartTime != null ? ZonedDateTime.of(gameStartTime, gameTimeZone) : null;
 	}
 
+	public boolean isGamePassed() {
+
+		return gameStartTime != null ? gameStartTime.isBefore(LocalDateTime.now(gameTimeZone)) : false;
+	}
+
 	/**
 	 * Gets the bets associated with the game.
 	 *
@@ -288,7 +314,7 @@ public class GameBean implements Serializable {
 	public List<BetDTO> getGameBets() {
 
 		if (loginBean.getUserId() != null && !loginBean.getUserId().equals(gameBetsUserId))
-			setGameId(gameId, true);
+			setGameId(gameId, true); //reload stakes
 
 		return gameBets;
 	}
@@ -300,6 +326,10 @@ public class GameBean implements Serializable {
 	 */
 	public void setGameBets(List<BetDTO> gameBets) {
 		this.gameBets = gameBets;
+	}
+
+	public boolean isGameUsed() {
+		return gameUsed;
 	}
 
 	/**
@@ -416,7 +446,8 @@ public class GameBean implements Serializable {
 	 * @return minimum expiration year for a valid credit card
 	 */
 	public Integer getGamePaymentCreditCardExpirationYearMinimum() {
-		return gamePaymentCreditCardExpirationYearMinimum;
+
+		return LocalDate.now().getYear();
 	}
 
 	/**
@@ -425,7 +456,8 @@ public class GameBean implements Serializable {
 	 * @return maximum expiration year for a valid credit card
 	 */
 	public Integer getGamePaymentCreditCardExpirationYearMaximum() {
-		return gamePaymentCreditCardExpirationYearMaximum;
+
+		return LocalDate.now().getYear() + 25;
 	}
 
 	/**
@@ -436,6 +468,16 @@ public class GameBean implements Serializable {
 	public List<Team> getTeams() {
 
 		return getTeamDAO().findAll();
+	}
+
+	/**
+	 * Gets the game.
+	 *
+	 * @return game with the specified unique identifier
+	 */
+	public Game getGame() {
+
+		return getGameDAO().find(gameId);
 	}
 
 	/**
@@ -468,14 +510,19 @@ public class GameBean implements Serializable {
 		return getGameDAO().findPast();
 	}
 
-	/**
-	 * Gets the game.
-	 *
-	 * @return game with the specified unique identifier
-	 */
-	public Game getGame() {
+	public List<BetType> getBetTypes() {
 
-		return getGameDAO().find(gameId);
+		return Arrays.asList(BetType.values());
+	}
+
+	public void addNewBet() {
+
+		gameBets.add(new BetDTO());
+	}
+
+	public void removeBet(BetDTO betDTO) {
+
+		gameBets.remove(betDTO);
 	}
 
 	/**
@@ -489,20 +536,56 @@ public class GameBean implements Serializable {
 			Team team1 = getTeamDAO().find(gameTeam1);
 			Team team2 = getTeamDAO().find(gameTeam2);
 			ZonedDateTime startTimeZoned = ZonedDateTime.of(gameStartTime, gameTimeZone);
+			boolean passed = isGamePassed();
 
-			Game game = gameId != null ? getGameDAO().find(gameId) : null;
-			if (game != null) {
-				game.setTeam1(team1);
-				game.setTeam2(team2);
-				game.setStartTimeZoned(startTimeZoned);
-				getGameDAO().merge(game);
+			if (!passed) {
+				Game game = gameId != null ? getGameDAO().find(gameId) : null;
+				if (game != null) {
+					game.setTeam1(team1);
+					game.setTeam2(team2);
+					game.setStartTimeZoned(startTimeZoned);
+					getGameDAO().merge(game);
 
-			} else {
-				game = new Game(team1, team2, startTimeZoned);
-				getGameDAO().persist(game);
-			}
+				} else {
+					getGameDAO().persist(game = new Game(team1, team2, startTimeZoned));
+					gameId = game.getId();
+				}
 
-			return String.format("/players/game.xhtml?id=%d&faces-redirect=true", game.getId());
+				List<Bet> gameBetsOld = game.getBets();
+				for (BetDTO betDTO: gameBets) {
+					Bet bet = betDTO.getId() != null ? new ArrayList<>(gameBetsOld).stream().filter(b -> b.getId().equals(betDTO.getId())).collect(Streams.nullableSingleCollector()) : null; //BUGFIX: new ArrayList<>(...) needed in eclipselink < 2.7
+					if (bet != null) {
+						if (!passed && bet.getUserBets().isEmpty()) {
+							bet.setType(betDTO.getType());
+							bet.setTeam(getTeamDAO().find(betDTO.getTeam()));
+							bet.setTime(betDTO.getTime());
+							bet.setGoals(betDTO.getGoals());
+							bet.setOdds(betDTO.getOdds());
+						} else
+							bet.setOccurred(betDTO.getOccurred());
+						getBetDAO().merge(bet);
+
+					} else
+						getBetDAO().persist(bet = new Bet(game, betDTO.getType(), betDTO.getOdds(), null, getTeamDAO().find(betDTO.getTeam()), betDTO.getTime(), betDTO.getGoals()));
+				}
+
+				for (Bet bet: gameBetsOld) {
+					BetDTO betDTO = gameBets.stream().filter(b -> bet.getId().equals(b.getId())).collect(Streams.nullableSingleCollector());
+					if (betDTO == null)
+						if (bet.getUserBets().isEmpty())
+							getBetDAO().remove(bet);
+
+						else {
+							MessageFactory.addError("ch.bfh.awebt.bookmaker.GAME_CANNOT_DELETE_IN_USE");
+							return null;
+						}
+				}
+
+				//return String.format("/players/game.xhtml?id=%d&faces-redirect=true", game.getId());
+				return "/managers/upcoming-games.xhtml?faces-redirect=true";
+
+			} else
+				MessageFactory.addError("ch.bfh.awebt.bookmaker.GAME_CANNOT_CREATE_PAST");
 
 		} catch (PersistenceException ex) {
 			MessageFactory.addError("ch.bfh.awebt.bookmaker.PERSISTENCE_ERROR");
@@ -520,11 +603,15 @@ public class GameBean implements Serializable {
 
 		try {
 			Game game = gameId != null ? getGameDAO().find(gameId) : null;
-			if (game != null) {
-				getGameDAO().remove(game);
-				return "/managers/upcoming-games.xhtml";
+			if (game != null)
+				if (!new ArrayList<>(game.getBets()).stream().anyMatch(b -> !b.getUserBets().isEmpty())) { //BUGFIX: new ArrayList<>(...) needed in eclipselink < 2.7
+					getGameDAO().remove(game);
+					return "/managers/upcoming-games.xhtml?faces-redirect=true";
 
-			} else
+				} else
+					MessageFactory.addError("ch.bfh.awebt.bookmaker.GAME_CANNOT_DELETE_IN_USE");
+
+			else
 				MessageFactory.addWarning("ch.bfh.awebt.bookmaker.ITEM_NOT_FOUND_ERROR");
 
 		} catch (PersistenceException ex) {
@@ -554,8 +641,7 @@ public class GameBean implements Serializable {
 		gamePaymentCreditCardNumber = gamePaymentCreditCardCode = null;
 
 		LocalDate date = LocalDate.now();
-		gamePaymentCreditCardExpirationYearMinimum = gamePaymentCreditCardExpirationYear = date.getYear();
-		gamePaymentCreditCardExpirationYearMaximum = date.getYear() + 25;
+		gamePaymentCreditCardExpirationYear = date.getYear();
 		gamePaymentCreditCardExpirationMonth = date.getMonthValue();
 	}
 

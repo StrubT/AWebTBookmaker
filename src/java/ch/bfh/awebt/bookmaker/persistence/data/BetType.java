@@ -17,33 +17,58 @@ public enum BetType {
 	/**
 	 * Represents a bet on the winning team.
 	 */
-	TEAM_WINS("WIN"),
+	TEAM_WINS("WIN", true, false, false),
 
 	/**
 	 * Represents a bet on a tied outcome.
 	 */
-	ENDS_TIED("EVN"),
+	ENDS_TIED("EVN", false, false, false),
 
 	/**
 	 * Represents a bet on the leading team after a specified playing time.
 	 */
-	TEAM_LEADS_AFTER_TIME("LDT"),
+	TEAM_LEADS_AFTER_TIME("LDT", true, true, false),
 
 	/**
 	 * Represents a bet on a tie after a specified playing time.
 	 */
-	TIED_AFTER_TIME("EVT"),
+	TIED_AFTER_TIME("EVT", false, true, false),
 
 	/**
 	 * Represents a bet on the leading team after a specified playing time with a number of goals.
 	 */
-	TEAM_LEADS_AFTER_TIME_WITH_NOF_GOALS("LDG");
+	TEAM_LEADS_AFTER_TIME_WITH_NOF_GOALS("LDG", true, true, true);
 
 	private final String code;
+	private final boolean teamRequired, timeRequired, goalsRequired;
 
-	BetType(String code) {
+	BetType(String code, boolean teamRequired, boolean timeRequired, boolean goalsRequired) {
 
 		this.code = code;
+		this.teamRequired = teamRequired;
+		this.timeRequired = timeRequired;
+		this.goalsRequired = goalsRequired;
+	}
+
+	/**
+	 * Gets the unique code of the bet type.
+	 *
+	 * @return unique code of the bet type
+	 */
+	public String getCode() {
+		return code;
+	}
+
+	public boolean isTeamRequired() {
+		return teamRequired;
+	}
+
+	public boolean isTimeRequired() {
+		return timeRequired;
+	}
+
+	public boolean isGoalsRequired() {
+		return goalsRequired;
 	}
 
 	/**
@@ -77,14 +102,5 @@ public enum BetType {
 		return Arrays.stream(BetType.values())
 			.filter(t -> t.getCode().equals(code))
 			.collect(collector);
-	}
-
-	/**
-	 * Gets the unique code of the bet type.
-	 *
-	 * @return unique code of the bet type
-	 */
-	public String getCode() {
-		return code;
 	}
 }

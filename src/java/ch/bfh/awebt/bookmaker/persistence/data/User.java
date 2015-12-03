@@ -23,6 +23,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Version;
+import ch.bfh.awebt.bookmaker.converters.CurrencyConverterValidator;
 import ch.bfh.awebt.bookmaker.converters.LocaleConverter;
 import ch.bfh.awebt.bookmaker.converters.ZoneIdConverter;
 
@@ -76,7 +77,7 @@ public class User extends PersistentObject<Integer> implements Serializable {
 	@Convert(converter = ZoneIdConverter.class)
 	private ZoneId timeZone;
 
-	@Column(name = "balance", nullable = false, precision = 10, scale = 3)
+	@Column(name = "balance", nullable = false, precision = CurrencyConverterValidator.PRECISION, scale = CurrencyConverterValidator.SCALE)
 	private BigDecimal balance = BigDecimal.ZERO;
 
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
@@ -318,17 +319,6 @@ public class User extends PersistentObject<Integer> implements Serializable {
 	 */
 	public List<UserBet> getBets() {
 		return Collections.unmodifiableList(bets);
-	}
-
-	/**
-	 * Places a new bet for the user with the bookmaker.
-	 *
-	 * @param bet bet to place for the user
-	 *
-	 * @return whether or not the bet was added to the list
-	 */
-	boolean addBet(UserBet bet) {
-		return bets.add(bet);
 	}
 
 	/**
