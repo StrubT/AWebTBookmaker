@@ -60,6 +60,49 @@
 				</div>
 			</div>
 			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-10">
+					<h:dataTable value="#{gameBean.gameBets}" var="bet" class="table table-condensed table-striped">
+						<h:column>
+							<f:facet name="header">#{texts.GameBetTypeLabel}</f:facet>
+							<h:selectOneListbox size="1" value="#{bet.type}" class="form-control input-sm">
+								<f:selectItems value="#{gameBean.betTypes}" var="betType" itemValue="#{betType}" itemLabel="#{bets[betType.code]}" />
+							</h:selectOneListbox>
+						</h:column>
+						<h:column>
+							<f:facet name="header">#{texts.GameBetTeamLabel}</f:facet>
+							<h:selectOneListbox size="1" value="#{bet.team}" class="form-control input-sm">
+								<f:selectItem itemValue="#{null}" itemLabel="n/a" />
+								<f:selectItems value="#{gameBean.teams}" var="team" itemValue="#{team.code}" itemLabel="#{teams[team.code]}" />
+							</h:selectOneListbox>
+						</h:column>
+						<h:column>
+							<f:facet name="header">#{texts.GameBetTimeLabel}</f:facet>
+							<h:inputText id="betTimeField" value="#{bet.time}" class="form-control input-sm" converter="ch.bfh.awebt.bookmaker.LOCAL_TIME_CONVERTER">
+								<f:passThroughAttribute name="type" value="time" />
+							</h:inputText>
+							<h:message for="betTeamField" infoClass="text-success" warnClass="text-warning" errorClass="text-danger" fatalClass="text-danger bg-danger" />
+						</h:column>
+						<h:column>
+							<f:facet name="header">#{texts.GameBetGoalsLabel}</f:facet>
+							<h:inputText id="betGoalsField" value="#{bet.goals}" class="form-control input-sm">
+								<f:validateLongRange minimum="0" />
+								<f:passThroughAttribute name="type" value="number" />
+								<f:passThroughAttribute name="min" value="0" />
+							</h:inputText>
+							<h:message for="betTeamField" infoClass="text-success" warnClass="text-warning" errorClass="text-danger" fatalClass="text-danger bg-danger" />
+						</h:column>
+						<h:column>
+							<f:facet name="header">#{texts.GameBetOddsLabel}</f:facet>
+							<h:inputText id="betTeamField" value="#{bet.odds}" class="form-control input-sm" converter="ch.bfh.awebt.bookmaker.ODDS_CONVERTER" validator="ch.bfh.awebt.bookmaker.ODDS_VALIDATOR">
+								<f:passThroughAttribute name="type" value="number" />
+								<f:passThroughAttribute name="min" value="0" />
+							</h:inputText>
+							<h:message for="betTeamField" infoClass="text-success" warnClass="text-warning" errorClass="text-danger" fatalClass="text-danger bg-danger" />
+						</h:column>
+					</h:dataTable>
+				</div>
+			</div>
+			<div class="form-group">
 				<div class="col-sm-offset-2 col-sm-10 btn-group">
 					<h:commandButton id="saveButton" action="#{gameBean.saveGame}" class="btn btn-primary" value="#{texts.FormSaveButton}" />
 					<h:commandButton id="deleteButton" action="#{gameBean.deleteGame}" class="btn btn-warning" value="#{texts.FormDeleteButton}" />
