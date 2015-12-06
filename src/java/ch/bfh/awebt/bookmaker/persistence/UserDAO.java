@@ -10,7 +10,7 @@ import ch.bfh.awebt.bookmaker.persistence.data.User;
  *
  * @author strut1 &amp; touwm1
  */
-public class UserDAO extends GenericDAO<User> implements Serializable {
+public class UserDAO extends GenericDAO<User, Integer> implements Serializable {
 
 	private static final long serialVersionUID = 7855160381047946895L;
 

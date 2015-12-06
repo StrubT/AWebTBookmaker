@@ -8,7 +8,7 @@ import ch.bfh.awebt.bookmaker.persistence.data.Bet;
  *
  * @author strut1 &amp; touwm1
  */
-public class BetDAO extends GenericDAO<Bet> implements Serializable {
+public class BetDAO extends GenericDAO<Bet, Integer> implements Serializable {
 
 	private static final long serialVersionUID = 7653413437250369536L;
 

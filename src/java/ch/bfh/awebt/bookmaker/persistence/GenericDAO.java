@@ -16,10 +16,11 @@ import ch.bfh.awebt.bookmaker.persistence.data.PersistentObject;
  * Provides CRUD operations for generic {@link PersistentObject}s.
  *
  * @param <T> type of the entities
+ * @param <K> type of the unique entity identifiers
  *
  * @author strut1 &amp; touwm1
  */
-public abstract class GenericDAO<T extends PersistentObject<?>> {
+public abstract class GenericDAO<T extends PersistentObject<K>, K> {
 
 	/**
 	 * Gets the name of the persistence unit to use.
@@ -83,7 +84,7 @@ public abstract class GenericDAO<T extends PersistentObject<?>> {
 	 *
 	 * @return entity with the specified unique identifier
 	 */
-	public T find(Object id) {
+	public T find(K id) {
 
 		return getEntityManager().find(getEntityClass(), id);
 	}

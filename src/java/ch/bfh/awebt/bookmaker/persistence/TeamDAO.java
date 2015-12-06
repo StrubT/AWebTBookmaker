@@ -8,7 +8,7 @@ import ch.bfh.awebt.bookmaker.persistence.data.Team;
  *
  * @author strut1 &amp; touwm1
  */
-public class TeamDAO extends GenericDAO<Team> implements Serializable {
+public class TeamDAO extends GenericDAO<Team, String> implements Serializable {
 
 	private static final long serialVersionUID = -5893067542641772425L;
 

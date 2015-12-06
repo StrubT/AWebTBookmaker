@@ -12,7 +12,7 @@ import ch.bfh.awebt.bookmaker.persistence.data.UserBet;
  *
  * @author strut1 &amp; touwm1
  */
-public class UserBetDAO extends GenericDAO<UserBet> implements Serializable {
+public class UserBetDAO extends GenericDAO<UserBet, UserBet.PK> implements Serializable {
 
 	private static final long serialVersionUID = -3307307888664577411L;
 

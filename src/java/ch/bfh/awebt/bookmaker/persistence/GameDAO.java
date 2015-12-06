@@ -11,7 +11,7 @@ import ch.bfh.awebt.bookmaker.persistence.data.Game;
  *
  * @author strut1 &amp; touwm1
  */
-public class GameDAO extends GenericDAO<Game> implements Serializable {
+public class GameDAO extends GenericDAO<Game, Integer> implements Serializable {
 
 	private static final long serialVersionUID = -5138682905529615638L;
 
