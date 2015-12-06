@@ -35,7 +35,7 @@
 							</h:column>
 							<h:column>
 								<f:facet name="header">#{texts.GameBetOddsLabel}</f:facet>
-								<data value="#{bet.odds}">#{bet.odds}</data>
+								<data value="#{bet.odds}">#{loginBean.formatNumber(bet.odds)}</data>
 							</h:column>
 							<h:column rendered="#{loginBean.userHasAccess('REGISTERED')}">
 								<f:facet name="header">#{texts.GameBetStakeLabel} (#{texts.Currency})</f:facet>

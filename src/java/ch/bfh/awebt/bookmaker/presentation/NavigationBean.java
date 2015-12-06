@@ -1,6 +1,7 @@
 package ch.bfh.awebt.bookmaker.presentation;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
@@ -24,6 +25,8 @@ import ch.bfh.awebt.bookmaker.presentation.data.NavigationPage;
 public class NavigationBean implements Serializable {
 
 	private static final long serialVersionUID = -1616488627854886893L;
+
+	public static final int CREATION_YEAR = 2015;
 
 	private final NavigationPage PAGE_HOME, PAGE_LOGIN, PAGE_REGISTER;
 	private final List<NavigationPage> PAGES;
@@ -111,6 +114,16 @@ public class NavigationBean implements Serializable {
 		return PAGES.stream()
 			.filter(p -> view.equals(p.getView()))
 			.collect(Streams.nullableSingleCollector());
+	}
+
+	public int getCreationYear() {
+		return CREATION_YEAR;
+	}
+
+	public String getCopyrightYears() {
+
+		int year = LocalDate.now().getYear();
+		return String.format(year > CREATION_YEAR ? "%d - %d" : "%d", CREATION_YEAR, year);
 	}
 
 	private boolean hasMessage(Iterator<FacesMessage> messages, FacesMessage.Severity severity) {

@@ -1,7 +1,9 @@
 package ch.bfh.awebt.bookmaker.presentation;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.security.NoSuchAlgorithmException;
+import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -235,6 +237,16 @@ public class LoginBean implements Serializable {
 		this.timeZone = timeZone;
 	}
 
+	public String formatNumber(BigDecimal number) {
+
+		return number != null ? NumberFormat.getNumberInstance(locale).format(number) : null;
+	}
+
+	public String formatPercent(BigDecimal number) {
+
+		return number != null ? NumberFormat.getPercentInstance(locale).format(number) : null;
+	}
+
 	/**
 	 * Formats a date/time according to the ISO standard.
 	 *
@@ -307,7 +319,7 @@ public class LoginBean implements Serializable {
 
 		return String.format(includeDetails ? "(%s) %s - %s" : "%3$s",
 												 timeZone.getRules().getOffset(LocalDateTime.now()),
-												 timeZone.toString(),
+												 timeZone,
 												 timeZone.getDisplayName(TextStyle.FULL, locale));
 	}
 

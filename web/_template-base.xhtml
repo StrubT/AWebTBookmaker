@@ -53,15 +53,13 @@
 									</c:forEach>
 								</ul>
 							</nav>
-							<div class="navbar-right">
-								<ul class="nav navbar-nav">
-									<c:forEach items="#{loginBean.supportedLocales}" var="locale">
-										<li class="#{loginBean.language eq locale.language ? 'active' : ''}">
-											<h:commandLink action="#{loginBean.setLanguage(locale.language)}" class="navbar-link" value="#{locale.getDisplayName(locale)}" title="#{locale.displayName}" />
-										</li>
-									</c:forEach>
-								</ul>
-							</div>
+							<ul class="nav navbar-nav navbar-right">
+								<c:forEach items="#{loginBean.supportedLocales}" var="locale">
+									<li class="#{loginBean.language eq locale.language ? 'active' : ''}">
+										<h:commandLink action="#{loginBean.setLanguage(locale.language)}" class="navbar-link" value="#{locale.getDisplayName(locale)}" title="#{locale.displayName}" />
+									</li>
+								</c:forEach>
+							</ul>
 						</div>
 					</div>
 				</header>
@@ -84,9 +82,7 @@
 				</div>
 				<footer class="navbar navbar-default navbar-fixed-bottom">
 					<div class="container">
-						<p class="navbar-text">
-							&#169; 2015 #{texts.ApplicationCopyrightOwner}
-						</p>
+						<p class="navbar-text">&#169; #{navigationBean.copyrightYears} #{texts.ApplicationCopyrightOwner}</p>
 						<c:if test="#{navigationBean.showLoginRegister()}">
 							<c:choose>
 								<c:when test="#{empty loginBean.user}">
@@ -110,10 +106,12 @@
 									</div>
 								</c:when>
 								<c:otherwise>
-									<p class="navbar-text navbar-right">
-										logged in as #{loginBean.login} |
-										<h:commandLink action="#{loginBean.logout}" class="navbar-link" value="#{texts.LoginLogoutButton}" />
-									</p>
+									<div class="navbar-right">
+										<p class="navbar-text">
+											logged in as #{loginBean.login} |
+											<h:commandLink action="#{loginBean.logout}" class="navbar-link" value="#{texts.LoginLogoutButton}" />
+										</p>
+									</div>
 								</c:otherwise>
 							</c:choose>
 						</c:if>

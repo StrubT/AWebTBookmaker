@@ -8,9 +8,59 @@
 								xmlns:t="http://myfaces.apache.org/tomahawk"
 								xmlns:cc="http://java.sun.com/jsf/composite/custom-components">
 	<ui:define name="main">
-		<p class="text-muted">no content yet</p>
+		<h2>#{texts.LoginAccountTitle} '#{loginBean.login}'</h2>
+		<h:dataTable value="#{loginBean.user.bets}" var="bet" class="table table-striped table-condensed">
+			<h:column>
+				<f:facet name="header">
+					#{texts.GameTeam1Label} / #{texts.GameTeam2Label}<br />
+					<em>#{texts.GameStartTimeLabel} (#{loginBean.formatTimeZoneUser(loginBean.timeZone, false)})</em>
+				</f:facet>
+				<h:outputFormat value="#{texts.GameName}">
+					<f:param value="#{teams[bet.bet.game.team1.code]}" />
+					<f:param value="#{teams[bet.bet.game.team2.code]}" />
+				</h:outputFormat><br />
+				<em><time datetime="#{loginBean.formatDateTimeISO(bet.bet.game.startTimeZoned)}">#{loginBean.formatDateTimeUser(bet.bet.game.startTimeZoned, false)}</time></em>
+			</h:column>
+			<h:column>
+				<f:facet name="header">#{texts.GameBetDescriptionLabel}</f:facet>
+				<h:outputFormat value="#{bets[bet.bet.type.code]}">
+					<f:param value="#{teams[bet.bet.team.code]}" />
+					<f:param value="#{bet.bet.time}" />
+					<f:param value="#{bet.bet.goals}" />
+				</h:outputFormat>
+			</h:column>
+			<h:column>
+				<f:facet name="header">
+					#{texts.GameBetStakeLabel} &#8901; #{texts.GameBetOddsLabel}<br />
+					<em>(#{texts.CurrencyLong})</em>
+				</f:facet>
+				<data value="#{bet.stake}">#{loginBean.formatNumber(bet.stake)}</data> &#8901; <data value="#{bet.bet.odds}">#{loginBean.formatNumber(bet.bet.odds)}</data>
+				<c:if test="#{not empty bet.bet.occurred}">
+					<br />= <data value="#{bet.gain}" class="text-#{bet.bet.occurred ? 'success' : 'danger'}">#{loginBean.formatNumber(bet.gain)}</data>
+				</c:if>
+			</h:column>
+			<h:column>
+				<f:facet name="header">#{texts.GameBetOccurredLabel}</f:facet>
+				<data value="#{bet.bet.occurred}">#{bet.bet.occurred ? texts.BooleanTrue : texts.BooleanFalse}</data>
+			</h:column>
+		</h:dataTable>
 	</ui:define>
 	<ui:define name="aside">
-		<p class="text-muted">no content yet</p>
+		<dl class="well">
+			<dt>#{texts.LoginLoginLabel}</dt>
+			<dl>#{loginBean.login}</dl>
+			<dt>#{texts.LoginManagerLabel}</dt>
+			<dl>#{loginBean.user.manager ? texts.BooleanTrue : texts.BooleanFalse}</dl>
+			<dt>#{texts.LoginLocaleLabel}</dt>
+			<dl>#{loginBean.locale} - #{loginBean.locale.getDisplayName(loginBean.locale)}</dl>
+			<dt>#{texts.LoginTimeZoneLabel}</dt>
+			<dl>#{loginBean.formatTimeZoneUser(loginBean.timeZone, true)}</dl>
+		</dl>
+		<dl class="well">
+			<dt>#{texts.GameAccountBalanceLabel}</dt>
+			<dl>#{loginBean.formatNumber(loginBean.user.balance)} (#{texts.Currency})</dl>
+			<dt>#{texts.GameNofBetsLabel}</dt>
+			<dl>#{loginBean.user.bets.size()}</dl>
+		</dl>
 	</ui:define>
 </ui:composition>

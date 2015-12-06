@@ -133,6 +133,16 @@ public class UserBet extends PersistentObject<UserBet.PK> implements Serializabl
 		this.stake = stake;
 	}
 
+	public BigDecimal getPotentialGain() {
+
+		return stake.multiply(bet.getOdds());
+	}
+
+	public BigDecimal getGain() {
+
+		return new Boolean(true).equals(bet.getOccurred()) ? getPotentialGain() : BigDecimal.ZERO;
+	}
+
 	/**
 	 * Represents the compound primary key of the {@link UserBet} {@link Entity}.
 	 */
