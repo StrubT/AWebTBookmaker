@@ -237,34 +237,77 @@ public class LoginBean implements Serializable {
 		this.timeZone = timeZone;
 	}
 
+	/**
+	 * Format a number according to the user settings.
+	 *
+	 * @param number number to format
+	 *
+	 * @return number formatted according to the user settings
+	 */
 	public String formatNumberUser(BigDecimal number) {
 
 		return number != null ? NumberFormat.getNumberInstance(locale).format(number) : null;
 	}
 
+	/**
+	 * Format a number according to the user settings. <br>
+	 * <em>This method merely redirects to {@link #formatNumberUser(long)} but is needed for JSF.</em>
+	 *
+	 * @param number number to format
+	 *
+	 * @return number formatted according to the user settings
+	 */
 	public String formatNumberUser(int number) {
 
 		return formatNumberUser((long)number);
 	}
 
+	/**
+	 * Format a number according to the user settings.
+	 *
+	 * @param number number to format
+	 *
+	 * @return number formatted according to the user settings
+	 */
 	public String formatNumberUser(long number) {
 
 		return NumberFormat.getNumberInstance(locale).format(number);
 	}
 
+	/**
+	 * Format a number according to the user settings.
+	 *
+	 * @param number number to format
+	 *
+	 * @return number formatted according to the user settings
+	 */
 	public String formatNumberUser(double number) {
 
 		return NumberFormat.getNumberInstance(locale).format(number);
 	}
 
-	public String formatPercentUser(BigDecimal number) {
+	/**
+	 * Format a percentage according to the user settings.
+	 *
+	 * @param percentage percentage to format
+	 *
+	 * @return percentage formatted according to the user settings
+	 */
+	public String formatPercentUser(BigDecimal percentage) {
 
-		return number != null ? NumberFormat.getPercentInstance(locale).format(number) : null;
+		return percentage != null ? NumberFormat.getPercentInstance(locale).format(percentage) : null;
 	}
 
-	public String formatPercentUser(double number) {
+	/**
+	 * Format a percentage according to the user settings.
+	 *
+	 * @param percentage percentage to format
+	 *
+	 * @return percentage formatted according to the user settings
+	 */
+	public String formatPercentUser(double percentage) {
 
-		return NumberFormat.getPercentInstance(locale).format(number);
+		return NumberFormat.getPercentInstance(locale).format(percentage);
 	}
 
 	/**
@@ -388,6 +431,11 @@ public class LoginBean implements Serializable {
 		}
 	}
 
+	/**
+	 * Gets the current user's unique identifier.
+	 *
+	 * @return user's unique identifier, if any
+	 */
 	public Integer getUserId() {
 		return userId;
 	}

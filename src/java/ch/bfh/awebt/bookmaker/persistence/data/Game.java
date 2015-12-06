@@ -94,6 +94,13 @@ public class Game extends PersistentObject<Integer> implements Serializable {
 		this.startTimeUTC = startTimeUTC;
 	}
 
+	/**
+	 * Constructs an football game with defined teams and start time.
+	 *
+	 * @param team1          first (home) team to compete in the game
+	 * @param team2          second (away) team to compete in the game
+	 * @param startTimeZoned date &amp; time the game is scheduled to start
+	 */
 	public Game(Team team1, Team team2, ZonedDateTime startTimeZoned) {
 		this(team1, team2, startTimeZoned.withZoneSameInstant(ZONE_UTC).toLocalDateTime());
 	}

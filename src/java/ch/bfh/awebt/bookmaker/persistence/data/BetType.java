@@ -92,7 +92,7 @@ public enum BetType {
 	private final String code;
 	private final boolean teamRequired, timeRequired, numberRequired;
 
-	BetType(String code, boolean teamRequired, boolean timeRequired, boolean numberRequired) {
+	private BetType(String code, boolean teamRequired, boolean timeRequired, boolean numberRequired) {
 
 		this.code = code;
 		this.teamRequired = teamRequired;
@@ -109,14 +109,29 @@ public enum BetType {
 		return code;
 	}
 
+	/**
+	 * Gets whether or not the {@link Bet#team} property is required / supported.
+	 *
+	 * @return whether or not the {@link Bet#team} property is required
+	 */
 	public boolean isTeamRequired() {
 		return teamRequired;
 	}
 
+	/**
+	 * Gets whether or not the {@link Bet#time} property is required / supported.
+	 *
+	 * @return whether or not the {@link Bet#time} property is required
+	 */
 	public boolean isTimeRequired() {
 		return timeRequired;
 	}
 
+	/**
+	 * Gets whether or not the {@link Bet#number} property is required / supported.
+	 *
+	 * @return whether or not the {@link Bet#number} property is required
+	 */
 	public boolean isNumberRequired() {
 		return numberRequired;
 	}

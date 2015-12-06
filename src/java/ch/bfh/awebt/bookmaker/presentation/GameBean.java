@@ -94,26 +94,56 @@ public class GameBean implements Serializable {
 		this.loginBean = loginBean;
 	}
 
+	/**
+	 * Gets the credit card number field of the current view.
+	 *
+	 * @return credit card number field of the current view
+	 */
 	public UIComponent getCreditCardNumberField() {
 		return creditCardNumberField;
 	}
 
+	/**
+	 * Sets the credit card number field of the current view.
+	 *
+	 * @param creditCardNumberField credit card number field of the current view
+	 */
 	public void setCreditCardNumberField(UIComponent creditCardNumberField) {
 		this.creditCardNumberField = creditCardNumberField;
 	}
 
+	/**
+	 * Gets the credit card validation code field of the current view.
+	 *
+	 * @return credit card validation code field of the current view
+	 */
 	public UIComponent getCreditCardCodeField() {
 		return creditCardCodeField;
 	}
 
+	/**
+	 * Sets the credit card validation code field of the current view.
+	 *
+	 * @param creditCardCodeField credit card validation code field of the current view
+	 */
 	public void setCreditCardCodeField(UIComponent creditCardCodeField) {
 		this.creditCardCodeField = creditCardCodeField;
 	}
 
+	/**
+	 * Gets the game start time field of the current view.
+	 *
+	 * @return game start time field of the current view
+	 */
 	public UIComponent getStartTimeField() {
 		return startTimeField;
 	}
 
+	/**
+	 * Sets the game start time field of the current view.
+	 *
+	 * @param startTimeField game start time field of the current view
+	 */
 	public void setStartTimeField(UIComponent startTimeField) {
 		this.startTimeField = startTimeField;
 	}
@@ -158,6 +188,11 @@ public class GameBean implements Serializable {
 		return userBetDAO;
 	}
 
+	/**
+	 * Gets whether or not to show the confirmation view.
+	 *
+	 * @return whether or not to show the confirmation view
+	 */
 	public boolean isConfirmation() {
 
 		return statusConfirmation;
@@ -269,6 +304,11 @@ public class GameBean implements Serializable {
 		this.gameStartTime = gameStartTime;
 	}
 
+	/**
+	 * Gets the minimum start time supported for this game.
+	 *
+	 * @return minimum start time supported
+	 */
 	public LocalDateTime getGameStartTimeMinimum() {
 
 		return LocalDate.now().atStartOfDay();
@@ -296,11 +336,21 @@ public class GameBean implements Serializable {
 		this.gameTimeZone = gameTimeZone;
 	}
 
+	/**
+	 * Gets the game's scheduled start date &amp; time.
+	 *
+	 * @return game's scheduled start date &amp; time
+	 */
 	public ZonedDateTime getGameStartTimeZoned() {
 
 		return gameStartTime != null ? ZonedDateTime.of(gameStartTime, gameTimeZone) : null;
 	}
 
+	/**
+	 * Gets whether or not the game has started / passed.
+	 *
+	 * @return whether or not the game has started / passed
+	 */
 	public boolean isGamePassed() {
 
 		return gameStartTime != null ? gameStartTime.isBefore(LocalDateTime.now(gameTimeZone)) : false;
@@ -328,6 +378,12 @@ public class GameBean implements Serializable {
 		this.gameBets = gameBets;
 	}
 
+	/**
+	 * Gets whether or not the game is in use.
+	 * (Whether any user put stakes on its bets.)
+	 *
+	 * @return whether or not the game is in use
+	 */
 	public boolean isGameUsed() {
 		return gameUsed;
 	}
@@ -460,41 +516,76 @@ public class GameBean implements Serializable {
 		return LocalDate.now().getYear() + 25;
 	}
 
-	public int getNumberOfBets() {
+	/**
+	 * Gets the number of bets the user put stakes on.
+	 *
+	 * @return number of bets the user put stakes on
+	 */
+	public int getUserNumberOfBets() {
+
 		return loginBean.getUser().getBets().size();
 	}
 
-	public double getBetsPercentageWon() {
+	/**
+	 * Gets the percentage of bets the user won.
+	 *
+	 * @return percentage of bets the user won
+	 */
+	public double getUserBetsPercentageWon() {
 
 		List<UserBet> bets = loginBean.getUser().getBets();
 		if (bets.size() == 0)
 			return 0.0;
 
-		return new ArrayList<>(bets).stream().filter(b -> new Boolean(true).equals(b.getBet().getOccurred())).count() / (double)bets.size(); //BUGFIX: new ArrayList<>(...) needed in eclipselink < 2.7
+		return new ArrayList<>(bets).stream().filter(b -> Boolean.TRUE.equals(b.getBet().getOccurred())).count() / (double)bets.size(); //BUGFIX: new ArrayList<>(...) needed in eclipselink < 2.7
 	}
 
-	public double getBetsPercentageLost() {
+	/**
+	 * Gets the percentage of bets the user lost.
+	 *
+	 * @return percentage of bets the user lost
+	 */
+	public double getUserBetsPercentageLost() {
 
 		List<UserBet> bets = loginBean.getUser().getBets();
 		if (bets.size() == 0)
 			return 0.0;
 
-		return new ArrayList<>(bets).stream().filter(b -> new Boolean(false).equals(b.getBet().getOccurred())).count() / (double)bets.size(); //BUGFIX: new ArrayList<>(...) needed in eclipselink < 2.7
+		return new ArrayList<>(bets).stream().filter(b -> Boolean.FALSE.equals(b.getBet().getOccurred())).count() / (double)bets.size(); //BUGFIX: new ArrayList<>(...) needed in eclipselink < 2.7
 	}
 
-	public BigDecimal getBetsAmountWon() {
+	/**
+	 * Gets the amount the user won.
+	 *
+	 * @return amount the user won
+	 */
+	public BigDecimal getUserBetsAmountWon() {
 
-		return new ArrayList<>(loginBean.getUser().getBets()).stream().filter(b -> new Boolean(true).equals(b.getBet().getOccurred()))
+		return new ArrayList<>(loginBean.getUser().getBets()).stream().filter(b -> Boolean.TRUE.equals(b.getBet().getOccurred()))
 			.reduce(BigDecimal.ZERO, (a, b) -> a.add(b.getStake().multiply(b.getBet().getOdds())), (a, b) -> a.add(b));
 	}
 
-	public BigDecimal getBetsAmountLost() {
+	/**
+	 * Gets the amount the user lost.
+	 *
+	 * @return amount the user lost
+	 */
+	public BigDecimal getUserBetsAmountLost() {
 
-		return new ArrayList<>(loginBean.getUser().getBets()).stream().filter(b -> new Boolean(false).equals(b.getBet().getOccurred())) //BUGFIX: new ArrayList<>(...) needed in eclipselink < 2.7
+		return new ArrayList<>(loginBean.getUser().getBets()).stream().filter(b -> Boolean.FALSE.equals(b.getBet().getOccurred())) //BUGFIX: new ArrayList<>(...) needed in eclipselink < 2.7
 			.reduce(BigDecimal.ZERO, (a, b) -> a.add(b.getStake().multiply(b.getBet().getOdds())), (a, b) -> a.add(b));
 	}
 
-	public BigDecimal getBetsAmountSum() {
+	/**
+	 * Gets the amount the user actually won/lost. <br>
+	 * This returns the the won amount minus the lost amount.
+	 *
+	 * @return amount the user actually won/lost
+	 *
+	 * @see #getUserBetsAmountWon()
+	 * @see #getUserBetsAmountLost()
+	 */
+	public BigDecimal getUserBetsAmountSum() {
 
 		return new ArrayList<>(loginBean.getUser().getBets()).stream().filter(b -> b.getBet().getOccurred() != null) //BUGFIX: new ArrayList<>(...) needed in eclipselink < 2.7
 			.reduce(BigDecimal.ZERO, (a, b) -> a.add((b.getBet().getOccurred() ? BigDecimal.ONE : BigDecimal.ONE.negate()).multiply(b.getStake()).multiply(b.getBet().getOdds())), (a, b) -> a.add(b));
@@ -550,16 +641,29 @@ public class GameBean implements Serializable {
 		return getGameDAO().findPast();
 	}
 
+	/**
+	 * Gets the supported bet types.
+	 *
+	 * @return all supported bet types
+	 */
 	public List<BetType> getBetTypes() {
 
 		return Arrays.asList(BetType.values());
 	}
 
+	/**
+	 * Adds a new (empty) bet to the list.
+	 */
 	public void addNewBet() {
 
 		gameBets.add(new BetDTO());
 	}
 
+	/**
+	 * Removes a specific bet from the list.
+	 *
+	 * @param betDTO bet to remove
+	 */
 	public void removeBet(BetDTO betDTO) {
 
 		gameBets.remove(betDTO);
@@ -746,11 +850,18 @@ public class GameBean implements Serializable {
 		}
 	}
 
+	/**
+	 * Confirms the payment succeeded.
+	 *
+	 * @return whether or not the payment succeeded
+	 */
 	private boolean confirmPayment() {
 
 		LocalDate now = LocalDate.now();
 		LocalDate exp = LocalDate.of(gamePaymentCreditCardExpirationYear, gamePaymentCreditCardExpirationMonth, 1).plusMonths(1).minusDays(1);
 
-		return gamePaymentCreditCardCode != null && gamePaymentCreditCardCode != null && now.compareTo(exp) < 0; //implement actual payment process
+		//implement actual payment process
+		//
+		return gamePaymentCreditCardCode != null && gamePaymentCreditCardCode != null && now.compareTo(exp) < 0;
 	}
 }

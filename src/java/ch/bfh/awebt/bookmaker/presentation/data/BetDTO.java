@@ -225,11 +225,13 @@ public class BetDTO implements Serializable {
 		this.stake = stake;
 	}
 
+	/**
+	 * Gets whether or not this bet is is use.
+	 * (Whether or not any users put stakes on this bet.)
+	 *
+	 * @return whether or not this bet is is use
+	 */
 	public boolean isUsed() {
 		return used;
-	}
-
-	public void setUsed(boolean used) {
-		this.used = used;
 	}
 }

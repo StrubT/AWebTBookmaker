@@ -49,6 +49,11 @@ public class User extends PersistentObject<Integer> implements Serializable {
 	 */
 	public static final String HASH_ALGORITHM = "MD5";
 
+	/**
+	 * Constant for the anonymous user. <br>
+	 * This instance can be used instead of {@code null} if a user has to be specified, but none is available. <br>
+	 * <strong>Whenever possible, {@code null} should be used instead.</strong>
+	 */
 	public static final User ANONYMOUS = new User();
 
 	@Id

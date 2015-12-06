@@ -11,13 +11,36 @@ import javax.faces.validator.Validator;
 import javax.faces.validator.ValidatorException;
 import ch.bfh.awebt.bookmaker.presentation.MessageFactory;
 
+/**
+ * Represents a converter &amp; validator for {@link BigDecimal}s representing a currency amount.
+ *
+ * @author strut1 &amp; touwm1
+ */
 @FacesConverter("ch.bfh.awebt.bookmaker.CURRENCY_CONVERTER")
 @FacesValidator("ch.bfh.awebt.bookmaker.CURRENCY_VALIDATOR")
 public class CurrencyConverterValidator implements Converter, Validator {
 
+	/**
+	 * The {@link BigDecimal#precision()} to use for currency amounts.
+	 */
 	public static final int PRECISION = 10;
+
+	/**
+	 * The {@link BigDecimal#scale()} to use for currency amounts.
+	 */
 	public static final int SCALE = 3;
 
+	/**
+	 * Converts the {@link BigDecimal} to a {@link String} value.
+	 *
+	 * @param context   JSF context (not used)
+	 * @param component JSF UI component (not used)
+	 * @param value     {@link BigDecimal} to convert
+	 *
+	 * @return {@link String} value for the specified {@link BigDecimal}
+	 *
+	 * @throws ConverterException if the {@link BigDecimal} could not be converted
+	 */
 	@Override
 	public String getAsString(FacesContext context, UIComponent component, Object value) {
 
@@ -27,6 +50,17 @@ public class CurrencyConverterValidator implements Converter, Validator {
 		return value != null ? value.toString() : null;
 	}
 
+	/**
+	 * Converts the {@link String} to a {@link BigDecimal} value.
+	 *
+	 * @param context   JSF context (not used)
+	 * @param component JSF UI component (not used)
+	 * @param value     {@link String} to convert
+	 *
+	 * @return {@link BigDecimal} value for the specified {@link String}
+	 *
+	 * @throws ConverterException if the {@link String} could not be converted
+	 */
 	@Override
 	public Object getAsObject(FacesContext context, UIComponent component, String value) {
 
@@ -38,6 +72,15 @@ public class CurrencyConverterValidator implements Converter, Validator {
 		}
 	}
 
+	/**
+	 * Validate the {@link BigDecimal} using currency amount constraints.
+	 *
+	 * @param context   JSF context (not used)
+	 * @param component JSF UI component (not used)
+	 * @param value     {@link BigDecimal} to convert
+	 *
+	 * @throws ValidatorException if the {@link BigDecimal} is not valid
+	 */
 	@Override
 	public void validate(FacesContext context, UIComponent component, Object value) {
 

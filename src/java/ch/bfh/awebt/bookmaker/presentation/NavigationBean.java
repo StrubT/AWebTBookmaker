@@ -26,6 +26,9 @@ public class NavigationBean implements Serializable {
 
 	private static final long serialVersionUID = -1616488627854886893L;
 
+	/**
+	 * The year this site was created in.
+	 */
 	public static final int CREATION_YEAR = 2015;
 
 	private final NavigationPage PAGE_HOME, PAGE_LOGIN, PAGE_REGISTER;
@@ -116,10 +119,23 @@ public class NavigationBean implements Serializable {
 			.collect(Streams.nullableSingleCollector());
 	}
 
+	/**
+	 * Gets the year this site was created in.
+	 *
+	 * @return year this site was created in
+	 */
 	public int getCreationYear() {
 		return CREATION_YEAR;
 	}
 
+	/**
+	 * Gets the year(s) to use in the copyright notice. <br>
+	 * This will return the range of the year of creation up to the current year.
+	 *
+	 * @return year(s) to use in the copyright notice
+	 *
+	 * @see #getCreationYear()
+	 */
 	public String getCopyrightYears() {
 
 		int year = LocalDate.now().getYear();

@@ -26,6 +26,9 @@ public class UserBet extends PersistentObject<UserBet.PK> implements Serializabl
 
 	private static final long serialVersionUID = 5153932768816522284L;
 
+	/**
+	 * Name of the {@link NamedQuery} to find user bets by the unique bet and user identifiers.
+	 */
 	public static final String FIND_BY_USER_BET = "UserBet.FIND_BY_USER_BET";
 
 	@Id
@@ -133,14 +136,27 @@ public class UserBet extends PersistentObject<UserBet.PK> implements Serializabl
 		this.stake = stake;
 	}
 
+	/**
+	 * Gets the potential gain if the user won.
+	 *
+	 * @return potential gain if the user won
+	 */
 	public BigDecimal getPotentialGain() {
 
 		return stake.multiply(bet.getOdds());
 	}
 
+	/**
+	 * Gets the actual gain. <br>
+	 * This method returns {@link BigDecimal#ZERO} if either the game has not yet been evaluated or the bet's condition was not fulfilled.
+	 *
+	 * @return the user's actual gain
+	 *
+	 * @see #getPotentialGain()
+	 */
 	public BigDecimal getGain() {
 
-		return new Boolean(true).equals(bet.getOccurred()) ? getPotentialGain() : BigDecimal.ZERO;
+		return Boolean.TRUE.equals(bet.getOccurred()) ? getPotentialGain() : BigDecimal.ZERO;
 	}
 
 	/**
