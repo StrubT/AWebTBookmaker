@@ -15,39 +15,89 @@ public enum BetType {
 	//If you modify this enumerable, remember to modify the text bundle 'ch.bfh.awebt.bookmaker.bundles.bets' as well.
 
 	/**
-	 * Represents a bet on the winning team.
+	 * {0} kicks off
 	 */
-	TEAM_WINS("WIN", true, false, false),
+	TEAM_KICKS_OFF("KCK", false, true, true),
 
 	/**
-	 * Represents a bet on a tied outcome.
+	 * {0} scores first goal
 	 */
-	ENDS_TIED("EVN", false, false, false),
+	TEAM_SCORES_FIRST_GOAL("FGL", false, true, true),
 
 	/**
-	 * Represents a bet on the leading team after a specified playing time.
+	 * {0} awarded first throw in
 	 */
-	TEAM_LEADS_AFTER_TIME("LDT", true, true, false),
+	TEAM_AWARDED_FIRST_THROW_IN("FTW", false, true, true),
 
 	/**
-	 * Represents a bet on a tie after a specified playing time.
+	 * {0} leads after {1}
 	 */
-	TIED_AFTER_TIME("EVT", false, true, false),
+	TEAM_LEADS_AFTER_TIME("LDT", false, false, true),
 
 	/**
-	 * Represents a bet on the leading team after a specified playing time with a number of goals.
+	 * {0} leads after {1} with {2} or more goals
 	 */
-	TEAM_LEADS_AFTER_TIME_WITH_NOF_GOALS("LDG", true, true, true);
+	TEAM_LEADS_AFTER_TIME_WITH_NOF_GOALS("LDG", false, false, false),
+
+	/**
+	 * tied after {1}
+	 */
+	TIED_AFTER_TIME("EVT", true, false, true),
+
+	/**
+	 * {2} or more goals after {1}
+	 */
+	NOF_GOALS_AFTER_TIME("GLT", true, false, false),
+
+	/**
+	 * {0} wins
+	 */
+	TEAM_WINS("WIN", false, true, true),
+
+	/**
+	 * {0} wins leading with {2} or more goals
+	 */
+	TEAM_WINS_LEADING_WITH_NOF_GOALS("WNG", false, true, false),
+
+	/**
+	 * ends in a draw
+	 */
+	ENDS_TIED("EVN", true, true, true),
+
+	/**
+	 * ends with {2} or more goals
+	 */
+	ENDS_WITH_NOF_GOALS("GLS", true, true, false),
+
+	/**
+	 * ends with {2} or more cards combined
+	 */
+	ENDS_WITH_NOF_CARDS_COMBINED("CRD", true, true, false),
+
+	/**
+	 * ends with {2} or more yellow cards
+	 */
+	ENDS_WITH_NOF_YELLOW_CARDS("YEL", true, true, false),
+
+	/**
+	 * ends with {2} or more red cards
+	 */
+	ENDS_WITH_NOF_RED_CARDS("RED", true, true, false),
+
+	/**
+	 * ends with {2} or more corners
+	 */
+	ENDS_WITH_NOF_CORNERS("CRN", true, true, false);
 
 	private final String code;
-	private final boolean teamRequired, timeRequired, goalsRequired;
+	private final boolean teamRequired, timeRequired, numberRequired;
 
-	BetType(String code, boolean teamRequired, boolean timeRequired, boolean goalsRequired) {
+	BetType(String code, boolean teamRequired, boolean timeRequired, boolean numberRequired) {
 
 		this.code = code;
 		this.teamRequired = teamRequired;
 		this.timeRequired = timeRequired;
-		this.goalsRequired = goalsRequired;
+		this.numberRequired = numberRequired;
 	}
 
 	/**
@@ -67,8 +117,8 @@ public enum BetType {
 		return timeRequired;
 	}
 
-	public boolean isGoalsRequired() {
-		return goalsRequired;
+	public boolean isNumberRequired() {
+		return numberRequired;
 	}
 
 	/**

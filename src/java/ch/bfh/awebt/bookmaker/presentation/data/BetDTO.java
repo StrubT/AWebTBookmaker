@@ -20,7 +20,7 @@ public class BetDTO implements Serializable {
 	private Boolean occurred;
 	private String team;
 	private LocalTime time;
-	private Integer goals;
+	private Integer number;
 
 	private Integer user;
 	private BigDecimal stake;
@@ -45,7 +45,7 @@ public class BetDTO implements Serializable {
 		occurred = bet.getOccurred();
 		team = bet.getTeam() != null ? bet.getTeam().getCode() : null;
 		time = bet.getTime();
-		goals = bet.getGoals();
+		number = bet.getNumber();
 
 		used = !bet.getUserBets().isEmpty();
 	}
@@ -172,21 +172,21 @@ public class BetDTO implements Serializable {
 	}
 
 	/**
-	 * Gets the number of goals this bet refers to, if any.
+	 * Gets the number of goals / cards / etc. this bet refers to, if any.
 	 *
-	 * @return number of goals this bet refers to, or {@code null} if none
+	 * @return number of goals / cards / etc. this bet refers to, or {@code null} if none
 	 */
-	public Integer getGoals() {
-		return goals;
+	public Integer getNumber() {
+		return number;
 	}
 
 	/**
-	 * Sets the number of goals this bet refers to, if any.
+	 * Sets the number of goals / cards / etc. this bet refers to, if any.
 	 *
-	 * @param goals number of goals this bet refers to, or {@code null} if none
+	 * @param number number of goals / cards / etc. this bet refers to, or {@code null} if none
 	 */
-	public void setGoals(Integer goals) {
-		this.goals = goals;
+	public void setNumber(Integer number) {
+		this.number = number;
 	}
 
 	/**

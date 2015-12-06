@@ -60,7 +60,7 @@ public class Bet extends PersistentObject<Integer> implements Serializable {
 	private LocalTime time;
 
 	@Column(name = "goals")
-	private Integer goals;
+	private Integer number;
 
 	@OneToMany(mappedBy = "bet", fetch = FetchType.LAZY)
 	private List<UserBet> userBets;
@@ -145,9 +145,9 @@ public class Bet extends PersistentObject<Integer> implements Serializable {
 	 * @param occurred whether or not this the situation this bet refers to actually occurred
 	 * @param team     team this bet refers to
 	 * @param time     playing time this bet refers to
-	 * @param goals    number of goals this bet refers to
+	 * @param number   number of goals / cards / etc. this bet refers to
 	 */
-	public Bet(Game game, BetType type, BigDecimal odds, Boolean occurred, Team team, LocalTime time, Integer goals) {
+	public Bet(Game game, BetType type, BigDecimal odds, Boolean occurred, Team team, LocalTime time, Integer number) {
 		this();
 
 		this.game = game;
@@ -156,7 +156,7 @@ public class Bet extends PersistentObject<Integer> implements Serializable {
 		this.occurred = occurred;
 		this.team = team;
 		this.time = time;
-		this.goals = goals;
+		this.number = number;
 	}
 
 	@Override
@@ -282,21 +282,21 @@ public class Bet extends PersistentObject<Integer> implements Serializable {
 	}
 
 	/**
-	 * Gets the number of goals this bet refers to, if any.
+	 * Gets the number of goals / cards / etc. this bet refers to, if any.
 	 *
-	 * @return number of goals this bet refers to, or {@code null} if none
+	 * @return number of goals / cards / etc. this bet refers to, or {@code null} if none
 	 */
-	public Integer getGoals() {
-		return goals;
+	public Integer getNumber() {
+		return number;
 	}
 
 	/**
-	 * Sets the number of goals this bet refers to, if any.
+	 * Sets the number of goals / cards / etc. this bet refers to, if any.
 	 *
-	 * @param goals number of goals this bet refers to, or {@code null} if none
+	 * @param number number of goals / cards / etc. this bet refers to, or {@code null} if none
 	 */
-	public void setGoals(Integer goals) {
-		this.goals = goals;
+	public void setNumber(Integer number) {
+		this.number = number;
 	}
 
 	/**

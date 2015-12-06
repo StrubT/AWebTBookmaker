@@ -209,7 +209,7 @@ public class GameBean implements Serializable {
 				gameTeam1 = gameTeam2 = null;
 				gameStartTime = null;
 
-				gameBets = new ArrayList<>();
+				gameBets = loginBean.getNavigationBean().getCurrentView().equals("/managers/game.xhtml") ? new ArrayList<>(Arrays.asList(new BetDTO())) : new ArrayList<>();
 				gameUsed = false;
 			}
 		}
@@ -460,6 +460,46 @@ public class GameBean implements Serializable {
 		return LocalDate.now().getYear() + 25;
 	}
 
+	public int getNumberOfBets() {
+		return loginBean.getUser().getBets().size();
+	}
+
+	public double getBetsPercentageWon() {
+
+		List<UserBet> bets = loginBean.getUser().getBets();
+		if (bets.size() == 0)
+			return 0.0;
+
+		return new ArrayList<>(bets).stream().filter(b -> new Boolean(true).equals(b.getBet().getOccurred())).count() / (double)bets.size(); //BUGFIX: new ArrayList<>(...) needed in eclipselink < 2.7
+	}
+
+	public double getBetsPercentageLost() {
+
+		List<UserBet> bets = loginBean.getUser().getBets();
+		if (bets.size() == 0)
+			return 0.0;
+
+		return new ArrayList<>(bets).stream().filter(b -> new Boolean(false).equals(b.getBet().getOccurred())).count() / (double)bets.size(); //BUGFIX: new ArrayList<>(...) needed in eclipselink < 2.7
+	}
+
+	public BigDecimal getBetsAmountWon() {
+
+		return new ArrayList<>(loginBean.getUser().getBets()).stream().filter(b -> new Boolean(true).equals(b.getBet().getOccurred()))
+			.reduce(BigDecimal.ZERO, (a, b) -> a.add(b.getStake().multiply(b.getBet().getOdds())), (a, b) -> a.add(b));
+	}
+
+	public BigDecimal getBetsAmountLost() {
+
+		return new ArrayList<>(loginBean.getUser().getBets()).stream().filter(b -> new Boolean(false).equals(b.getBet().getOccurred())) //BUGFIX: new ArrayList<>(...) needed in eclipselink < 2.7
+			.reduce(BigDecimal.ZERO, (a, b) -> a.add(b.getStake().multiply(b.getBet().getOdds())), (a, b) -> a.add(b));
+	}
+
+	public BigDecimal getBetsAmountSum() {
+
+		return new ArrayList<>(loginBean.getUser().getBets()).stream().filter(b -> b.getBet().getOccurred() != null) //BUGFIX: new ArrayList<>(...) needed in eclipselink < 2.7
+			.reduce(BigDecimal.ZERO, (a, b) -> a.add((b.getBet().getOccurred() ? BigDecimal.ONE : BigDecimal.ONE.negate()).multiply(b.getStake()).multiply(b.getBet().getOdds())), (a, b) -> a.add(b));
+	}
+
 	/**
 	 * Gets a {@link List} of all teams.
 	 *
@@ -555,18 +595,25 @@ public class GameBean implements Serializable {
 				for (BetDTO betDTO: gameBets) {
 					Bet bet = betDTO.getId() != null ? new ArrayList<>(gameBetsOld).stream().filter(b -> b.getId().equals(betDTO.getId())).collect(Streams.nullableSingleCollector()) : null; //BUGFIX: new ArrayList<>(...) needed in eclipselink < 2.7
 					if (bet != null) {
+						if (bet.getType().isTeamRequired() && betDTO.getTeam() == null
+								&& bet.getType().isTimeRequired() && betDTO.getTime() == null
+								&& bet.getType().isNumberRequired() && betDTO.getNumber() == null) {
+							MessageFactory.addWarning("ch.bfh.awebt.bookmaker.GAME_BET_PROPERTY_MISSING");
+							return null;
+						}
+
 						if (!passed && bet.getUserBets().isEmpty()) {
 							bet.setType(betDTO.getType());
 							bet.setTeam(getTeamDAO().find(betDTO.getTeam()));
 							bet.setTime(betDTO.getTime());
-							bet.setGoals(betDTO.getGoals());
+							bet.setNumber(betDTO.getNumber());
 							bet.setOdds(betDTO.getOdds());
 						} else
 							bet.setOccurred(betDTO.getOccurred());
 						getBetDAO().merge(bet);
 
 					} else
-						getBetDAO().persist(bet = new Bet(game, betDTO.getType(), betDTO.getOdds(), null, getTeamDAO().find(betDTO.getTeam()), betDTO.getTime(), betDTO.getGoals()));
+						getBetDAO().persist(bet = new Bet(game, betDTO.getType(), betDTO.getOdds(), null, getTeamDAO().find(betDTO.getTeam()), betDTO.getTime(), betDTO.getNumber()));
 				}
 
 				for (Bet bet: gameBetsOld) {

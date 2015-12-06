@@ -66,22 +66,24 @@
 					<h:dataTable value="#{gameBean.gameBets}" var="bet" class="table table-condensed table-striped">
 						<h:column>
 							<f:facet name="header">#{texts.GameBetTypeLabel}</f:facet>
-							<h:selectOneListbox size="1" value="#{bet.type}" class="form-control input-sm" rendered="#{not (gameBean.gamePassed or bet.used)}">
-								<f:selectItems value="#{gameBean.betTypes}" var="betType" itemValue="#{betType}" itemLabel="#{bets[betType.code]}" />
+							<h:selectOneListbox size="1" value="#{bet.type}" class="form-control input-sm bet-type" rendered="#{not (gameBean.gamePassed or bet.used)}">
+								<f:selectItems value="#{gameBean.betTypes}" var="betType" itemValue="#{betType}" itemLabel="#{bets[betType.code]}">
+									<f:passThroughAttribute name="data-code" value="#{betType.code}" />
+								</f:selectItems>
 							</h:selectOneListbox>
-							<h:selectOneListbox size="1" value="#{bet.type}" class="form-control input-sm" rendered="#{gameBean.gamePassed or bet.used}">
+							<h:selectOneListbox size="1" value="#{bet.type}" class="form-control input-sm bet-type" rendered="#{gameBean.gamePassed or bet.used}">
 								<f:passThroughAttribute name="disabled" value="disabled" />
 								<f:selectItems value="#{gameBean.betTypes}" var="betType" itemValue="#{betType}" itemLabel="#{bets[betType.code]}" />
 							</h:selectOneListbox>
 						</h:column>
 						<h:column>
 							<f:facet name="header">#{texts.GameBetTeamLabel}</f:facet>
-							<h:selectOneListbox size="1" value="#{bet.team}" class="form-control input-sm" rendered="#{not (gameBean.gamePassed or bet.used)}">
+							<h:selectOneListbox size="1" value="#{bet.team}" class="form-control input-sm bet-team" rendered="#{not (gameBean.gamePassed or bet.used)}">
 								<f:selectItem itemValue="#{null}" itemLabel="n/a" />
 								<f:selectItem itemValue="#{gameBean.gameTeam1}" itemLabel="#{teams[gameBean.gameTeam1]}" />
 								<f:selectItem itemValue="#{gameBean.gameTeam2}" itemLabel="#{teams[gameBean.gameTeam2]}" />
 							</h:selectOneListbox>
-							<h:selectOneListbox size="1" value="#{bet.team}" class="form-control input-sm" rendered="#{gameBean.gamePassed or bet.used}">
+							<h:selectOneListbox size="1" value="#{bet.team}" class="form-control input-sm bet-team" rendered="#{gameBean.gamePassed or bet.used}">
 								<f:passThroughAttribute name="disabled" value="disabled" />
 								<f:selectItem itemValue="#{null}" itemLabel="n/a" />
 								<f:selectItem itemValue="#{gameBean.gameTeam1}" itemLabel="#{teams[gameBean.gameTeam1]}" />
@@ -90,19 +92,19 @@
 						</h:column>
 						<h:column>
 							<f:facet name="header">#{texts.GameBetTimeLabel}</f:facet>
-							<h:inputText id="betTimeField" readonly="#{gameBean.gamePassed or bet.used}" value="#{bet.time}" class="form-control input-sm" converter="ch.bfh.awebt.bookmaker.LOCAL_TIME_CONVERTER">
+							<h:inputText id="betTimeField" readonly="#{gameBean.gamePassed or bet.used}" value="#{bet.time}" class="form-control input-sm bet-time" converter="ch.bfh.awebt.bookmaker.LOCAL_TIME_CONVERTER">
 								<f:passThroughAttribute name="type" value="time" />
 							</h:inputText>
 							<h:message for="betTimeField" infoClass="text-success" warnClass="text-warning" errorClass="text-danger" fatalClass="text-danger bg-danger" />
 						</h:column>
 						<h:column>
-							<f:facet name="header">#{texts.GameBetGoalsLabel}</f:facet>
-							<h:inputText id="betGoalsField" readonly="#{gameBean.gamePassed or bet.used}" value="#{bet.goals}" class="form-control input-sm">
+							<f:facet name="header">#{texts.GameBetNumberLabel}</f:facet>
+							<h:inputText id="betNumberField" readonly="#{gameBean.gamePassed or bet.used}" value="#{bet.number}" class="form-control input-sm bet-number">
 								<f:validateLongRange minimum="0" />
 								<f:passThroughAttribute name="type" value="number" />
 								<f:passThroughAttribute name="min" value="0" />
 							</h:inputText>
-							<h:message for="betGoalsField" infoClass="text-success" warnClass="text-warning" errorClass="text-danger" fatalClass="text-danger bg-danger" />
+							<h:message for="betNumberField" infoClass="text-success" warnClass="text-warning" errorClass="text-danger" fatalClass="text-danger bg-danger" />
 						</h:column>
 						<h:column>
 							<f:facet name="header">#{texts.GameBetOddsLabel}</f:facet>
@@ -144,5 +146,23 @@
 				</div>
 			</div>
 		</div>
+		<script>
+			/*<![CDATA[*/
+			var betTypes = {};
+			$(function () {
+				$('main').on('change', '.bet-type', function () {
+					var $type = $(this), settings = betTypes[$type.find('option[value="' + $type.val() + '"]').data('code')], $tr = $type.closest('tr');
+					if (!$type.prop('disabled') && settings) {
+						$team = $tr.find('.bet-team').prop('disabled', settings.team);
+						$team = $tr.find('.bet-time').prop('readonly', settings.time);
+						$team = $tr.find('.bet-number').prop('readonly', settings.number);
+					}
+				}).find('.bet-type').trigger('change');
+			});
+			/*]]>*/
+		</script>
+		<c:forEach items="#{gameBean.betTypes}" var="type">
+			<script>betTypes['#{type.code}'] = {team: #{type.teamRequired}, time: #{type.timeRequired}, number: #{type.numberRequired}};</script>
+		</c:forEach>
 	</ui:define>
 </ui:composition>

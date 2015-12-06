@@ -237,14 +237,34 @@ public class LoginBean implements Serializable {
 		this.timeZone = timeZone;
 	}
 
-	public String formatNumber(BigDecimal number) {
+	public String formatNumberUser(BigDecimal number) {
 
 		return number != null ? NumberFormat.getNumberInstance(locale).format(number) : null;
 	}
 
-	public String formatPercent(BigDecimal number) {
+	public String formatNumberUser(int number) {
+
+		return formatNumberUser((long)number);
+	}
+
+	public String formatNumberUser(long number) {
+
+		return NumberFormat.getNumberInstance(locale).format(number);
+	}
+
+	public String formatNumberUser(double number) {
+
+		return NumberFormat.getNumberInstance(locale).format(number);
+	}
+
+	public String formatPercentUser(BigDecimal number) {
 
 		return number != null ? NumberFormat.getPercentInstance(locale).format(number) : null;
+	}
+
+	public String formatPercentUser(double number) {
+
+		return NumberFormat.getPercentInstance(locale).format(number);
 	}
 
 	/**
