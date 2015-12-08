@@ -9,7 +9,7 @@
 								xmlns:cc="http://java.sun.com/jsf/composite/custom-components">
 	<ui:define name="main">
 		<h2>#{texts.GamePastTitle}</h2>
-		<p>
+		<c:when test="#{not empty gameBean.pastGames}">
 			<h:dataTable value="#{gameBean.pastGames}" var="game" class="table table-condensed table-striped">
 				<h:column>
 					<h:link outcome="/managers/game.xhtml?id=#{game.id}">#{texts.GameDetailsLink}</h:link>
@@ -31,6 +31,9 @@
 					<span class="glyphicon glyphicon-#{game.evaluated ? 'ok' : 'remove'}"></span>
 				</h:column>
 			</h:dataTable>
-		</p>
+		</c:when>
+		<c:otherwise>
+			<p class="text-muted">#{texts.NoItemsFound}</p>
+		</c:otherwise>
 	</ui:define>
 </ui:composition>

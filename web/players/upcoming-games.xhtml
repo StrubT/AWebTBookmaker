@@ -9,7 +9,7 @@
 								xmlns:cc="http://java.sun.com/jsf/composite/custom-components">
 	<ui:define name="main">
 		<h2>#{texts.GameUpcomingTitle}</h2>
-		<p>
+		<c:when test="#{not empty gameBean.upcomingGames}">
 			<h:dataTable value="#{gameBean.upcomingGames}" var="game" class="table table-condensed table-striped">
 				<h:column>
 					<h:link outcome="/players/game.xhtml?id=#{game.id}">#{texts.GameDetailsLink}</h:link>
@@ -27,6 +27,9 @@
 					<time datetime="#{loginBean.formatDateTimeISO(game.startTimeZoned)}">#{loginBean.formatDateTimeUser(game.startTimeZoned, false)}</time>
 				</h:column>
 			</h:dataTable>
-		</p>
+		</c:when>
+		<c:otherwise>
+			<p class="text-muted">#{texts.NoItemsFound}</p>
+		</c:otherwise>
 	</ui:define>
 </ui:composition>
