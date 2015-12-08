@@ -27,6 +27,14 @@
 						<f:facet name="header">#{texts.GameStartTimeLabel} (#{loginBean.formatTimeZoneUser(loginBean.timeZone, false)})</f:facet>
 						<time datetime="#{loginBean.formatDateTimeISO(game.startTimeZoned)}">#{loginBean.formatDateTimeUser(game.startTimeZoned, false)}</time>
 					</h:column>
+					<h:column>
+						<f:facet name="header">#{texts.GameBetStakeLabel}</f:facet>
+						<span>#{game.totalStake}</span>
+					</h:column>
+					<h:column>
+						<f:facet name="header">#{texts.GameBetStakeLabel} &#8901; #{texts.GameBetOddsLabel}</f:facet>
+						<span>#{game.totalPotentialGain}</span>
+					</h:column>
 				</h:dataTable>
 			</c:when>
 			<c:otherwise>

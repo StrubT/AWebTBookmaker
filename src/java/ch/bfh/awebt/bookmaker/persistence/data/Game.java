@@ -1,6 +1,7 @@
 package ch.bfh.awebt.bookmaker.persistence.data;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -202,11 +203,46 @@ public class Game extends PersistentObject<Integer> implements Serializable {
 		return Collections.unmodifiableList(bets);
 	}
 
+	/**
+	 * Gets whether or not all the bets have been evaluated.
+	 *
+	 * @return whether or not all the bets have been evaluated
+	 */
 	public boolean isEvaluated() {
 
 		for (Bet bet: bets)
 			if (bet.getOccurred() == null)
 				return false;
 		return true;
+	}
+
+	/**
+	 * Gets the total stake of a game.
+	 *
+	 * @return the total Stake
+	 */
+	public BigDecimal getTotalStake() {
+
+		BigDecimal totalStake = BigDecimal.ZERO;
+		for (Bet bet: bets)
+			for (UserBet userBet: bet.getUserBets())
+				totalStake = totalStake.add(userBet.getStake());
+
+		return totalStake;
+	}
+
+	/**
+	 * Gets the total potential gain of a game.
+	 *
+	 * @return the total potential gain
+	 */
+	public BigDecimal getTotalPotentialGain() {
+
+		BigDecimal totalStake = BigDecimal.ZERO;
+		for (Bet bet: bets)
+			for (UserBet userBet: bet.getUserBets())
+				totalStake = totalStake.add(userBet.getStake().multiply(bet.getOdds()));
+
+		return totalStake;
 	}
 }

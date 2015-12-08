@@ -29,7 +29,11 @@
 					</h:column>
 					<h:column>
 						<f:facet name="header">#{texts.GameEvaluatedLabel}</f:facet>
-						<span class="glyphicon glyphicon-#{game.evaluated ? 'ok' : 'remove'}"></span>
+						<span class="glyphicon glyphicon-#{game.evaluated ? 'ok' : 'remove'} text-#{game.evaluated ? 'success' : 'danger'}"></span>
+					</h:column>
+					<h:column>
+						<f:facet name="header">#{texts.GameBetAmountSumLabel}</f:facet>
+						<span>#{game.totalStake}</span>
 					</h:column>
 				</h:dataTable>
 			</c:when>
