@@ -27,14 +27,14 @@ public abstract class GenericDAO<T extends PersistentObject<K>, K> {
 	 */
 	public static final String PERSISTENCE_UNIT = "bookmaker";
 
-	private transient EntityManager _entityManager;
+	private static EntityManager _entityManager;
 
 	/**
 	 * Gets an entity manager for the configured {@link #PERSISTENCE_UNIT}.
 	 *
 	 * @return entity manager for the configured persistence unit
 	 */
-	protected EntityManager getEntityManager() {
+	protected static EntityManager getEntityManager() {
 
 		if (_entityManager == null)
 			_entityManager = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT).createEntityManager();

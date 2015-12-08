@@ -156,7 +156,7 @@ public class UserBet extends PersistentObject<UserBet.PK> implements Serializabl
 	 */
 	public BigDecimal getGain() {
 
-		return Boolean.TRUE.equals(bet.getOccurred()) ? getPotentialGain() : BigDecimal.ZERO;
+		return Boolean.TRUE.equals(bet.getOccurred()) ? getPotentialGain() : stake.negate();
 	}
 
 	/**

@@ -293,6 +293,11 @@ public class User extends PersistentObject<Integer> implements Serializable {
 		this.balance = balance;
 	}
 
+	public BigDecimal bookAmount(BigDecimal amount, boolean deposit) {
+
+		return balance = deposit ? balance.add(amount) : balance.subtract(amount);
+	}
+
 	/**
 	 * Deposits an amount in the user's account with the bookmaker.
 	 *
@@ -301,8 +306,7 @@ public class User extends PersistentObject<Integer> implements Serializable {
 	 * @return new balance of the user's account
 	 */
 	public BigDecimal deposit(BigDecimal amount) {
-
-		return this.balance = this.balance.add(amount);
+		return bookAmount(amount, true);
 	}
 
 	/**
@@ -313,8 +317,7 @@ public class User extends PersistentObject<Integer> implements Serializable {
 	 * @return new balance of the user's account
 	 */
 	public BigDecimal withdraw(BigDecimal amount) {
-
-		return this.balance = this.balance.subtract(amount);
+		return bookAmount(amount, false);
 	}
 
 	/**

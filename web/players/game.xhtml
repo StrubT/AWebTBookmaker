@@ -39,15 +39,25 @@
 							</h:column>
 							<h:column rendered="#{loginBean.userHasAccess('REGISTERED')}">
 								<f:facet name="header">#{texts.GameBetStakeLabel} (#{texts.Currency})</f:facet>
-								<h:inputText id="betStakeField" value="#{bet.stake}" class="form-control input-sm" required="true" converter="ch.bfh.awebt.bookmaker.CURRENCY_CONVERTER" validator="ch.bfh.awebt.bookmaker.CURRENCY_VALIDATOR">
+								<h:inputText id="betStakeField" value="#{bet.stake}" rendered="#{not gameBean.gamePassed}" class="form-control input-sm" required="true" converter="ch.bfh.awebt.bookmaker.CURRENCY_CONVERTER" validator="ch.bfh.awebt.bookmaker.CURRENCY_VALIDATOR">
 									<f:passThroughAttribute name="type" value="number" />
 									<f:passThroughAttribute name="required" value="required" />
 									<f:passThroughAttribute name="min" value="0" />
 									<f:passThroughAttribute name="step" value="0.001" />
 								</h:inputText>
+								<h:panelGroup rendered="#{gameBean.gamePassed}" class="form-control-static">#{bet.stake gt 0 ? loginBean.formatNumberUser(bet.stake) : '-'}</h:panelGroup>
 								<h:message for="betStakeField" infoClass="text-success" warnClass="text-warning" errorClass="text-danger" fatalClass="text-danger bg-danger" />
 								<f:facet name="footer">
-									<h:commandButton id="confirmUserBetsButton" action="#{gameBean.confirmUserBets}" class="btn btn-default" value="#{texts.GameBetSaveButton}" />
+									<h:commandButton id="confirmUserBetsButton" action="#{gameBean.confirmUserBets}" rendered="#{not gameBean.gamePassed}" class="btn btn-default" value="#{texts.GameBetSaveButton}" />
+								</f:facet>
+							</h:column>
+							<h:column rendered="#{loginBean.userHasAccess('REGISTERED') and gameBean.gamePassed}">
+								<f:facet name="header">#{texts.GameBetAmountSumLabel}</f:facet>
+								<span class="#{bet.stake gt 0 ? (bet.gain gt 0 ? 'text-success' : 'text-danger') : null}">#{bet.stake gt 0 ? loginBean.formatNumberUser(bet.gain) : '-'}</span>
+								<f:facet name="footer">
+									<span class="text-success">#{loginBean.formatNumberUser(gameBean.gameBetsAmountWon)}</span>
+									<span class="text-danger">- #{loginBean.formatNumberUser(gameBean.gameBetsAmountLost)}</span><br />
+									<strong class="text-#{gameBean.gameBetsAmountSum ge 0 ? 'success' : 'danger'}">= #{loginBean.formatNumberUser(gameBean.gameBetsAmountSum)}</strong>
 								</f:facet>
 							</h:column>
 						</h:dataTable>

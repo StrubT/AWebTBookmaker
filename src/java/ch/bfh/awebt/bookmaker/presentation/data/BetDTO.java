@@ -3,6 +3,7 @@ package ch.bfh.awebt.bookmaker.presentation.data;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import ch.bfh.awebt.bookmaker.persistence.data.Bet;
 import ch.bfh.awebt.bookmaker.persistence.data.BetType;
 import ch.bfh.awebt.bookmaker.persistence.data.UserBet;
@@ -23,8 +24,9 @@ public class BetDTO implements Serializable {
 	private Integer number;
 
 	private Integer user;
-	private BigDecimal stake;
+	private BigDecimal stake, gain;
 
+	private BigDecimal totalStake;
 	private boolean used;
 
 	public BetDTO() {
@@ -47,6 +49,7 @@ public class BetDTO implements Serializable {
 		time = bet.getTime();
 		number = bet.getNumber();
 
+		totalStake = new ArrayList<>(bet.getUserBets()).stream().reduce(BigDecimal.ZERO, (a, b) -> a.add(b.getStake()), (a, b) -> a.add(b)); //BUGFIX: new ArrayList<>(...) needed in eclipselink < 2.7
 		used = !bet.getUserBets().isEmpty();
 	}
 
@@ -61,6 +64,7 @@ public class BetDTO implements Serializable {
 
 		user = userBet.getUser().getId();
 		stake = userBet.getStake();
+		gain = userBet.getGain();
 	}
 
 	/**
@@ -225,6 +229,18 @@ public class BetDTO implements Serializable {
 		this.stake = stake;
 	}
 
+	public BigDecimal getGain() {
+		return gain;
+	}
+
+	public void setGain(BigDecimal gain) {
+		this.gain = gain;
+	}
+
+	public BigDecimal getTotalStake() {
+		return totalStake;
+	}
+
 	/**
 	 * Gets whether or not this bet is is use.
 	 * (Whether or not any users put stakes on this bet.)
@@ -233,5 +249,10 @@ public class BetDTO implements Serializable {
 	 */
 	public boolean isUsed() {
 		return used;
+	}
+
+	public BigDecimal getTotalGain() {
+
+		return totalStake.multiply(odds);
 	}
 }

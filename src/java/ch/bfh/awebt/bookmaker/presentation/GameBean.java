@@ -305,16 +305,6 @@ public class GameBean implements Serializable {
 	}
 
 	/**
-	 * Gets the minimum start time supported for this game.
-	 *
-	 * @return minimum start time supported
-	 */
-	public LocalDateTime getGameStartTimeMinimum() {
-
-		return LocalDate.now().atStartOfDay();
-	}
-
-	/**
 	 * Gets the time zone the game's scheduled start date &amp; time.
 	 *
 	 * @return time zone the game's scheduled start date &amp; time
@@ -516,6 +506,23 @@ public class GameBean implements Serializable {
 		return LocalDate.now().getYear() + 25;
 	}
 
+	public BigDecimal getGameBetsAmountWon() {
+
+		return gameBets.stream().filter(b -> Boolean.TRUE.equals(b.getOccurred()))
+			.reduce(BigDecimal.ZERO, (a, b) -> a.add(b.getStake().multiply(b.getOdds())), (a, b) -> a.add(b));
+	}
+
+	public BigDecimal getGameBetsAmountLost() {
+
+		return gameBets.stream().filter(b -> Boolean.FALSE.equals(b.getOccurred()))
+			.reduce(BigDecimal.ZERO, (a, b) -> a.add(b.getStake()), (a, b) -> a.add(b));
+	}
+
+	public BigDecimal getGameBetsAmountSum() {
+
+		return getGameBetsAmountWon().subtract(getGameBetsAmountLost());
+	}
+
 	/**
 	 * Gets the number of bets the user put stakes on.
 	 *
@@ -561,7 +568,7 @@ public class GameBean implements Serializable {
 	 */
 	public BigDecimal getUserBetsAmountWon() {
 
-		return new ArrayList<>(loginBean.getUser().getBets()).stream().filter(b -> Boolean.TRUE.equals(b.getBet().getOccurred()))
+		return new ArrayList<>(loginBean.getUser().getBets()).stream().filter(b -> Boolean.TRUE.equals(b.getBet().getOccurred())) //BUGFIX: new ArrayList<>(...) needed in eclipselink < 2.7
 			.reduce(BigDecimal.ZERO, (a, b) -> a.add(b.getStake().multiply(b.getBet().getOdds())), (a, b) -> a.add(b));
 	}
 
@@ -573,7 +580,7 @@ public class GameBean implements Serializable {
 	public BigDecimal getUserBetsAmountLost() {
 
 		return new ArrayList<>(loginBean.getUser().getBets()).stream().filter(b -> Boolean.FALSE.equals(b.getBet().getOccurred())) //BUGFIX: new ArrayList<>(...) needed in eclipselink < 2.7
-			.reduce(BigDecimal.ZERO, (a, b) -> a.add(b.getStake().multiply(b.getBet().getOdds())), (a, b) -> a.add(b));
+			.reduce(BigDecimal.ZERO, (a, b) -> a.add(b.getStake()), (a, b) -> a.add(b));
 	}
 
 	/**
@@ -587,8 +594,7 @@ public class GameBean implements Serializable {
 	 */
 	public BigDecimal getUserBetsAmountSum() {
 
-		return new ArrayList<>(loginBean.getUser().getBets()).stream().filter(b -> b.getBet().getOccurred() != null) //BUGFIX: new ArrayList<>(...) needed in eclipselink < 2.7
-			.reduce(BigDecimal.ZERO, (a, b) -> a.add((b.getBet().getOccurred() ? BigDecimal.ONE : BigDecimal.ONE.negate()).multiply(b.getStake()).multiply(b.getBet().getOdds())), (a, b) -> a.add(b));
+		return getUserBetsAmountWon().subtract(getUserBetsAmountLost());
 	}
 
 	/**
@@ -680,46 +686,68 @@ public class GameBean implements Serializable {
 			Team team1 = getTeamDAO().find(gameTeam1);
 			Team team2 = getTeamDAO().find(gameTeam2);
 			ZonedDateTime startTimeZoned = ZonedDateTime.of(gameStartTime, gameTimeZone);
-			boolean passed = isGamePassed();
 
-			if (!passed) {
-				Game game = gameId != null ? getGameDAO().find(gameId) : null;
-				if (game != null) {
-					game.setTeam1(team1);
-					game.setTeam2(team2);
-					game.setStartTimeZoned(startTimeZoned);
-					getGameDAO().merge(game);
+			Game game = gameId != null ? getGameDAO().find(gameId) : null;
+			boolean passed = game != null && game.getStartTimeUTC() != null ? game.getStartTimeUTC().isBefore(LocalDateTime.now(Game.ZONE_UTC)) : false;
 
-				} else {
-					getGameDAO().persist(game = new Game(team1, team2, startTimeZoned));
-					gameId = game.getId();
-				}
+			if (game != null) {
+				game.setTeam1(team1);
+				game.setTeam2(team2);
+				game.setStartTimeZoned(startTimeZoned);
+				getGameDAO().merge(game);
 
-				List<Bet> gameBetsOld = game.getBets();
-				for (BetDTO betDTO: gameBets) {
-					Bet bet = betDTO.getId() != null ? new ArrayList<>(gameBetsOld).stream().filter(b -> b.getId().equals(betDTO.getId())).collect(Streams.nullableSingleCollector()) : null; //BUGFIX: new ArrayList<>(...) needed in eclipselink < 2.7
-					if (bet != null) {
-						if (bet.getType().isTeamRequired() && betDTO.getTeam() == null
-								&& bet.getType().isTimeRequired() && betDTO.getTime() == null
-								&& bet.getType().isNumberRequired() && betDTO.getNumber() == null) {
-							MessageFactory.addWarning("ch.bfh.awebt.bookmaker.GAME_BET_PROPERTY_MISSING");
-							return null;
-						}
+			} else {
+				getGameDAO().persist(game = new Game(team1, team2, startTimeZoned));
+				gameId = game.getId();
+			}
 
-						if (!passed && bet.getUserBets().isEmpty()) {
+			List<Bet> gameBetsOld = game.getBets();
+			for (BetDTO betDTO: gameBets) {
+				Bet bet = betDTO.getId() != null ? new ArrayList<>(gameBetsOld).stream().filter(b -> b.getId().equals(betDTO.getId())).collect(Streams.nullableSingleCollector()) : null; //BUGFIX: new ArrayList<>(...) needed in eclipselink < 2.7
+				if (bet != null) {
+					if (bet.getType().isTeamRequired() && betDTO.getTeam() == null
+							&& bet.getType().isTimeRequired() && betDTO.getTime() == null
+							&& bet.getType().isNumberRequired() && betDTO.getNumber() == null) {
+						MessageFactory.addWarning("ch.bfh.awebt.bookmaker.GAME_BET_PROPERTY_MISSING");
+						return null;
+					}
+
+					if (!passed)
+						if (bet.getUserBets().isEmpty()) {
 							bet.setType(betDTO.getType());
-							bet.setTeam(getTeamDAO().find(betDTO.getTeam()));
+							bet.setTeam(betDTO.getTeam() != null ? getTeamDAO().find(betDTO.getTeam()) : null);
 							bet.setTime(betDTO.getTime());
 							bet.setNumber(betDTO.getNumber());
 							bet.setOdds(betDTO.getOdds());
+							getBetDAO().merge(bet);
+
 						} else
-							bet.setOccurred(betDTO.getOccurred());
+							continue; //don't save changes
+
+					else { //already passed
+						Boolean old = bet.getOccurred();
+						bet.setOccurred(betDTO.getOccurred());
 						getBetDAO().merge(bet);
 
-					} else
-						getBetDAO().persist(bet = new Bet(game, betDTO.getType(), betDTO.getOdds(), null, getTeamDAO().find(betDTO.getTeam()), betDTO.getTime(), betDTO.getNumber()));
-				}
+						for (UserBet userBet: bet.getUserBets()) {
+							User user = getUserDAO().find(userBet.getUser().getId());
+							if (old != null)
+								user.bookAmount(bet.getOdds().multiply(userBet.getStake()), !old); //reverse old setting
+							if (bet.getOccurred() != null)
+								user.bookAmount(bet.getOdds().multiply(userBet.getStake()), bet.getOccurred()); //apply new outcome
 
+							getUserDAO().merge(user);
+						}
+					}
+
+				} else if (!passed)
+					getBetDAO().persist(bet = new Bet(game, betDTO.getType(), betDTO.getOdds(), null, getTeamDAO().find(betDTO.getTeam()), betDTO.getTime(), betDTO.getNumber()));
+
+				else
+					MessageFactory.addError("ch.bfh.awebt.bookmaker.GAME_CANNOT_CREATE_PAST");
+			}
+
+			if (!passed)
 				for (Bet bet: gameBetsOld) {
 					BetDTO betDTO = gameBets.stream().filter(b -> bet.getId().equals(b.getId())).collect(Streams.nullableSingleCollector());
 					if (betDTO == null)
@@ -732,11 +760,8 @@ public class GameBean implements Serializable {
 						}
 				}
 
-				//return String.format("/players/game.xhtml?id=%d&faces-redirect=true", game.getId());
-				return "/managers/upcoming-games.xhtml?faces-redirect=true";
-
-			} else
-				MessageFactory.addError("ch.bfh.awebt.bookmaker.GAME_CANNOT_CREATE_PAST");
+			//return String.format("/players/game.xhtml?id=%d&faces-redirect=true", game.getId());
+			return String.format("/managers/%s-games.xhtml?faces-redirect=true", isGamePassed() ? "past" : "upcoming");
 
 		} catch (PersistenceException ex) {
 			MessageFactory.addError("ch.bfh.awebt.bookmaker.PERSISTENCE_ERROR");
@@ -777,23 +802,27 @@ public class GameBean implements Serializable {
 	 */
 	public void confirmUserBets() {
 
-		statusConfirmation = true;
+		if (!isGamePassed()) {
+			statusConfirmation = true;
 
-		UserBetDAO userBetDAO = getUserBetDAO();
-		gameBetAmount = BigDecimal.ZERO;
-		for (BetDTO bet: gameBets) {
-			UserBet userBet = userBetDAO.findByUserAndBet(loginBean.getUserId(), bet.getId());
-			gameBetAmount = gameBetAmount.add(bet.getStake().subtract(userBet != null ? userBet.getStake() : BigDecimal.ZERO));
-		}
+			UserBetDAO userBetDAO = getUserBetDAO();
+			gameBetAmount = BigDecimal.ZERO;
+			for (BetDTO bet: gameBets) {
+				UserBet userBet = userBetDAO.findByUserAndBet(loginBean.getUserId(), bet.getId());
+				gameBetAmount = gameBetAmount.add(bet.getStake().subtract(userBet != null ? userBet.getStake() : BigDecimal.ZERO));
+			}
 
-		User user = loginBean.getUser();
-		gamePaymentAmount = gameBetAmount.compareTo(user.getBalance()) > 0 ? gameBetAmount.subtract(user.getBalance()) : BigDecimal.ZERO;
+			User user = loginBean.getUser();
+			gamePaymentAmount = gameBetAmount.compareTo(user.getBalance()) > 0 ? gameBetAmount.subtract(user.getBalance()) : BigDecimal.ZERO;
 
-		gamePaymentCreditCardNumber = gamePaymentCreditCardCode = null;
+			gamePaymentCreditCardNumber = gamePaymentCreditCardCode = null;
 
-		LocalDate date = LocalDate.now();
-		gamePaymentCreditCardExpirationYear = date.getYear();
-		gamePaymentCreditCardExpirationMonth = date.getMonthValue();
+			LocalDate date = LocalDate.now();
+			gamePaymentCreditCardExpirationYear = date.getYear();
+			gamePaymentCreditCardExpirationMonth = date.getMonthValue();
+
+		} else
+			MessageFactory.addError("ch.bfh.awebt.bookmaker.GAME_CANNOT_BET_PAST");
 	}
 
 	/**
@@ -812,42 +841,46 @@ public class GameBean implements Serializable {
 	 */
 	public void saveUserBets() {
 
-		try {
-			User user = loginBean.getUser();
-			BetDAO betDAO = getBetDAO();
-			UserBetDAO userBetDAO = getUserBetDAO();
+		if (!isGamePassed())
+			try {
+				User user = loginBean.getUser();
+				BetDAO betDAO = getBetDAO();
+				UserBetDAO userBetDAO = getUserBetDAO();
 
-			gamePaymentAmount = gameBetAmount.compareTo(user.getBalance()) > 0 ? gameBetAmount.subtract(user.getBalance()) : BigDecimal.ZERO;
-			if (gamePaymentAmount.compareTo(BigDecimal.ZERO) > 0 && !confirmPayment()) {
-				MessageFactory.addWarning("ch.bfh.awebt.bookmaker.PAYMENT_ERROR");
-				return;
+				gamePaymentAmount = gameBetAmount.compareTo(user.getBalance()) > 0 ? gameBetAmount.subtract(user.getBalance()) : BigDecimal.ZERO;
+				if (gamePaymentAmount.compareTo(BigDecimal.ZERO) > 0 && !confirmPayment()) {
+					MessageFactory.addWarning("ch.bfh.awebt.bookmaker.PAYMENT_ERROR");
+					return;
+				}
+
+				user.deposit(gamePaymentAmount);
+				user.withdraw(gameBetAmount);
+				getUserDAO().merge(user);
+
+				for (BetDTO betDTO: gameBets) {
+					Bet bet = betDAO.find(betDTO.getId());
+					UserBet userBet = userBetDAO.findByUserAndBet(user, bet);
+					boolean persist = betDTO.getStake().compareTo(BigDecimal.ZERO) > 0;
+
+					if (userBet != null)
+						if (persist) {
+							userBet.setStake(betDTO.getStake());
+							userBetDAO.merge(userBet);
+						} else
+							userBetDAO.remove(userBet);
+
+					else if (persist)
+						userBetDAO.persist(new UserBet(user, bet, betDTO.getStake()));
+				}
+
+				statusConfirmation = false;
+
+			} catch (PersistenceException ex) {
+				MessageFactory.addError("ch.bfh.awebt.bookmaker.PERSISTENCE_ERROR");
 			}
 
-			user.deposit(gamePaymentAmount);
-			user.withdraw(gameBetAmount);
-			getUserDAO().merge(user);
-
-			for (BetDTO betDTO: gameBets) {
-				Bet bet = betDAO.find(betDTO.getId());
-				UserBet userBet = userBetDAO.findByUserAndBet(user, bet);
-				boolean persist = betDTO.getStake().compareTo(BigDecimal.ZERO) > 0;
-
-				if (userBet != null)
-					if (persist) {
-						userBet.setStake(betDTO.getStake());
-						userBetDAO.merge(userBet);
-					} else
-						userBetDAO.remove(userBet);
-
-				else if (persist)
-					userBetDAO.persist(new UserBet(user, bet, betDTO.getStake()));
-			}
-
-			statusConfirmation = false;
-
-		} catch (PersistenceException ex) {
-			MessageFactory.addError("ch.bfh.awebt.bookmaker.PERSISTENCE_ERROR");
-		}
+		else
+			MessageFactory.addError("ch.bfh.awebt.bookmaker.GAME_CANNOT_BET_PAST");
 	}
 
 	/**
