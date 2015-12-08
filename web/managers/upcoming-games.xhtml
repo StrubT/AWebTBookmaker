@@ -29,11 +29,11 @@
 					</h:column>
 					<h:column>
 						<f:facet name="header">#{texts.GameBetStakeLabel}</f:facet>
-						<span>#{game.totalStake}</span>
+						<span>#{loginBean.formatNumberUser(game.totalStake)}</span>
 					</h:column>
 					<h:column>
 						<f:facet name="header">#{texts.GameBetStakeLabel} &#8901; #{texts.GameBetOddsLabel}</f:facet>
-						<span>#{game.totalPotentialGain}</span>
+						<span>#{loginBean.formatNumberUser(game.totalPotentialGain)}</span>
 					</h:column>
 				</h:dataTable>
 			</c:when>

@@ -68,17 +68,17 @@
 		</dl>
 		<dl class="well">
 			<dt>#{texts.GameAccountBalanceLabel}</dt>
-			<dl>#{loginBean.formatNumberUser(loginBean.user.balance)} (#{texts.Currency})</dl>
+			<dl>#{loginBean.formatNumberUser(loginBean.user.balance)} #{texts.Currency}</dl>
 			<dt>#{texts.GameNofBetsLabel}</dt>
 			<dl>#{loginBean.formatNumberUser(gameBean.userNumberOfBets)}</dl>
 			<dt>#{texts.GameBetPercentageWonLabel}</dt>
 			<dl class="text-success">#{loginBean.formatPercentUser(gameBean.userBetsPercentageWon)}</dl>
 			<dt>#{texts.GameBetAmountWonLabel}</dt>
-			<dl class="text-success">#{loginBean.formatNumberUser(gameBean.userBetsAmountWon)}</dl>
+			<dl class="text-success">#{loginBean.formatNumberUser(gameBean.userBetsAmountWon)} #{texts.Currency}</dl>
 			<dt>#{texts.GameBetAmountLostLabel}</dt>
-			<dl class="text-danger">#{loginBean.formatNumberUser(gameBean.userBetsAmountLost)}</dl>
+			<dl class="text-danger">#{loginBean.formatNumberUser(gameBean.userBetsAmountLost)} #{texts.Currency}</dl>
 			<dt>#{texts.GameBetAmountSumLabel}</dt>
-			<dl class="text-#{gameBean.userBetsAmountSum ge 0 ? 'success' : 'danger'}">#{loginBean.formatNumberUser(gameBean.userBetsAmountSum)}</dl>
+			<dl class="text-#{gameBean.userBetsAmountSum ge 0 ? 'success' : 'danger'}">#{loginBean.formatNumberUser(gameBean.userBetsAmountSum)} #{texts.Currency}</dl>
 		</dl>
 	</ui:define>
 </ui:composition>

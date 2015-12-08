@@ -52,7 +52,7 @@
 								</f:facet>
 							</h:column>
 							<h:column rendered="#{loginBean.userHasAccess('REGISTERED') and gameBean.gamePassed}">
-								<f:facet name="header">#{texts.GameBetAmountSumLabel}</f:facet>
+								<f:facet name="header">#{texts.GameBetAmountWonLabel} (#{texts.Currency})</f:facet>
 								<span class="#{bet.stake gt 0 ? (bet.gain gt 0 ? 'text-success' : 'text-danger') : null}">#{bet.stake gt 0 ? loginBean.formatNumberUser(bet.gain) : '-'}</span>
 								<f:facet name="footer">
 									<span class="text-success">#{loginBean.formatNumberUser(gameBean.gameBetsAmountWon)}</span>

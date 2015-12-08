@@ -509,18 +509,19 @@ public class GameBean implements Serializable {
 	public BigDecimal getGameBetsAmountWon() {
 
 		return gameBets.stream().filter(b -> Boolean.TRUE.equals(b.getOccurred()))
-			.reduce(BigDecimal.ZERO, (a, b) -> a.add(b.getStake().multiply(b.getOdds())), (a, b) -> a.add(b));
+			.reduce(BigDecimal.ZERO, (a, b) -> a.add(b.getGain()), (a, b) -> a.add(b));
 	}
 
 	public BigDecimal getGameBetsAmountLost() {
 
 		return gameBets.stream().filter(b -> Boolean.FALSE.equals(b.getOccurred()))
-			.reduce(BigDecimal.ZERO, (a, b) -> a.add(b.getStake()), (a, b) -> a.add(b));
+			.reduce(BigDecimal.ZERO, (a, b) -> a.add(b.getGain()), (a, b) -> a.add(b)).negate();
 	}
 
 	public BigDecimal getGameBetsAmountSum() {
 
-		return getGameBetsAmountWon().subtract(getGameBetsAmountLost());
+		return gameBets.stream().filter(b -> b.getOccurred() != null)
+			.reduce(BigDecimal.ZERO, (a, b) -> a.add(b.getGain()), (a, b) -> a.add(b));
 	}
 
 	/**
@@ -541,7 +542,7 @@ public class GameBean implements Serializable {
 	public double getUserBetsPercentageWon() {
 
 		List<UserBet> bets = loginBean.getUser().getBets();
-		if (bets.size() == 0)
+		if (bets.isEmpty())
 			return 0.0;
 
 		return new ArrayList<>(bets).stream().filter(b -> Boolean.TRUE.equals(b.getBet().getOccurred())).count() / (double)bets.size(); //BUGFIX: new ArrayList<>(...) needed in eclipselink < 2.7
@@ -555,7 +556,7 @@ public class GameBean implements Serializable {
 	public double getUserBetsPercentageLost() {
 
 		List<UserBet> bets = loginBean.getUser().getBets();
-		if (bets.size() == 0)
+		if (bets.isEmpty())
 			return 0.0;
 
 		return new ArrayList<>(bets).stream().filter(b -> Boolean.FALSE.equals(b.getBet().getOccurred())).count() / (double)bets.size(); //BUGFIX: new ArrayList<>(...) needed in eclipselink < 2.7
@@ -569,7 +570,7 @@ public class GameBean implements Serializable {
 	public BigDecimal getUserBetsAmountWon() {
 
 		return new ArrayList<>(loginBean.getUser().getBets()).stream().filter(b -> Boolean.TRUE.equals(b.getBet().getOccurred())) //BUGFIX: new ArrayList<>(...) needed in eclipselink < 2.7
-			.reduce(BigDecimal.ZERO, (a, b) -> a.add(b.getStake().multiply(b.getBet().getOdds())), (a, b) -> a.add(b));
+			.reduce(BigDecimal.ZERO, (a, b) -> a.add(b.getGain()), (a, b) -> a.add(b));
 	}
 
 	/**
@@ -580,7 +581,7 @@ public class GameBean implements Serializable {
 	public BigDecimal getUserBetsAmountLost() {
 
 		return new ArrayList<>(loginBean.getUser().getBets()).stream().filter(b -> Boolean.FALSE.equals(b.getBet().getOccurred())) //BUGFIX: new ArrayList<>(...) needed in eclipselink < 2.7
-			.reduce(BigDecimal.ZERO, (a, b) -> a.add(b.getStake()), (a, b) -> a.add(b));
+			.reduce(BigDecimal.ZERO, (a, b) -> a.add(b.getGain()), (a, b) -> a.add(b)).negate();
 	}
 
 	/**
@@ -594,7 +595,8 @@ public class GameBean implements Serializable {
 	 */
 	public BigDecimal getUserBetsAmountSum() {
 
-		return getUserBetsAmountWon().subtract(getUserBetsAmountLost());
+		return new ArrayList<>(loginBean.getUser().getBets()).stream().filter(b -> b.getBet().getOccurred() != null) //BUGFIX: new ArrayList<>(...) needed in eclipselink < 2.7
+			.reduce(BigDecimal.ZERO, (a, b) -> a.add(b.getGain()), (a, b) -> a.add(b));
 	}
 
 	/**

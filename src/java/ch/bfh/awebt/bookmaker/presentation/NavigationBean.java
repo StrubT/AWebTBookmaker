@@ -41,7 +41,6 @@ public class NavigationBean implements Serializable {
 													PAGE_REGISTER = new NavigationPage("/register.xhtml", "LoginRegister", AccessCondition.ALWAYS, AccessCondition.NEVER), //show in footer
 													new NavigationPage("/players/account.xhtml", "GameAccount", AccessCondition.REGISTERED),
 													new NavigationPage("/players/upcoming-games.xhtml", "GameUpcoming", AccessCondition.ALWAYS, AccessCondition.NOT_MANAGER),
-													new NavigationPage("/players/past-games.xhtml", "GamePast", AccessCondition.REGISTERED, AccessCondition.REGISTERED_NOT_MANAGER),
 													new NavigationPage("/players/game.xhtml", "GameDetails", AccessCondition.ALWAYS, AccessCondition.NEVER), //access via in-page links
 													new NavigationPage("/managers/game.xhtml", "GameCreate", AccessCondition.MANAGER),
 													new NavigationPage("/managers/upcoming-games.xhtml", "GameUpcoming", AccessCondition.MANAGER),

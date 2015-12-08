@@ -210,39 +210,39 @@ public class Game extends PersistentObject<Integer> implements Serializable {
 	 */
 	public boolean isEvaluated() {
 
-		for (Bet bet: bets)
+		for (Bet bet: bets) //do not use streams in eclipselink < 2.7
 			if (bet.getOccurred() == null)
 				return false;
 		return true;
 	}
 
-	/**
-	 * Gets the total stake of a game.
-	 *
-	 * @return the total Stake
-	 */
 	public BigDecimal getTotalStake() {
 
 		BigDecimal totalStake = BigDecimal.ZERO;
-		for (Bet bet: bets)
+		for (Bet bet: bets) //do not use streams in eclipselink < 2.7
 			for (UserBet userBet: bet.getUserBets())
 				totalStake = totalStake.add(userBet.getStake());
 
 		return totalStake;
 	}
 
-	/**
-	 * Gets the total potential gain of a game.
-	 *
-	 * @return the total potential gain
-	 */
 	public BigDecimal getTotalPotentialGain() {
 
-		BigDecimal totalStake = BigDecimal.ZERO;
-		for (Bet bet: bets)
+		BigDecimal totalPotentialGain = BigDecimal.ZERO;
+		for (Bet bet: bets) //do not use streams in eclipselink < 2.7
 			for (UserBet userBet: bet.getUserBets())
-				totalStake = totalStake.add(userBet.getStake().multiply(bet.getOdds()));
+				totalPotentialGain = totalPotentialGain.add(userBet.getPotentialGain());
 
-		return totalStake;
+		return totalPotentialGain;
+	}
+
+	public BigDecimal getTotalGain() {
+
+		BigDecimal totalGain = BigDecimal.ZERO;
+		for (Bet bet: bets) //do not use streams in eclipselink < 2.7
+			for (UserBet userBet: bet.getUserBets())
+				totalGain = totalGain.add(userBet.getGain());
+
+		return totalGain;
 	}
 }

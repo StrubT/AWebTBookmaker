@@ -32,8 +32,8 @@
 						<span class="glyphicon glyphicon-#{game.evaluated ? 'ok' : 'remove'} text-#{game.evaluated ? 'success' : 'danger'}"></span>
 					</h:column>
 					<h:column>
-						<f:facet name="header">#{texts.GameBetAmountSumLabel}</f:facet>
-						<span>#{game.totalStake}</span>
+						<f:facet name="header">#{texts.GameBetAmountWonLabel}</f:facet>
+						<span>#{loginBean.formatNumberUser(-game.totalGain)}</span>
 					</h:column>
 				</h:dataTable>
 			</c:when>
