@@ -201,4 +201,12 @@ public class Game extends PersistentObject<Integer> implements Serializable {
 	public List<Bet> getBets() {
 		return Collections.unmodifiableList(bets);
 	}
+
+	public boolean isEvaluated() {
+
+		for (Bet bet: bets)
+			if (bet.getOccurred() == null)
+				return false;
+		return true;
+	}
 }

@@ -8,6 +8,29 @@
 								xmlns:t="http://myfaces.apache.org/tomahawk"
 								xmlns:cc="http://java.sun.com/jsf/composite/custom-components">
 	<ui:define name="main">
-		<p class="text-muted">no content yet</p>
+		<h2>#{texts.GamePastTitle}</h2>
+		<p>
+			<h:dataTable value="#{gameBean.pastGames}" var="game" class="table table-condensed table-striped">
+				<h:column>
+					<h:link outcome="/managers/game.xhtml?id=#{game.id}">#{texts.GameDetailsLink}</h:link>
+				</h:column>
+				<h:column>
+					<f:facet name="header">#{texts.GameTeam1Label}</f:facet>
+					<span>#{teams[game.team1.code]}</span>
+				</h:column>
+				<h:column>
+					<f:facet name="header">#{texts.GameTeam2Label}</f:facet>
+					<span>#{teams[game.team2.code]}</span>
+				</h:column>
+				<h:column>
+					<f:facet name="header">#{texts.GameStartTimeLabel} (#{loginBean.formatTimeZoneUser(loginBean.timeZone, false)})</f:facet>
+					<time datetime="#{loginBean.formatDateTimeISO(game.startTimeZoned)}">#{loginBean.formatDateTimeUser(game.startTimeZoned, false)}</time>
+				</h:column>
+				<h:column>
+					<f:facet name="header">#{texts.GameEvaluatedLabel}</f:facet>
+					<span class="glyphicon glyphicon-#{game.evaluated ? 'ok' : 'remove'}"></span>
+				</h:column>
+			</h:dataTable>
+		</p>
 	</ui:define>
 </ui:composition>

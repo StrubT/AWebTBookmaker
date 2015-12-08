@@ -117,12 +117,12 @@
 						</h:column>
 						<h:column>
 							<f:facet name="header">#{texts.GameBetOccurredLabel}</f:facet>
-							<h:selectOneListbox size="1" value="#{bet.occurred}" class="form-control input-sm" rendered="#{gameBean.gamePassed and not bet.used}">
+							<h:selectOneListbox size="1" value="#{bet.occurred}" class="form-control input-sm" rendered="#{gameBean.gamePassed}">
 								<f:selectItem itemValue="#{null}" itemLabel="#{texts.NotAvailable}" />
 								<f:selectItem itemValue="#{true}" itemLabel="#{texts.BooleanTrue}" />
 								<f:selectItem itemValue="#{false}" itemLabel="#{texts.BooleanFalse}" />
 							</h:selectOneListbox>
-							<h:selectOneListbox size="1" value="#{bet.occurred}" class="form-control input-sm" rendered="#{not gameBean.gamePassed or bet.used}">
+							<h:selectOneListbox size="1" value="#{bet.occurred}" class="form-control input-sm" rendered="#{not gameBean.gamePassed}">
 								<f:passThroughAttribute name="disabled" value="disabled" />
 								<f:selectItem itemValue="#{null}" itemLabel="#{texts.NotAvailable}" />
 								<f:selectItem itemValue="#{true}" itemLabel="#{texts.BooleanTrue}" />
