@@ -731,12 +731,12 @@ public class GameBean implements Serializable {
 						bet.setOccurred(betDTO.getOccurred());
 						getBetDAO().merge(bet);
 
-						for (UserBet userBet: bet.getUserBets()) {
-							User user = getUserDAO().find(userBet.getUser().getId());
-							if (old != null)
-								user.bookAmount(bet.getOdds().multiply(userBet.getStake()), !old); //reverse old setting
-							if (bet.getOccurred() != null)
-								user.bookAmount(bet.getOdds().multiply(userBet.getStake()), bet.getOccurred()); //apply new outcome
+						for (UserBet userBet: bet.getUserBets()) { //book amount to user balances
+							User user = userBet.getUser();
+							if (Boolean.TRUE.equals(old))
+								user.withdraw(userBet.getGain().add(userBet.getStake())); //withdraw old gain
+							if (Boolean.TRUE.equals(bet.getOccurred()))
+								user.deposit(userBet.getGain().add(userBet.getStake())); //deposit new gain (reimburse stake as well)
 
 							getUserDAO().merge(user);
 						}
