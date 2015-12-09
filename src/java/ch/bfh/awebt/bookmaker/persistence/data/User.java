@@ -19,6 +19,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -34,7 +35,10 @@ import ch.bfh.awebt.bookmaker.converters.ZoneIdConverter;
  */
 @Entity
 @Table(name = "users")
-@NamedQuery(name = User.FIND_BY_LOGIN_QUERY, query = "select u from User u where lower(u.login) = lower(:login)")
+@NamedQueries({
+	@NamedQuery(name = User.FIND_BY_LOGIN_QUERY, query = "select u from User u where lower(u.login) = lower(:login)"),
+	@NamedQuery(name = User.FIND_ALL_ORDERED_BY_LOGIN_QUERY, query = "select u from User u order by u.login"),
+	@NamedQuery(name = User.FIND_MANAGERS_ORDERED_BY_LOGIN_QUERY, query = "select u from User u where u.isManager=1 order by u.login")})
 public class User extends PersistentObject<Integer> implements Serializable {
 
 	private static final long serialVersionUID = -7147878463002225404L;
@@ -43,6 +47,10 @@ public class User extends PersistentObject<Integer> implements Serializable {
 	 * Name of the {@link NamedQuery} to find a user by their login.
 	 */
 	public static final String FIND_BY_LOGIN_QUERY = "User.FIND_BY_LOGIN_QUERY";
+
+	public static final String FIND_ALL_ORDERED_BY_LOGIN_QUERY = "User.FIND_ALL_ORDERED_BY_LOGIN_QUERY";
+
+	public static final String FIND_MANAGERS_ORDERED_BY_LOGIN_QUERY = "User.FIND_MANAGERS_ORDERED_BY_LOGIN_QUERY";
 
 	/**
 	 * Name of the algorithm to use to hash the passwords.

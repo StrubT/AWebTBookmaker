@@ -606,7 +606,7 @@ public class GameBean implements Serializable {
 	 */
 	public List<Team> getTeams() {
 
-		return getTeamDAO().findAll();
+		return getTeamDAO().findAllOrderedById();
 	}
 
 	/**
@@ -617,16 +617,6 @@ public class GameBean implements Serializable {
 	public Game getGame() {
 
 		return getGameDAO().find(gameId);
-	}
-
-	/**
-	 * Gets a {@link List} of all games.
-	 *
-	 * @return {@link List} of all games
-	 */
-	public List<Game> getGames() {
-
-		return getGameDAO().findAll();
 	}
 
 	/**

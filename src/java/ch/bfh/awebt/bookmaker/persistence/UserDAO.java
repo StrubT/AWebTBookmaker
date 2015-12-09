@@ -1,6 +1,7 @@
 package ch.bfh.awebt.bookmaker.persistence;
 
 import java.io.Serializable;
+import java.util.List;
 import ch.bfh.awebt.bookmaker.MapBuilder;
 import ch.bfh.awebt.bookmaker.Streams;
 import ch.bfh.awebt.bookmaker.persistence.data.User;
@@ -17,6 +18,16 @@ public class UserDAO extends GenericDAO<User, Integer> implements Serializable {
 	@Override
 	protected Class<User> getEntityClass() {
 		return User.class;
+	}
+
+	public List<User> findAllOrderedByLogin() {
+
+		return findByQuery(User.FIND_ALL_ORDERED_BY_LOGIN_QUERY);
+	}
+
+	public List<User> findManagersOrderedByLogin() {
+
+		return findByQuery(User.FIND_MANAGERS_ORDERED_BY_LOGIN_QUERY);
 	}
 
 	/**

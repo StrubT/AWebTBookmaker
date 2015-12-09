@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ui:composition template="/_template-default.xhtml"
+								xmlns="http://www.w3.org/1999/xhtml"
+								xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+								xmlns:f="http://java.sun.com/jsf/core"
+								xmlns:h="http://java.sun.com/jsf/html"
+								xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+								xmlns:t="http://myfaces.apache.org/tomahawk"
+								xmlns:cc="http://java.sun.com/jsf/composite/custom-components">
+	<ui:define name="main">
+		<h2>#{texts.LoginAccountsTitle}</h2>
+		<h:dataTable value="#{loginBean.users}" var="user" class="table table-striped table-condensed">
+			<h:column>
+				<f:facet name="header">#{texts.LoginLoginLabel}</f:facet>
+				<span>#{user.login}</span>
+			</h:column>
+			<h:column>
+				<f:facet name="header">#{texts.LoginManagerLabel}</f:facet>
+				<span class="text-#{user.manager ? 'success' : 'warning'}">#{user.manager ? texts.BooleanTrue : texts.BooleanFalse}</span>
+			</h:column>
+			<h:column>
+				<h:commandButton action="#{loginBean.toggleIsManager(user)}" disabled="#{user.manager and not loginBean.hasMultipleManagers()}" value="#{user.manager ? texts.LoginMakePlayerButton : texts.LoginMakeManagerButton}" class="btn btn-#{user.id eq loginBean.userId ? 'danger' : user.manager ? 'default' : 'warning'} btn-xs" />
+			</h:column>
+		</h:dataTable>
+	</ui:define>
+</ui:composition>

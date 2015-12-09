@@ -105,6 +105,18 @@ public abstract class GenericDAO<T extends PersistentObject<K>, K> {
 	/**
 	 * Read: finds entities in the the data source using a {@link NamedQuery}.
 	 *
+	 * @param name name of the query to use
+	 *
+	 * @return a {@link List} with the found entities
+	 */
+	protected List<T> findByQuery(String name) {
+
+		return findByQuery(name, null);
+	}
+
+	/**
+	 * Read: finds entities in the the data source using a {@link NamedQuery}.
+	 *
 	 * @param name       name of the query to use
 	 * @param parameters parameters to pass to the query
 	 * @param <P>        type of the parameters
@@ -114,7 +126,8 @@ public abstract class GenericDAO<T extends PersistentObject<K>, K> {
 	protected <P> List<T> findByQuery(String name, Map<String, P> parameters) {
 
 		TypedQuery<T> query = getEntityManager().createNamedQuery(name, getEntityClass());
-		parameters.forEach(query::setParameter);
+		if (parameters != null)
+			parameters.forEach(query::setParameter);
 
 		return query.getResultList();
 	}

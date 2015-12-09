@@ -8,6 +8,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -18,9 +19,12 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "teams")
+@NamedQuery(name = Team.FIND_ALL_ORDERED_BY_ID_QUERY, query = "select t from Team t order by t.id")
 public class Team extends PersistentObject<String> implements Serializable {
 
 	private static final long serialVersionUID = -7712017410251177486L;
+
+	public static final String FIND_ALL_ORDERED_BY_ID_QUERY = "Team.FIND_ALL_ORDERED_BY_ID_QUERY";
 
 	@Id
 	@Column(name = "code", nullable = false, length = 10, unique = true)

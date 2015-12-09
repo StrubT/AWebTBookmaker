@@ -409,6 +409,11 @@ public class LoginBean implements Serializable {
 		return userDAO;
 	}
 
+	public List<User> getUsers() {
+
+		return getUserDAO().findAllOrderedByLogin();
+	}
+
 	/**
 	 * Gets the user currently logged in.
 	 *
@@ -522,6 +527,17 @@ public class LoginBean implements Serializable {
 	public boolean userHasAccess(AccessCondition accessCondition) {
 
 		return accessCondition.hasAccess(getUser());
+	}
+
+	public boolean hasMultipleManagers() {
+
+		return getUserDAO().findManagersOrderedByLogin().size() > 1;
+	}
+
+	public void toggleIsManager(User user) {
+
+		user.setIsManager(!user.isManager());
+		getUserDAO().merge(user);
 	}
 
 	/**

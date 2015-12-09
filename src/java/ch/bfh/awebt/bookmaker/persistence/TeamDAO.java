@@ -1,6 +1,7 @@
 package ch.bfh.awebt.bookmaker.persistence;
 
 import java.io.Serializable;
+import java.util.List;
 import ch.bfh.awebt.bookmaker.persistence.data.Team;
 
 /**
@@ -15,5 +16,10 @@ public class TeamDAO extends GenericDAO<Team, String> implements Serializable {
 	@Override
 	protected Class<Team> getEntityClass() {
 		return Team.class;
+	}
+
+	public List<Team> findAllOrderedById() {
+
+		return findByQuery(Team.FIND_ALL_ORDERED_BY_ID_QUERY);
 	}
 }

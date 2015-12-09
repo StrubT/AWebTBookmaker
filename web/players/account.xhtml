@@ -68,7 +68,7 @@
 		</dl>
 		<dl class="well">
 			<dt>#{texts.GameAccountBalanceLabel}</dt>
-			<dl>#{loginBean.formatNumberUser(loginBean.user.balance)} #{texts.Currency}</dl>
+			<dl class="text-#{loginBean.user.balance ge 0 ? 'success' : 'danger'}">#{loginBean.formatNumberUser(loginBean.user.balance)} #{texts.Currency}</dl>
 			<dt>#{texts.GameNofBetsLabel}</dt>
 			<dl>#{loginBean.formatNumberUser(gameBean.userNumberOfBets)}</dl>
 			<dt>#{texts.GameBetPercentageWonLabel}</dt>

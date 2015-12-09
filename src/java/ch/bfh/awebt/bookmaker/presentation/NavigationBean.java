@@ -44,7 +44,8 @@ public class NavigationBean implements Serializable {
 													new NavigationPage("/players/game.xhtml", "GameDetails", AccessCondition.ALWAYS, AccessCondition.NEVER), //access via in-page links
 													new NavigationPage("/managers/game.xhtml", "GameCreate", AccessCondition.MANAGER),
 													new NavigationPage("/managers/upcoming-games.xhtml", "GameUpcoming", AccessCondition.MANAGER),
-													new NavigationPage("/managers/past-games.xhtml", "GamePast", AccessCondition.MANAGER));
+													new NavigationPage("/managers/past-games.xhtml", "GamePast", AccessCondition.MANAGER),
+													new NavigationPage("/managers/accounts.xhtml", "LoginAccounts", AccessCondition.MANAGER));
 	}
 
 	/**
