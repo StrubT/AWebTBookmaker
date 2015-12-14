@@ -8,7 +8,9 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
@@ -29,6 +31,8 @@ import ch.bfh.awebt.bookmaker.persistence.data.Team;
 import ch.bfh.awebt.bookmaker.persistence.data.User;
 import ch.bfh.awebt.bookmaker.persistence.data.UserBet;
 import ch.bfh.awebt.bookmaker.presentation.data.BetDTO;
+import ch.bfh.awebt.bookmaker.presentation.data.GameBetStatisticsDTO;
+import ch.bfh.awebt.bookmaker.presentation.data.UserBetStatisticsDTO;
 
 /**
  * Represents a {@link ViewScoped} {@link ManagedBean} providing bookmaker game helpers.
@@ -64,6 +68,10 @@ public class GameBean implements Serializable {
 	private BigDecimal gameBetAmount, gamePaymentAmount;
 	private String gamePaymentCreditCardNumber, gamePaymentCreditCardCode;
 	private Integer gamePaymentCreditCardExpirationMonth, gamePaymentCreditCardExpirationYear;
+
+	private GameBetStatisticsDTO gameBetStatistics;
+	private Map<Integer, GameBetStatisticsDTO> gameBetStatisticsMap;
+	private UserBetStatisticsDTO userBetStatistics;
 
 	/**
 	 * Initialises the managed bean.
@@ -507,6 +515,50 @@ public class GameBean implements Serializable {
 	}
 
 	/**
+	 * Gets statistics about the current {@link Game}'s {@link Bet}s.
+	 *
+	 * @return statistics about the current {@link Game}'s {@link Bet}s
+	 */
+	public GameBetStatisticsDTO getGameBetStatistics() {
+
+		if (gameBetStatistics == null)
+			gameBetStatistics = new GameBetStatisticsDTO(getGame());
+
+		return gameBetStatistics;
+	}
+
+	/**
+	 * Gets statistics about the current {@link Game}'s {@link Bet}s.
+	 *
+	 * @param game game to get statistics for
+	 *
+	 * @return statistics about the current {@link Game}'s {@link Bet}s
+	 */
+	public GameBetStatisticsDTO getGameBetStatistics(Game game) {
+
+		if (gameBetStatisticsMap == null)
+			gameBetStatisticsMap = new HashMap<>();
+
+		if (!gameBetStatisticsMap.containsKey(game.getId()))
+			gameBetStatisticsMap.put(game.getId(), new GameBetStatisticsDTO(game));
+
+		return gameBetStatisticsMap.get(game.getId());
+	}
+
+	/**
+	 * Gets statistics about the current {@link User}'s {@link Bet}s.
+	 *
+	 * @return statistics about the current {@link User}'s {@link Bet}s
+	 */
+	public UserBetStatisticsDTO getUserBetStatistics() {
+
+		if (userBetStatistics == null)
+			userBetStatistics = new UserBetStatisticsDTO(loginBean.getUser());
+
+		return userBetStatistics;
+	}
+
+	/**
 	 * Gets a {@link List} of all teams.
 	 *
 	 * @return {@link List} of all teams
@@ -631,9 +683,9 @@ public class GameBean implements Serializable {
 						for (UserBet userBet: bet.getUserBets()) { //book amount to user balances
 							User user = userBet.getUser();
 							if (Boolean.TRUE.equals(old))
-								user.withdraw(userBet.getGain().add(userBet.getStake())); //withdraw old gain
+								user.withdraw(userBet.getDeposit()); //withdraw old gain
 							if (Boolean.TRUE.equals(bet.getOccurred()))
-								user.deposit(userBet.getGain().add(userBet.getStake())); //deposit new gain (reimburse stake as well)
+								user.deposit(userBet.getDeposit()); //deposit new gain (reimburse stake as well)
 
 							getUserDAO().merge(user);
 						}

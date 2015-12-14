@@ -22,7 +22,7 @@
 					</h:outputFormat>
 				</h:link><br />
 				<em><time datetime="#{loginBean.formatDateTimeISO(bet.bet.game.startTimeZoned)}">#{loginBean.formatDateTimeUser(bet.bet.game.startTimeZoned, false)}</time></em>
-				<f:facet name="footer"><em>#{texts.GameNofBetsLabel}:</em> #{loginBean.formatNumberUser(gameBean.userNumberOfBets)}</f:facet>
+				<f:facet name="footer"><em>#{texts.GameNofBetsLabel}:</em> #{loginBean.formatNumberUser(gameBean.userBetStatistics.numberOfBets)}</f:facet>
 			</h:column>
 			<h:column>
 				<f:facet name="header">#{texts.GameBetDescriptionLabel}</f:facet>
@@ -38,19 +38,22 @@
 					<em>(#{texts.CurrencyLong})</em>
 				</f:facet>
 				#{loginBean.formatNumberUser(bet.stake)} &#8901; #{loginBean.formatNumberUser(bet.bet.odds)}
-				<h:panelGroup rendered="#{not empty bet.bet.occurred}" class="text-#{bet.bet.occurred ? 'success' : 'danger'}"><br />= #{loginBean.formatNumberUser(bet.gain)}</h:panelGroup>
+				<h:panelGroup rendered="#{not empty bet.bet.occurred}" class="text-#{bet.bet.occurred ? 'success' : 'danger'}">
+					<br />= <em>#{loginBean.formatNumberUser(bet.deposit)}* - #{loginBean.formatNumberUser(bet.stake)}&#8224;</em>
+					<br />= #{loginBean.formatNumberUser(bet.gain)}&#8225;
+				</h:panelGroup>
 				<f:facet name="footer">
-					<span class="text-success">#{loginBean.formatNumberUser(gameBean.userBetsAmountWon)}</span>
-					<span class="text-danger">- #{loginBean.formatNumberUser(gameBean.userBetsAmountLost)}</span><br />
-					<strong class="text-#{gameBean.userBetsAmountSum ge 0 ? 'success' : 'danger'}">= #{loginBean.formatNumberUser(gameBean.userBetsAmountSum)}</strong>
+					<span class="text-success">#{loginBean.formatNumberUser(gameBean.userBetStatistics.betsAmountWon)}</span>
+					<span class="text-danger">- #{loginBean.formatNumberUser(gameBean.userBetStatistics.betsAmountLost)}</span><br />
+					<span class="text-#{gameBean.userBetStatistics.betsAmountSum ge 0 ? 'success' : 'danger'}">= #{loginBean.formatNumberUser(gameBean.userBetStatistics.betsAmountSum)}&#8225;</span>
 				</f:facet>
 			</h:column>
 			<h:column>
 				<f:facet name="header">#{texts.GameBetOccurredLabel}</f:facet>
 				<span class="text-#{bet.bet.occurred ? 'success' : 'danger'}">#{bet.bet.occurred ? texts.BooleanTrue : texts.BooleanFalse}</span>
 				<f:facet name="footer">
-					<span class="text-success">#{loginBean.formatPercentUser(gameBean.userBetsPercentageWon)}</span> /
-					<span class="text-danger">#{loginBean.formatPercentUser(gameBean.userBetsPercentageLost)}</span>
+					<span class="text-success">#{loginBean.formatPercentUser(gameBean.userBetStatistics.betsPercentageWon)}</span> /
+					<span class="text-danger">#{loginBean.formatPercentUser(gameBean.userBetStatistics.betsPercentageLost)}</span>
 				</f:facet>
 			</h:column>
 		</h:dataTable>
@@ -70,15 +73,20 @@
 			<dt>#{texts.GameAccountBalanceLabel}</dt>
 			<dl class="text-#{loginBean.user.balance ge 0 ? 'success' : 'danger'}">#{loginBean.formatNumberUser(loginBean.user.balance)} #{texts.Currency}</dl>
 			<dt>#{texts.GameNofBetsLabel}</dt>
-			<dl>#{loginBean.formatNumberUser(gameBean.userNumberOfBets)}</dl>
+			<dl>#{loginBean.formatNumberUser(gameBean.userBetStatistics.numberOfBets)}</dl>
 			<dt>#{texts.GameBetPercentageWonLabel}</dt>
-			<dl class="text-success">#{loginBean.formatPercentUser(gameBean.userBetsPercentageWon)}</dl>
+			<dl class="text-success">#{loginBean.formatPercentUser(gameBean.userBetStatistics.betsPercentageWon)}</dl>
 			<dt>#{texts.GameBetAmountWonLabel}</dt>
-			<dl class="text-success">#{loginBean.formatNumberUser(gameBean.userBetsAmountWon)} #{texts.Currency}</dl>
+			<dl class="text-success">#{loginBean.formatNumberUser(gameBean.userBetStatistics.betsAmountWon)} #{texts.Currency}</dl>
 			<dt>#{texts.GameBetAmountLostLabel}</dt>
-			<dl class="text-danger">#{loginBean.formatNumberUser(gameBean.userBetsAmountLost)} #{texts.Currency}</dl>
+			<dl class="text-danger">#{loginBean.formatNumberUser(gameBean.userBetStatistics.betsAmountLost)} #{texts.Currency}</dl>
 			<dt>#{texts.GameBetAmountSumLabel}</dt>
-			<dl class="text-#{gameBean.userBetsAmountSum ge 0 ? 'success' : 'danger'}">#{loginBean.formatNumberUser(gameBean.userBetsAmountSum)} #{texts.Currency}</dl>
+			<dl class="text-#{gameBean.userBetStatistics.betsAmountSum ge 0 ? 'success' : 'danger'}">#{loginBean.formatNumberUser(gameBean.userBetStatistics.betsAmountSum)} #{texts.Currency}</dl>
 		</dl>
+		<ul class="well list-unstyled text-muted">
+			<li>*: #{texts.GameBetAmountDepositLabel}</li>
+			<li>&#8224;: #{texts.GameBetStakeLabel}</li>
+			<li>&#8225;: #{texts.GameBetAmountWonLabel}</li>
+		</ul>
 	</ui:define>
 </ui:composition>

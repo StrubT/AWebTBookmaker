@@ -55,9 +55,9 @@
 								<f:facet name="header">#{texts.GameBetAmountWonLabel} (#{texts.Currency})</f:facet>
 								<span class="#{bet.stake gt 0 ? (bet.gain gt 0 ? 'text-success' : 'text-danger') : null}">#{bet.stake gt 0 ? loginBean.formatNumberUser(bet.gain) : '-'}</span>
 								<f:facet name="footer">
-									<span class="text-success">#{loginBean.formatNumberUser(gameBean.gameBetsAmountWon)}</span>
-									<span class="text-danger">- #{loginBean.formatNumberUser(gameBean.gameBetsAmountLost)}</span><br />
-									<strong class="text-#{gameBean.gameBetsAmountSum ge 0 ? 'success' : 'danger'}">= #{loginBean.formatNumberUser(gameBean.gameBetsAmountSum)}</strong>
+									<span class="text-success">#{loginBean.formatNumberUser(gameBean.gameBetStatistics.betsAmountWon)}</span>
+									<span class="text-danger">- #{loginBean.formatNumberUser(gameBean.gameBetStatistics.betsAmountLost)}</span><br />
+									<strong class="text-#{gameBean.gameBetStatistics.betsAmountSum ge 0 ? 'success' : 'danger'}">= #{loginBean.formatNumberUser(gameBean.gameBetStatistics.betsAmountSum)}</strong>
 								</f:facet>
 							</h:column>
 						</h:dataTable>

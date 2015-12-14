@@ -29,11 +29,11 @@
 					</h:column>
 					<h:column>
 						<f:facet name="header">#{texts.GameEvaluatedLabel}</f:facet>
-						<span class="glyphicon glyphicon-#{game.evaluated ? 'ok' : 'remove'} text-#{game.evaluated ? 'success' : 'danger'}"></span>
+						<span class="glyphicon glyphicon-#{gameBean.getGameBetStatistics(game).evaluated ? 'ok' : 'remove'} text-#{gameBean.getGameBetStatistics(game).evaluated ? 'success' : 'danger'}"></span>
 					</h:column>
 					<h:column>
 						<f:facet name="header">#{texts.GameBetAmountWonLabel}</f:facet>
-						<span>#{loginBean.formatNumberUser(-game.totalGain)}</span>
+						<span>#{loginBean.formatNumberUser(-gameBean.getGameBetStatistics(game).betsAmountSum)}</span>
 					</h:column>
 				</h:dataTable>
 			</c:when>

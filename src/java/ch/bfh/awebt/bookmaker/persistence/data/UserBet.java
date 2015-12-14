@@ -148,7 +148,7 @@ public class UserBet extends PersistentObject<UserBet.PK> implements Serializabl
 
 	/**
 	 * Gets the actual gain. <br>
-	 * This method returns {@link BigDecimal#ZERO} if either the game has not yet been evaluated or the bet's condition was not fulfilled.
+	 * This method returns the negated stake if either the game has not yet been evaluated OR the bet's condition was not fulfilled.
 	 *
 	 * @return the user's actual gain
 	 *
@@ -157,6 +157,19 @@ public class UserBet extends PersistentObject<UserBet.PK> implements Serializabl
 	public BigDecimal getGain() {
 
 		return Boolean.TRUE.equals(bet.getOccurred()) ? getPotentialGain() : stake.negate();
+	}
+
+	/**
+	 * Gets the amount to deposit on the user's account. <br>
+	 * This method returns {@link BigDecimal#ZERO} if either the game has not yet been evaluated OR the bet's condition was not fulfilled.
+	 *
+	 * @return the amount to deposit on the user's account
+	 *
+	 * @see #getGain()
+	 */
+	public BigDecimal getDeposit() {
+
+		return Boolean.TRUE.equals(bet.getOccurred()) ? stake.multiply(bet.getOdds()) : BigDecimal.ZERO;
 	}
 
 	/**

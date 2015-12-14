@@ -201,17 +201,4 @@ public class Game extends PersistentObject<Integer> implements Serializable {
 	public List<Bet> getBets() {
 		return Collections.unmodifiableList(bets);
 	}
-
-	/**
-	 * Gets whether or not all the bets have been evaluated.
-	 *
-	 * @return whether or not all the bets have been evaluated
-	 */
-	public boolean isEvaluated() {
-
-		for (Bet bet: bets) //do not use streams in eclipselink < 2.7
-			if (bet.getOccurred() == null)
-				return false;
-		return true;
-	}
 }
