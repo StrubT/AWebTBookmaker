@@ -48,8 +48,14 @@ public class User extends PersistentObject<Integer> implements Serializable {
 	 */
 	public static final String FIND_BY_LOGIN_QUERY = "User.FIND_BY_LOGIN_QUERY";
 
+	/**
+	 * Name of the {@link NamedQuery} to get all users ordered by their login.
+	 */
 	public static final String FIND_ALL_ORDERED_BY_LOGIN_QUERY = "User.FIND_ALL_ORDERED_BY_LOGIN_QUERY";
 
+	/**
+	 * Name of the {@link NamedQuery} to find all managers ordered by their login.
+	 */
 	public static final String FIND_MANAGERS_ORDERED_BY_LOGIN_QUERY = "User.FIND_MANAGERS_ORDERED_BY_LOGIN_QUERY";
 
 	/**
@@ -301,6 +307,14 @@ public class User extends PersistentObject<Integer> implements Serializable {
 		this.balance = balance;
 	}
 
+	/**
+	 * Book an amount on the user's account with the bookmaker.
+	 *
+	 * @param amount  amount to book
+	 * @param deposit whether to deposit ({@code true}) or withdraw ({@code false}) the amount
+	 *
+	 * @return new balance of the user's account
+	 */
 	public BigDecimal bookAmount(BigDecimal amount, boolean deposit) {
 
 		return balance = deposit ? balance.add(amount) : balance.subtract(amount);

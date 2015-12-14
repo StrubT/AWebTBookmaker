@@ -18,6 +18,11 @@ public class TeamDAO extends GenericDAO<Team, String> implements Serializable {
 		return Team.class;
 	}
 
+	/**
+	 * Gets all teams ordered by their unique identifier.
+	 *
+	 * @return {@link List} of all teams
+	 */
 	public List<Team> findAllOrderedById() {
 
 		return findByQuery(Team.FIND_ALL_ORDERED_BY_ID_QUERY);

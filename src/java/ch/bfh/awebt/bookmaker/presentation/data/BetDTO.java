@@ -212,33 +212,39 @@ public class BetDTO implements Serializable {
 	}
 
 	/**
-	 * Gets the stake of the bet.
+	 * Gets the user's stake on the bet.
 	 *
-	 * @return stake of the bet
+	 * @return user's stake on the bet
 	 */
 	public BigDecimal getStake() {
 		return stake;
 	}
 
 	/**
-	 * Sets the stake of the bet.
+	 * Sets the user's stake on the bet.
 	 *
-	 * @param stake stake of the bet
+	 * @param stake user's stake on the bet
 	 */
 	public void setStake(BigDecimal stake) {
 		this.stake = stake;
 	}
 
+	/**
+	 * Gets the user's gain of the bet.
+	 *
+	 * @return user's gain of the bet
+	 */
 	public BigDecimal getGain() {
 		return gain;
 	}
 
+	/**
+	 * Sets the user's gain of the bet.
+	 *
+	 * @param gain user's gain of the bet
+	 */
 	public void setGain(BigDecimal gain) {
 		this.gain = gain;
-	}
-
-	public BigDecimal getTotalStake() {
-		return totalStake;
 	}
 
 	/**
@@ -251,6 +257,20 @@ public class BetDTO implements Serializable {
 		return used;
 	}
 
+	/**
+	 * Gets the stakes of all placed bets combined.
+	 *
+	 * @return stakes of all placed bets combined
+	 */
+	public BigDecimal getTotalStake() {
+		return totalStake;
+	}
+
+	/**
+	 * Gets the gain of all placed bets combined.
+	 *
+	 * @return gain of all placed bets combined
+	 */
 	public BigDecimal getTotalGain() {
 
 		return totalStake.multiply(odds);

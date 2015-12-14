@@ -24,6 +24,9 @@ public class Team extends PersistentObject<String> implements Serializable {
 
 	private static final long serialVersionUID = -7712017410251177486L;
 
+	/**
+	 * Name of the {@link NamedQuery} to get all teams ordered by their unique identifier.
+	 */
 	public static final String FIND_ALL_ORDERED_BY_ID_QUERY = "Team.FIND_ALL_ORDERED_BY_ID_QUERY";
 
 	@Id

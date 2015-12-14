@@ -1,7 +1,6 @@
 package ch.bfh.awebt.bookmaker.persistence.data;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -214,35 +213,5 @@ public class Game extends PersistentObject<Integer> implements Serializable {
 			if (bet.getOccurred() == null)
 				return false;
 		return true;
-	}
-
-	public BigDecimal getTotalStake() {
-
-		BigDecimal totalStake = BigDecimal.ZERO;
-		for (Bet bet: bets) //do not use streams in eclipselink < 2.7
-			for (UserBet userBet: bet.getUserBets())
-				totalStake = totalStake.add(userBet.getStake());
-
-		return totalStake;
-	}
-
-	public BigDecimal getTotalPotentialGain() {
-
-		BigDecimal totalPotentialGain = BigDecimal.ZERO;
-		for (Bet bet: bets) //do not use streams in eclipselink < 2.7
-			for (UserBet userBet: bet.getUserBets())
-				totalPotentialGain = totalPotentialGain.add(userBet.getPotentialGain());
-
-		return totalPotentialGain;
-	}
-
-	public BigDecimal getTotalGain() {
-
-		BigDecimal totalGain = BigDecimal.ZERO;
-		for (Bet bet: bets) //do not use streams in eclipselink < 2.7
-			for (UserBet userBet: bet.getUserBets())
-				totalGain = totalGain.add(userBet.getGain());
-
-		return totalGain;
 	}
 }

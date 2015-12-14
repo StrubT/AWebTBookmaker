@@ -20,11 +20,21 @@ public class UserDAO extends GenericDAO<User, Integer> implements Serializable {
 		return User.class;
 	}
 
+	/**
+	 * Gets all users ordered by their login.
+	 *
+	 * @return {@link List} of all users
+	 */
 	public List<User> findAllOrderedByLogin() {
 
 		return findByQuery(User.FIND_ALL_ORDERED_BY_LOGIN_QUERY);
 	}
 
+	/**
+	 * Finds all managers ordered by their login.
+	 *
+	 * @return {@link List} of all managers
+	 */
 	public List<User> findManagersOrderedByLogin() {
 
 		return findByQuery(User.FIND_MANAGERS_ORDERED_BY_LOGIN_QUERY);

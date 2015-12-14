@@ -99,7 +99,7 @@ public class LoginBean implements Serializable {
 	/**
 	 * Gets the login (user name) field of the current view.
 	 *
-	 * @returnlogin (user name) field of the current view
+	 * @return login (user name) field of the current view
 	 */
 	public UIComponent getLoginField() {
 		return loginField;
@@ -409,6 +409,11 @@ public class LoginBean implements Serializable {
 		return userDAO;
 	}
 
+	/**
+	 * Gets all users ordered by their login.
+	 *
+	 * @return {@link List} of all users
+	 */
 	public List<User> getUsers() {
 
 		return getUserDAO().findAllOrderedByLogin();
@@ -529,11 +534,21 @@ public class LoginBean implements Serializable {
 		return accessCondition.hasAccess(getUser());
 	}
 
+	/**
+	 * Gets whether or no there are multiple managers.
+	 *
+	 * @return whether or no there are multiple managers
+	 */
 	public boolean hasMultipleManagers() {
 
 		return getUserDAO().findManagersOrderedByLogin().size() > 1;
 	}
 
+	/**
+	 * Toggle whether or not a user is manager.
+	 *
+	 * @param user user to perform action on
+	 */
 	public void toggleIsManager(User user) {
 
 		user.setIsManager(!user.isManager());
