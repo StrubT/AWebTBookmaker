@@ -60,88 +60,104 @@
 					</h:selectOneListbox>
 				</div>
 			</div>
-			<div class="form-group">
-				<div class="col-sm-offset-2 col-sm-10">
-					<h:dataTable value="#{gameBean.gameBets}" var="bet" class="table table-condensed table-striped">
-						<h:column>
-							<f:facet name="header">#{gameBean.gamePassed ? texts.GameBetDescriptionLabel : texts.GameBetTypeLabel}</f:facet>
-							<h:selectOneListbox size="1" value="#{bet.type}" rendered="#{not (gameBean.gamePassed or bet.used)}" class="form-control input-sm bet-type">
-								<f:selectItems value="#{gameBean.betTypes}" var="betType" itemValue="#{betType}" itemLabel="#{bets[betType.code]}">
-									<f:passThroughAttribute name="data-code" value="#{betType.code}" />
-								</f:selectItems>
-							</h:selectOneListbox>
-							<h:outputFormat value="#{bets[bet.type.code]}" rendered="#{gameBean.gamePassed or bet.used}" class="form-control-static">
-								<f:param value="#{bet.team}" />
-								<f:param value="#{bet.time}" />
-								<f:param value="#{bet.number}" />
-							</h:outputFormat>
-						</h:column>
-						<h:column rendered="#{not gameBean.gamePassed}">
-							<f:facet name="header">#{texts.GameBetTeamLabel}</f:facet>
-							<h:selectOneListbox size="1" value="#{bet.team}" rendered="#{not (gameBean.gamePassed or bet.used)}" class="form-control input-sm bet-team">
-								<f:selectItem itemValue="#{null}" itemLabel="n/a" />
-								<f:selectItem itemValue="#{gameBean.gameTeam1}" itemLabel="#{teams[gameBean.gameTeam1]}" />
-								<f:selectItem itemValue="#{gameBean.gameTeam2}" itemLabel="#{teams[gameBean.gameTeam2]}" />
-							</h:selectOneListbox>
-						</h:column>
-						<h:column rendered="#{not gameBean.gamePassed}">
-							<f:facet name="header">#{texts.GameBetTimeLabel}</f:facet>
-							<h:inputText id="betTimeField" value="#{bet.time}" rendered="#{not (gameBean.gamePassed or bet.used)}" class="form-control input-sm bet-time" converter="ch.bfh.awebt.bookmaker.LOCAL_TIME_CONVERTER">
-								<f:passThroughAttribute name="type" value="time" />
-							</h:inputText>
-							<h:message for="betTimeField" infoClass="text-success" warnClass="text-warning" errorClass="text-danger" fatalClass="text-danger bg-danger" />
-						</h:column>
-						<h:column rendered="#{not gameBean.gamePassed}">
-							<f:facet name="header">#{texts.GameBetNumberLabel}</f:facet>
-							<h:inputText id="betNumberField" value="#{bet.number}" rendered="#{not (gameBean.gamePassed or bet.used)}" class="form-control input-sm bet-number">
-								<f:validateLongRange minimum="0" />
-								<f:passThroughAttribute name="type" value="number" />
-								<f:passThroughAttribute name="min" value="0" />
-							</h:inputText>
-							<h:message for="betNumberField" infoClass="text-success" warnClass="text-warning" errorClass="text-danger" fatalClass="text-danger bg-danger" />
-						</h:column>
-						<h:column>
-							<f:facet name="header">#{texts.GameBetOddsLabel}</f:facet>
-							<h:inputText id="betOddsField" rendered="#{not (gameBean.gamePassed or bet.used)}" value="#{bet.odds}" class="form-control input-sm" converter="ch.bfh.awebt.bookmaker.ODDS_CONVERTER" validator="ch.bfh.awebt.bookmaker.ODDS_VALIDATOR">
-								<f:passThroughAttribute name="type" value="number" />
-								<f:passThroughAttribute name="min" value="0" />
-								<f:passThroughAttribute name="step" value="0.001" />
-							</h:inputText>
-							<h:panelGroup rendered="#{gameBean.gamePassed or bet.used}" class="form-control-static">#{loginBean.formatNumberUser(bet.odds)}</h:panelGroup>
-							<h:message for="betOddsField" infoClass="text-success" warnClass="text-warning" errorClass="text-danger" fatalClass="text-danger bg-danger" />
-						</h:column>
-						<h:column rendered="#{not empty gameBean.gameId}">
-							<f:facet name="header">#{texts.GameBetStakeLabel} <em>(#{texts.CurrencyLong})</em></f:facet>
-							<h:panelGroup rendered="#{bet.used}">
-								<span>#{loginBean.formatNumberUser(bet.totalStake)}</span>
-								<em>&#8901; #{loginBean.formatNumberUser(bet.odds)} = #{loginBean.formatNumberUser(bet.totalGain)}</em>
-							</h:panelGroup>
-							<h:panelGroup rendered="#{not bet.used}">-</h:panelGroup>
-						</h:column>
-						<h:column rendered="#{gameBean.gamePassed}">
-							<f:facet name="header">#{texts.GameBetOccurredLabel}</f:facet>
-							<h:selectOneListbox size="1" value="#{bet.occurred}" class="form-control input-sm">
-								<f:selectItem itemValue="#{null}" itemLabel="#{texts.NotAvailable}" />
-								<f:selectItem itemValue="#{true}" itemLabel="#{texts.BooleanTrue}" />
-								<f:selectItem itemValue="#{false}" itemLabel="#{texts.BooleanFalse}" />
-							</h:selectOneListbox>
-						</h:column>
-						<h:column rendered="#{not gameBean.gamePassed}">
-							<h:commandLink action="#{gameBean.removeBet(bet)}" class="btn btn-warning btn-sm" rendered="#{not (bet.used or gameBean.gamePassed)}"><span class="glyphicon glyphicon-minus-sign"></span></h:commandLink>
-							<f:facet name="footer"><h:commandLink action="#{gameBean.addNewBet}" class="btn btn-success btn-sm"><span class="glyphicon glyphicon-plus-sign"></span></h:commandLink></f:facet>
-						</h:column>
-					</h:dataTable>
-				</div>
-			</div>
-			<div class="form-group">
-				<div class="col-sm-offset-2 col-sm-10 btn-group">
-					<h:commandButton id="saveButton" action="#{gameBean.saveGame}" class="btn btn-primary" value="#{texts.FormSaveButton}" />
-					<c:if test="#{not (empty gameBean.gameId or gameBean.gameUsed)}">
-						<h:commandButton id="deleteButton" action="#{gameBean.deleteGame}" class="btn btn-danger" value="#{texts.FormDeleteButton}" />
-					</c:if>
-					<h:link outcome="/managers/#{gameBean.gamePassed ? 'past' : 'upcoming'}-games.xhtml" class="btn btn-default" value="#{texts.FormCancelButton}" />
-				</div>
-			</div>
+		</div>
+		<h:dataTable value="#{gameBean.gameBets}" var="bet" class="table table-condensed table-striped">
+			<h:column>
+				<f:facet name="header">#{gameBean.gamePassed ? texts.GameBetDescriptionLabel : texts.GameBetTypeLabel}</f:facet>
+				<h:selectOneListbox size="1" value="#{bet.type}" rendered="#{not (gameBean.gamePassed or bet.used)}" class="form-control input-sm bet-type">
+					<f:selectItems value="#{gameBean.betTypes}" var="betType" itemValue="#{betType}" itemLabel="#{bets[betType.code]}">
+						<f:passThroughAttribute name="data-code" value="#{betType.code}" />
+					</f:selectItems>
+				</h:selectOneListbox>
+				<h:outputFormat value="#{bets[bet.type.code]}" rendered="#{gameBean.gamePassed or bet.used}" class="form-control-static">
+					<f:param value="#{bet.team}" />
+					<f:param value="#{bet.time}" />
+					<f:param value="#{bet.number}" />
+				</h:outputFormat>
+			</h:column>
+			<h:column rendered="#{not gameBean.gamePassed}">
+				<f:facet name="header">#{texts.GameBetTeamLabel}</f:facet>
+				<h:selectOneListbox size="1" value="#{bet.team}" rendered="#{not (gameBean.gamePassed or bet.used)}" class="form-control input-sm bet-team">
+					<f:selectItem itemValue="#{null}" itemLabel="n/a" />
+					<f:selectItem itemValue="#{gameBean.gameTeam1}" itemLabel="#{teams[gameBean.gameTeam1]}" />
+					<f:selectItem itemValue="#{gameBean.gameTeam2}" itemLabel="#{teams[gameBean.gameTeam2]}" />
+				</h:selectOneListbox>
+			</h:column>
+			<h:column rendered="#{not gameBean.gamePassed}">
+				<f:facet name="header">#{texts.GameBetTimeLabel}</f:facet>
+				<h:inputText id="betTimeField" value="#{bet.time}" rendered="#{not (gameBean.gamePassed or bet.used)}" class="form-control input-sm bet-time" converter="ch.bfh.awebt.bookmaker.LOCAL_TIME_CONVERTER">
+					<f:passThroughAttribute name="type" value="time" />
+				</h:inputText>
+				<h:message for="betTimeField" infoClass="text-success" warnClass="text-warning" errorClass="text-danger" fatalClass="text-danger bg-danger" />
+			</h:column>
+			<h:column rendered="#{not gameBean.gamePassed}">
+				<f:facet name="header">#{texts.GameBetNumberLabel}</f:facet>
+				<h:inputText id="betNumberField" value="#{bet.number}" rendered="#{not (gameBean.gamePassed or bet.used)}" class="form-control input-sm bet-number">
+					<f:validateLongRange minimum="0" />
+					<f:passThroughAttribute name="type" value="number" />
+					<f:passThroughAttribute name="min" value="0" />
+				</h:inputText>
+				<h:message for="betNumberField" infoClass="text-success" warnClass="text-warning" errorClass="text-danger" fatalClass="text-danger bg-danger" />
+			</h:column>
+			<h:column>
+				<f:facet name="header">#{texts.GameBetOddsLabel}</f:facet>
+				<h:inputText id="betOddsField" rendered="#{not (gameBean.gamePassed or bet.used)}" value="#{bet.odds}" class="form-control input-sm" converter="ch.bfh.awebt.bookmaker.ODDS_CONVERTER" validator="ch.bfh.awebt.bookmaker.ODDS_VALIDATOR">
+					<f:passThroughAttribute name="type" value="number" />
+					<f:passThroughAttribute name="min" value="0" />
+					<f:passThroughAttribute name="step" value="0.001" />
+				</h:inputText>
+				<h:panelGroup rendered="#{gameBean.gamePassed or bet.used}" class="form-control-static">#{loginBean.formatNumberUser(bet.odds)}</h:panelGroup>
+				<h:message for="betOddsField" infoClass="text-success" warnClass="text-warning" errorClass="text-danger" fatalClass="text-danger bg-danger" />
+			</h:column>
+			<h:column rendered="#{not empty gameBean.gameId}">
+				<f:facet name="header">#{texts.GameNofBetsLabel} (#{texts.GameUserBetsLabel})</f:facet>
+				<h:outputText rendered="#{bet.used}" value="#{loginBean.formatNumberUser(bet.totalBets)}" />
+				<h:outputText rendered="#{not bet.used}" value="-" />
+				<f:facet name="footer">
+					#{texts.GameNofBetsLabel}: #{loginBean.formatNumberUser(gameBean.gameBetStatistics.numberOfBets)}<br />
+					&#931; #{texts.GameUserBetsLabel}: #{loginBean.formatNumberUser(gameBean.gameBetStatistics.numberOfUserBets)}
+				</f:facet>
+			</h:column>
+			<h:column rendered="#{not empty gameBean.gameId}">
+				<f:facet name="header">#{texts.GameBetStakeLabel} (#{texts.Currency})</f:facet>
+				<h:outputText rendered="#{bet.used}" value="#{loginBean.formatNumberUser(bet.totalStake)}" />
+				<h:outputText rendered="#{not bet.used}" value="-" />
+				<f:facet name="footer">&#931; #{loginBean.formatNumberUser(gameBean.gameBetStatistics.betsAmountSum)}</f:facet>
+			</h:column>
+			<h:column rendered="#{not (empty gameBean.gameId or gameBean.gamePassed)}">
+				<f:facet name="header"><span class="text-muted">#{texts.GameBetPotentialLossLabel} (#{texts.Currency})</span></f:facet>
+				<h:outputText rendered="#{bet.used}" class="text-muted" value="#{loginBean.formatNumberUser(bet.totalPotentialGain)}" />
+				<h:outputText rendered="#{not bet.used}" class="text-muted" value="-" />
+				<f:facet name="footer"><span class="text-muted">&#931; #{loginBean.formatNumberUser(gameBean.gameBetStatistics.betsPotentialLoss)}*</span></f:facet>
+			</h:column>
+			<h:column rendered="#{gameBean.gamePassed}">
+				<f:facet name="header">#{texts.GameBetAmountWonLabel} (#{texts.Currency})</f:facet>
+				<h:outputText rendered="#{bet.used and not empty bet.occurred}" class="text-#{not bet.occurred ? 'success' : 'danger'}" value="#{loginBean.formatNumberUser(bet.occurred ? -bet.totalPotentialGain : bet.totalStake)}" />
+				<h:outputText rendered="#{not bet.used or empty bet.occurred}" value="-" />
+				<f:facet name="footer"><span class="text-#{gameBean.gameBetStatistics.betsAmountSum le 0 ? 'success' : 'danger'}">&#931; #{loginBean.formatNumberUser(-gameBean.gameBetStatistics.betsAmountSum)}</span></f:facet>
+			</h:column>
+			<h:column rendered="#{gameBean.gamePassed}">
+				<f:facet name="header">#{texts.GameBetOccurredLabel}</f:facet>
+				<h:selectOneListbox size="1" value="#{bet.occurred}" class="form-control input-sm">
+					<f:selectItem itemValue="#{null}" itemLabel="#{texts.NotAvailable}" />
+					<f:selectItem itemValue="#{true}" itemLabel="#{texts.BooleanTrue}" />
+					<f:selectItem itemValue="#{false}" itemLabel="#{texts.BooleanFalse}" />
+				</h:selectOneListbox>
+			</h:column>
+			<h:column rendered="#{not gameBean.gamePassed}">
+				<h:commandLink action="#{gameBean.removeBet(bet)}" class="btn btn-warning btn-sm" rendered="#{not (bet.used or gameBean.gamePassed)}"><span class="glyphicon glyphicon-minus-sign"></span></h:commandLink>
+				<f:facet name="footer"><h:commandLink action="#{gameBean.addNewBet}" class="btn btn-success btn-sm"><span class="glyphicon glyphicon-plus-sign"></span></h:commandLink></f:facet>
+			</h:column>
+		</h:dataTable>
+		<ul class="list-unstyled text-right">
+			<t:htmlTag value="li" rendered="#{not (empty gameBean.gameId or gameBean.gamePassed)}">*<em class="text-muted">#{texts.GameBetPotentialLossHint}</em></t:htmlTag>
+		</ul>
+		<div class="btn-group">
+			<h:commandButton id="saveButton" action="#{gameBean.saveGame}" class="btn btn-primary" value="#{texts.FormSaveButton}" />
+			<c:if test="#{not (empty gameBean.gameId or gameBean.gameUsed)}">
+				<h:commandButton id="deleteButton" action="#{gameBean.deleteGame}" class="btn btn-danger" value="#{texts.FormDeleteButton}" />
+			</c:if>
+			<h:link outcome="/managers/#{gameBean.gamePassed ? 'past' : 'upcoming'}-games.xhtml" class="btn btn-default" value="#{texts.FormCancelButton}" />
 		</div>
 		<script>
 			/*<![CDATA[*/

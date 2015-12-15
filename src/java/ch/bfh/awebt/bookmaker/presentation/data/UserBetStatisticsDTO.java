@@ -17,17 +17,26 @@ public class UserBetStatisticsDTO {
 	private double betsPercentageWon, betsPercentageLost;
 
 	/**
+	 * Constructs an empty statistics data transfer object.
+	 */
+	public UserBetStatisticsDTO() {
+
+		numberOfBets = 0;
+		betsAmountWon = betsAmountLost = betsAmountSum = BigDecimal.ZERO;
+		betsPercentageWon = betsPercentageLost = 0.0;
+	}
+
+	/**
 	 * Constructs a new statistics data transfer object for the specified {@link User}.
 	 *
 	 * @param user user to get statistics for
 	 */
 	public UserBetStatisticsDTO(User user) {
+		this();
 
 		List<UserBet> userBets = user.getBets();
 		numberOfBets = userBets.size();
 
-		betsAmountWon = betsAmountLost = BigDecimal.ZERO;
-		betsPercentageWon = betsPercentageLost = 0.0;
 		for (UserBet userBet: userBets)
 			if (Boolean.TRUE.equals(userBet.getBet().getOccurred())) {
 				betsAmountWon = betsAmountWon.add(userBet.getGain());

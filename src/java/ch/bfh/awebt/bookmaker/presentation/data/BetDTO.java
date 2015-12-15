@@ -26,8 +26,9 @@ public class BetDTO implements Serializable {
 	private Integer user;
 	private BigDecimal stake, gain;
 
-	private BigDecimal totalStake;
 	private boolean used;
+	private int totalBets;
+	private BigDecimal totalStake, totalPotentialGain;
 
 	public BetDTO() {
 
@@ -49,8 +50,10 @@ public class BetDTO implements Serializable {
 		time = bet.getTime();
 		number = bet.getNumber();
 
-		totalStake = new ArrayList<>(bet.getUserBets()).stream().reduce(BigDecimal.ZERO, (a, b) -> a.add(b.getStake()), (a, b) -> a.add(b)); //BUGFIX: new ArrayList<>(...) needed in eclipselink < 2.7
 		used = !bet.getUserBets().isEmpty();
+		totalBets = bet.getUserBets().size();
+		totalStake = new ArrayList<>(bet.getUserBets()).stream().reduce(BigDecimal.ZERO, (a, b) -> a.add(b.getStake()), (a, b) -> a.add(b)); //BUGFIX: new ArrayList<>(...) needed in eclipselink < 2.7
+		totalPotentialGain = totalStake.multiply(odds.subtract(BigDecimal.ONE));
 	}
 
 	/**
@@ -258,6 +261,15 @@ public class BetDTO implements Serializable {
 	}
 
 	/**
+	 * Gets the number of bets users placed.
+	 *
+	 * @return number of bets users placed
+	 */
+	public int getTotalBets() {
+		return totalBets;
+	}
+
+	/**
 	 * Gets the stakes of all placed bets combined.
 	 *
 	 * @return stakes of all placed bets combined
@@ -267,12 +279,12 @@ public class BetDTO implements Serializable {
 	}
 
 	/**
-	 * Gets the gain of all placed bets combined.
+	 * Gets the potential gain of all placed bets combined.
 	 *
-	 * @return gain of all placed bets combined
+	 * @return potential gain of all placed bets combined
 	 */
-	public BigDecimal getTotalGain() {
+	public BigDecimal getTotalPotentialGain() {
 
-		return totalStake.multiply(odds);
+		return totalPotentialGain;
 	}
 }

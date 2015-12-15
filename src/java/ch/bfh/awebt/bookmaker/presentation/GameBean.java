@@ -69,7 +69,7 @@ public class GameBean implements Serializable {
 	private String gamePaymentCreditCardNumber, gamePaymentCreditCardCode;
 	private Integer gamePaymentCreditCardExpirationMonth, gamePaymentCreditCardExpirationYear;
 
-	private GameBetStatisticsDTO gameBetStatistics;
+	private GameBetStatisticsDTO gameBetStatistics, userGameBetStatistics;
 	private Map<Integer, GameBetStatisticsDTO> gameBetStatisticsMap;
 	private UserBetStatisticsDTO userBetStatistics;
 
@@ -515,6 +515,32 @@ public class GameBean implements Serializable {
 	}
 
 	/**
+	 * Gets statistics about the current {@link User}'s {@link Bet}s.
+	 *
+	 * @return statistics about the current {@link User}'s {@link Bet}s
+	 */
+	public UserBetStatisticsDTO getUserBetStatistics() {
+
+		if (userBetStatistics == null)
+			userBetStatistics = new UserBetStatisticsDTO(loginBean.getUser());
+
+		return userBetStatistics;
+	}
+
+	/**
+	 * Gets statistics about the current {@link Game}'s {@link Bet}s for the current {@link User}.
+	 *
+	 * @return statistics about the current {@link Game}'s {@link Bet}s for the current {@link User}
+	 */
+	public GameBetStatisticsDTO getUserGameBetStatistics() {
+
+		if (userGameBetStatistics == null)
+			userGameBetStatistics = new GameBetStatisticsDTO(getGame(), loginBean.getUser());
+
+		return userGameBetStatistics;
+	}
+
+	/**
 	 * Gets statistics about the current {@link Game}'s {@link Bet}s.
 	 *
 	 * @return statistics about the current {@link Game}'s {@link Bet}s
@@ -523,6 +549,24 @@ public class GameBean implements Serializable {
 
 		if (gameBetStatistics == null)
 			gameBetStatistics = new GameBetStatisticsDTO(getGame());
+
+		return gameBetStatistics;
+	}
+
+	/**
+	 * Gets statistics about the current {@link Game}s' {@link Bet}s.
+	 *
+	 * @param games games to get statistics for
+	 *
+	 * @return statistics about the current {@link Game}s' {@link Bet}s
+	 */
+	public GameBetStatisticsDTO getGameBetStatistics(List<Game> games) {
+
+		if (gameBetStatistics == null) {
+			gameBetStatistics = new GameBetStatisticsDTO();
+			for (Game game: games)
+				gameBetStatistics = gameBetStatistics.combine(getGameBetStatistics(game));
+		}
 
 		return gameBetStatistics;
 	}
@@ -543,19 +587,6 @@ public class GameBean implements Serializable {
 			gameBetStatisticsMap.put(game.getId(), new GameBetStatisticsDTO(game));
 
 		return gameBetStatisticsMap.get(game.getId());
-	}
-
-	/**
-	 * Gets statistics about the current {@link User}'s {@link Bet}s.
-	 *
-	 * @return statistics about the current {@link User}'s {@link Bet}s
-	 */
-	public UserBetStatisticsDTO getUserBetStatistics() {
-
-		if (userBetStatistics == null)
-			userBetStatistics = new UserBetStatisticsDTO(loginBean.getUser());
-
-		return userBetStatistics;
 	}
 
 	/**
@@ -672,8 +703,9 @@ public class GameBean implements Serializable {
 							bet.setOdds(betDTO.getOdds());
 							getBetDAO().merge(bet);
 
-						} else
-							continue; //don't save changes
+						} else {
+							//don't save changes
+						}
 
 					else { //already passed
 						Boolean old = bet.getOccurred();
@@ -681,12 +713,13 @@ public class GameBean implements Serializable {
 						getBetDAO().merge(bet);
 
 						for (UserBet userBet: bet.getUserBets()) { //book amount to user balances
+							BigDecimal amount = userBet.getStake().multiply(bet.getOdds()); //calculate withdraw/deposit amount
+
 							User user = userBet.getUser();
 							if (Boolean.TRUE.equals(old))
-								user.withdraw(userBet.getDeposit()); //withdraw old gain
+								user.withdraw(amount); //withdraw old gain
 							if (Boolean.TRUE.equals(bet.getOccurred()))
-								user.deposit(userBet.getDeposit()); //deposit new gain (reimburse stake as well)
-
+								user.deposit(amount); //deposit new gain (reimburse stake as well)
 							getUserDAO().merge(user);
 						}
 					}

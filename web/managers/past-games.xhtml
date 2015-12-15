@@ -13,7 +13,11 @@
 			<c:when test="#{not empty gameBean.pastGames}">
 				<h:dataTable value="#{gameBean.pastGames}" var="game" class="table table-condensed table-striped">
 					<h:column>
-						<h:link outcome="/managers/game.xhtml?id=#{game.id}">#{texts.GameDetailsLink}</h:link>
+						<h:link outcome="/managers/game.xhtml?id=#{game.id}">#{texts.GameChangeLink}</h:link>
+					</h:column>
+					<h:column>
+						<f:facet name="header">#{texts.GameEvaluatedLabel}</f:facet>
+						<span class="glyphicon glyphicon-#{gameBean.getGameBetStatistics(game).evaluated ? 'ok' : 'remove'} text-#{gameBean.getGameBetStatistics(game).evaluated ? 'success' : 'danger'}"></span>
 					</h:column>
 					<h:column>
 						<f:facet name="header">#{texts.GameTeam1Label}</f:facet>
@@ -28,12 +32,16 @@
 						<time datetime="#{loginBean.formatDateTimeISO(game.startTimeZoned)}">#{loginBean.formatDateTimeUser(game.startTimeZoned, false)}</time>
 					</h:column>
 					<h:column>
-						<f:facet name="header">#{texts.GameEvaluatedLabel}</f:facet>
-						<span class="glyphicon glyphicon-#{gameBean.getGameBetStatistics(game).evaluated ? 'ok' : 'remove'} text-#{gameBean.getGameBetStatistics(game).evaluated ? 'success' : 'danger'}"></span>
+						<f:facet name="header">
+							#{texts.GameNofBetsLabel}<br />
+							(#{texts.GameBetsLabel} / #{texts.GameUserBetsLabel})
+						</f:facet>
+						#{loginBean.formatNumberUser(gameBean.getGameBetStatistics(game).numberOfBets)} / #{loginBean.formatNumberUser(gameBean.getGameBetStatistics(game).numberOfUserBets)}
 					</h:column>
 					<h:column>
-						<f:facet name="header">#{texts.GameBetAmountWonLabel}</f:facet>
-						<span>#{loginBean.formatNumberUser(-gameBean.getGameBetStatistics(game).betsAmountSum)}</span>
+						<f:facet name="header">#{texts.GameBetAmountWonLabel} (#{texts.Currency})</f:facet>
+						<span class="text-#{gameBean.getGameBetStatistics(game).betsAmountSum le 0 ? 'success' : 'danger'}">#{loginBean.formatNumberUser(-gameBean.getGameBetStatistics(game).betsAmountSum)}</span>
+						<f:facet name="footer"><span class="text-#{gameBean.getGameBetStatistics(gameBean.pastGames).betsAmountSum le 0 ? 'success' : 'danger'}">&#931; #{loginBean.formatNumberUser(-gameBean.getGameBetStatistics(gameBean.pastGames).betsAmountSum)}</span></f:facet>
 					</h:column>
 				</h:dataTable>
 			</c:when>
