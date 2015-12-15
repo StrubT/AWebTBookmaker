@@ -70,7 +70,7 @@
 					</f:selectItems>
 				</h:selectOneListbox>
 				<h:outputFormat value="#{bets[bet.type.code]}" rendered="#{gameBean.gamePassed or bet.used}" class="form-control-static">
-					<f:param value="#{bet.team}" />
+					<f:param value="#{teams[bet.team]}" />
 					<f:param value="#{bet.time}" />
 					<f:param value="#{bet.number}" />
 				</h:outputFormat>
@@ -122,13 +122,13 @@
 				<f:facet name="header">#{texts.GameBetStakeLabel} (#{texts.Currency})</f:facet>
 				<h:outputText rendered="#{bet.used}" value="#{loginBean.formatNumberUser(bet.totalStake)}" />
 				<h:outputText rendered="#{not bet.used}" value="-" />
-				<f:facet name="footer">&#931; #{loginBean.formatNumberUser(gameBean.gameBetStatistics.betsAmountSum)}</f:facet>
+				<f:facet name="footer">&#931; #{loginBean.formatNumberUser(gameBean.gameBetStatistics.betsStake)}</f:facet>
 			</h:column>
 			<h:column rendered="#{not (empty gameBean.gameId or gameBean.gamePassed)}">
-				<f:facet name="header"><span class="text-muted">#{texts.GameBetPotentialLossLabel} (#{texts.Currency})</span></f:facet>
-				<h:outputText rendered="#{bet.used}" class="text-muted" value="#{loginBean.formatNumberUser(bet.totalPotentialGain)}" />
-				<h:outputText rendered="#{not bet.used}" class="text-muted" value="-" />
-				<f:facet name="footer"><span class="text-muted">&#931; #{loginBean.formatNumberUser(gameBean.gameBetStatistics.betsPotentialLoss)}*</span></f:facet>
+				<f:facet name="header"><span class="text-warning">#{texts.GameBetPotentialLossLabel} (#{texts.Currency})</span></f:facet>
+				<h:outputText rendered="#{bet.used}" class="text-warning" value="#{loginBean.formatNumberUser(bet.totalPotentialGain)}" />
+				<h:outputText rendered="#{not bet.used}" class="text-warning" value="-" />
+				<f:facet name="footer"><span class="text-warning">&#8960; #{loginBean.formatNumberUser(gameBean.gameBetStatistics.betsPotentialLoss)}*</span></f:facet>
 			</h:column>
 			<h:column rendered="#{gameBean.gamePassed}">
 				<f:facet name="header">#{texts.GameBetAmountWonLabel} (#{texts.Currency})</f:facet>
@@ -150,7 +150,10 @@
 			</h:column>
 		</h:dataTable>
 		<ul class="list-unstyled text-right">
-			<t:htmlTag value="li" rendered="#{not (empty gameBean.gameId or gameBean.gamePassed)}">*<em class="text-muted">#{texts.GameBetPotentialLossHint}</em></t:htmlTag>
+			<t:htmlTag value="li" rendered="#{not (empty gameBean.gameId or gameBean.gamePassed)}">
+				<f:passThroughAttribute name="class" value="text-warning" />
+				*<em>#{texts.GameBetPotentialLossHint}</em>
+			</t:htmlTag>
 		</ul>
 		<div class="btn-group">
 			<h:commandButton id="saveButton" action="#{gameBean.saveGame}" class="btn btn-primary" value="#{texts.FormSaveButton}" />

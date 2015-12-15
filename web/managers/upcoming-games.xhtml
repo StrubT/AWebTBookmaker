@@ -32,22 +32,21 @@
 							#{texts.GameNofBetsLabel}<br />
 							(#{texts.GameBetsLabel} / #{texts.GameUserBetsLabel})
 						</f:facet>
-						#{loginBean.formatNumberUser(gameBean.getGameBetStatistics(game).numberOfBets)} /
-						#{loginBean.formatNumberUser(gameBean.getGameBetStatistics(game).numberOfUserBets)}
+						#{loginBean.formatNumberUser(gameBean.getGameBetStatistics(game).numberOfBets)} / #{loginBean.formatNumberUser(gameBean.getGameBetStatistics(game).numberOfUserBets)}
 					</h:column>
 					<h:column>
 						<f:facet name="header">#{texts.GameBetStakeLabel} (#{texts.Currency})</f:facet>
-						<span>#{loginBean.formatNumberUser(gameBean.getGameBetStatistics(game).betsAmountSum)}</span>
-						<f:facet name="footer">&#931; #{loginBean.formatNumberUser(gameBean.getGameBetStatistics(gameBean.upcomingGames).betsAmountSum)}</f:facet>
+						<span>#{loginBean.formatNumberUser(gameBean.getGameBetStatistics(game).betsStake)}</span>
+						<f:facet name="footer">&#931; #{loginBean.formatNumberUser(gameBean.getGameBetStatistics(gameBean.upcomingGames).betsStake)}</f:facet>
 					</h:column>
 					<h:column>
-						<f:facet name="header"><span class="text-muted">#{texts.GameBetPotentialLossLabel}* (#{texts.Currency})</span></f:facet>
-						<span class="text-muted">#{loginBean.formatNumberUser(gameBean.getGameBetStatistics(game).betsPotentialLoss)}</span>
-						<f:facet name="footer"><span class="text-muted">&#931; #{loginBean.formatNumberUser(gameBean.getGameBetStatistics(gameBean.upcomingGames).betsPotentialLoss)}</span></f:facet>
+						<f:facet name="header"><span class="text-warning">#{texts.GameBetPotentialLossLabel}* (#{texts.Currency})</span></f:facet>
+						<span class="text-warning">#{loginBean.formatNumberUser(gameBean.getGameBetStatistics(game).betsPotentialLoss)}</span>
+						<f:facet name="footer"><span class="text-warning">&#931; #{loginBean.formatNumberUser(gameBean.getGameBetStatistics(gameBean.upcomingGames).betsPotentialLoss)}</span></f:facet>
 					</h:column>
 				</h:dataTable>
 				<ul class="list-unstyled text-right">
-					<li>*<em class="text-muted">#{texts.GameBetPotentialLossHint}</em></li>
+					<li class="text-warning">*<em>#{texts.GameBetPotentialLossHint}</em></li>
 				</ul>
 			</c:when>
 			<c:otherwise>

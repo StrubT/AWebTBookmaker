@@ -744,6 +744,8 @@ public class GameBean implements Serializable {
 						}
 				}
 
+			getGameDAO().refresh(game);
+
 			//return String.format("/players/game.xhtml?id=%d&faces-redirect=true", game.getId());
 			return String.format("/managers/%s-games.xhtml?faces-redirect=true", isGamePassed() ? "past" : "upcoming");
 
@@ -855,7 +857,11 @@ public class GameBean implements Serializable {
 
 					else if (persist)
 						userBetDAO.persist(new UserBet(user, bet, betDTO.getStake()));
+
+					getBetDAO().refresh(bet);
 				}
+
+				getUserDAO().refresh(user);
 
 				statusConfirmation = false;
 

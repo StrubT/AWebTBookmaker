@@ -13,6 +13,7 @@ import ch.bfh.awebt.bookmaker.Streams;
 public enum BetType {
 	//
 	//If you modify this enumerable, remember to modify the text bundle 'ch.bfh.awebt.bookmaker.bundles.bets' as well.
+	//You might also want to add additional checks to 'ch.bfh.awebt.bookmaker.presentation.data.GameBetStatisticsDTO.COMPATIBLE_CHECKS' to improve the potential loss calculation.
 
 	/**
 	 * {0} kicks off
