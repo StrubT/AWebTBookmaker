@@ -82,7 +82,7 @@
 				</div>
 				<footer class="navbar navbar-default navbar-fixed-bottom">
 					<div class="container">
-						<p class="navbar-text">&#169; #{navigationBean.copyrightYears} #{texts.ApplicationCopyrightOwner}</p>
+						<p class="navbar-text navbar-text-nomargin">&#169; #{navigationBean.copyrightYears} #{texts.ApplicationCopyrightOwner}</p>
 						<c:if test="#{navigationBean.showLoginRegister()}">
 							<c:choose>
 								<c:when test="#{empty loginBean.user}">
@@ -106,12 +106,10 @@
 									</div>
 								</c:when>
 								<c:otherwise>
-									<div class="navbar-right">
-										<p class="navbar-text">
-											logged in as #{loginBean.login} |
-											<h:commandLink action="#{loginBean.logout}" class="navbar-link" value="#{texts.LoginLogoutButton}" />
-										</p>
-									</div>
+									<p class="navbar-right navbar-text navbar-text-nomargin">
+										logged in as #{loginBean.login} |
+										<h:commandLink action="#{loginBean.logout}" class="navbar-link" value="#{texts.LoginLogoutButton}" />
+									</p>
 								</c:otherwise>
 							</c:choose>
 						</c:if>

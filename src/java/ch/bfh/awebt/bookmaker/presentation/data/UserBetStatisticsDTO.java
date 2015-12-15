@@ -48,8 +48,11 @@ public class UserBetStatisticsDTO {
 			}
 
 		betsAmountSum = betsAmountWon.subtract(betsAmountLost);
-		betsPercentageWon /= numberOfBets;
-		betsPercentageLost /= numberOfBets;
+
+		if (numberOfBets > 0) {
+			betsPercentageWon /= numberOfBets;
+			betsPercentageLost /= numberOfBets;
+		}
 	}
 
 	/**
