@@ -220,7 +220,7 @@ public class GameBetStatisticsDTO {
 			.first(BetType.TEAM_KICKS_OFF, MapBuilder
 						 .single(BetType.TEAM_KICKS_OFF, compatibleSameTeam))
 			.add(BetType.TEAM_SCORES_FIRST_GOAL, MapBuilder
-					 .single(BetType.TEAM_KICKS_OFF, compatibleSameTeam))
+					 .single(BetType.TEAM_SCORES_FIRST_GOAL, compatibleSameTeam))
 			.add(BetType.TEAM_AWARDED_FIRST_THROW_IN, MapBuilder
 					 .single(BetType.TEAM_AWARDED_FIRST_THROW_IN, compatibleSameTeam));
 
