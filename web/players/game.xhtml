@@ -84,10 +84,10 @@
 						<cc:form-group component="#{gameBean.creditCardNumberField}">
 							<label for="creditCardNumberField" class="col-sm-2 control-label">#{texts.GamePaymentCreditCardNumberLabel}</label>
 							<div class="col-sm-10">
-								<h:inputText id="creditCardNumberField" value="#{gameBean.gamePaymentCreditCardNumber}" binding="#{gameBean.creditCardNumberField}" required="true" class="form-control">
+								<h:inputText id="creditCardNumberField" value="#{gameBean.gamePaymentCreditCardNumber}" binding="#{gameBean.creditCardNumberField}" required="true" class="form-control" validator="ch.bfh.awebt.bookmaker.CREDIT_CARD_VALIDATOR">
 									<f:passThroughAttribute name="required" value="required" />
 									<f:passThroughAttribute name="placeholder" value="1234 1234 1234 1234" />
-									<t:validateCreditCard />
+									<!--<t:validateCreditCard />-->
 								</h:inputText>
 								<cc:message component="#{gameBean.creditCardNumberField}" />
 							</div>

@@ -18,77 +18,77 @@ public enum BetType {
 	/**
 	 * {0} kicks off
 	 */
-	TEAM_KICKS_OFF("KCK", false, true, true),
+	TEAM_KICKS_OFF("KCK", true, false, false),
 
 	/**
 	 * {0} scores first goal
 	 */
-	TEAM_SCORES_FIRST_GOAL("FGL", false, true, true),
+	TEAM_SCORES_FIRST_GOAL("FGL", true, false, false),
 
 	/**
 	 * {0} awarded first throw in
 	 */
-	TEAM_AWARDED_FIRST_THROW_IN("FTW", false, true, true),
+	TEAM_AWARDED_FIRST_THROW_IN("FTW", true, false, false),
 
 	/**
 	 * {0} leads after {1}
 	 */
-	TEAM_LEADS_AFTER_TIME("LDT", false, false, true),
+	TEAM_LEADS_AFTER_TIME("LDT", true, true, false),
 
 	/**
 	 * {0} leads after {1} with {2} or more goals
 	 */
-	TEAM_LEADS_AFTER_TIME_WITH_NOF_GOALS("LDG", false, false, false),
+	TEAM_LEADS_AFTER_TIME_WITH_NOF_GOALS("LDG", true, true, true),
 
 	/**
 	 * tied after {1}
 	 */
-	TIED_AFTER_TIME("EVT", true, false, true),
+	TIED_AFTER_TIME("EVT", false, true, false),
 
 	/**
 	 * {2} or more goals after {1}
 	 */
-	NOF_GOALS_AFTER_TIME("GLT", true, false, false),
+	NOF_GOALS_AFTER_TIME("GLT", false, true, true),
 
 	/**
 	 * {0} wins
 	 */
-	TEAM_WINS("WIN", false, true, true),
+	TEAM_WINS("WIN", true, false, false),
 
 	/**
 	 * {0} wins leading with {2} or more goals
 	 */
-	TEAM_WINS_LEADING_WITH_NOF_GOALS("WNG", false, true, false),
+	TEAM_WINS_LEADING_WITH_NOF_GOALS("WNG", true, false, true),
 
 	/**
 	 * ends in a draw
 	 */
-	ENDS_TIED("EVN", true, true, true),
+	ENDS_TIED("EVN", false, false, false),
 
 	/**
 	 * ends with {2} or more goals
 	 */
-	ENDS_WITH_NOF_GOALS("GLS", true, true, false),
+	ENDS_WITH_NOF_GOALS("GLS", false, false, true),
 
 	/**
 	 * ends with {2} or more cards combined
 	 */
-	ENDS_WITH_NOF_CARDS_COMBINED("CRD", true, true, false),
+	ENDS_WITH_NOF_CARDS_COMBINED("CRD", false, false, true),
 
 	/**
 	 * ends with {2} or more yellow cards
 	 */
-	ENDS_WITH_NOF_YELLOW_CARDS("YEL", true, true, false),
+	ENDS_WITH_NOF_YELLOW_CARDS("YEL", false, false, true),
 
 	/**
 	 * ends with {2} or more red cards
 	 */
-	ENDS_WITH_NOF_RED_CARDS("RED", true, true, false),
+	ENDS_WITH_NOF_RED_CARDS("RED", false, false, true),
 
 	/**
 	 * ends with {2} or more corners
 	 */
-	ENDS_WITH_NOF_CORNERS("CRN", true, true, false);
+	ENDS_WITH_NOF_CORNERS("CRN", false, false, true);
 
 	private final String code;
 	private final boolean teamRequired, timeRequired, numberRequired;

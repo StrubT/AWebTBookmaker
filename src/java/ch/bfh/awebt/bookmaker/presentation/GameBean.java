@@ -252,7 +252,7 @@ public class GameBean implements Serializable {
 				gameTeam1 = gameTeam2 = null;
 				gameStartTime = null;
 
-				gameBets = loginBean.getNavigationBean().getCurrentView().equals("/managers/game.xhtml") ? new ArrayList<>(Arrays.asList(new BetDTO())) : new ArrayList<>();
+				gameBets = new ArrayList<>();
 				gameUsed = false;
 			}
 		}
@@ -688,8 +688,8 @@ public class GameBean implements Serializable {
 				Bet bet = betDTO.getId() != null ? new ArrayList<>(gameBetsOld).stream().filter(b -> b.getId().equals(betDTO.getId())).collect(Streams.nullableSingleCollector()) : null; //BUGFIX: new ArrayList<>(...) needed in eclipselink < 2.7
 				if (bet != null) {
 					if (bet.getType().isTeamRequired() && betDTO.getTeam() == null
-							&& bet.getType().isTimeRequired() && betDTO.getTime() == null
-							&& bet.getType().isNumberRequired() && betDTO.getNumber() == null) {
+							|| bet.getType().isTimeRequired() && betDTO.getTime() == null
+							|| bet.getType().isNumberRequired() && betDTO.getNumber() == null) {
 						MessageFactory.addWarning("ch.bfh.awebt.bookmaker.GAME_BET_PROPERTY_MISSING");
 						return null;
 					}
