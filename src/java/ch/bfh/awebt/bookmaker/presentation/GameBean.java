@@ -354,7 +354,7 @@ public class GameBean implements Serializable {
 	 */
 	public boolean isGamePassed() {
 
-		return gameStartTime != null ? gameStartTime.isBefore(LocalDateTime.now(gameTimeZone)) : false;
+		return getGameId() != null && gameStartTime != null ? gameStartTime.isBefore(LocalDateTime.now(gameTimeZone)) : false;
 	}
 
 	/**

@@ -169,9 +169,9 @@
 				$('main').on('change', '.bet-type', function () {
 					var $type = $(this), settings = betTypes[$type.find('option[value="' + $type.val() + '"]').data('code')], $tr = $type.closest('tr');
 					if (!$type.prop('disabled') && settings) {
-						$team = $tr.find('.bet-team').prop('disabled', settings.team);
-						$team = $tr.find('.bet-time').prop('readonly', settings.time);
-						$team = $tr.find('.bet-number').prop('readonly', settings.number);
+						$team = $tr.find('.bet-team').prop('disabled', !settings.team);
+						$team = $tr.find('.bet-time').prop('readonly', !settings.time);
+						$team = $tr.find('.bet-number').prop('readonly', !settings.number);
 					}
 				}).find('.bet-type').trigger('change');
 			});
