@@ -495,7 +495,7 @@ public class LoginBean implements Serializable {
 	 */
 	public void setPassword(String password) {
 
-		userPassword = password.toCharArray();
+		userPassword = password.length() > 0 ? password.toCharArray() : null;
 	}
 
 	/**

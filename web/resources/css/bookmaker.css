@@ -7,3 +7,4 @@ h2 { margin-top: 0; }
 
 .table th { white-space: nowrap; }
 .navbar-text.navbar-text-nomargin { margin-left: 0; margin-right: 0; }
+#home-image { max-width: 100%; }

@@ -8,7 +8,18 @@
 								xmlns:t="http://myfaces.apache.org/tomahawk"
 								xmlns:cc="http://java.sun.com/jsf/composite/custom-components">
 	<ui:define name="main">
-		<h2>#{texts.HomeTitle}</h2>
-		<p>#{texts.HomeContent}</p>
+		<div class="jumbotron">
+			<div class="h1">#{texts.ApplicationName}</div>
+			<p>#{texts.HomeContentJumbotron}</p>
+		</div>
+		<div class="row">
+			<div class="col-sm-6">
+				<p class="lead">#{texts.HomeContentLead}</p>
+				<h:outputText value="#{texts.HomeContentTree}" escape="false" />
+			</div>
+			<div class="col-sm-6">
+				<img id="home-image" src="#{resource['images:home-image.jpg']}" alt="#{texts.ApplicationName}" />
+			</div>
+		</div>
 	</ui:define>
 </ui:composition>
