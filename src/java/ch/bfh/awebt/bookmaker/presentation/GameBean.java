@@ -13,10 +13,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.component.UIComponent;
+import javax.faces.event.AbortProcessingException;
 import javax.persistence.PersistenceException;
 import ch.bfh.awebt.bookmaker.Streams;
 import ch.bfh.awebt.bookmaker.persistence.BetDAO;
@@ -30,6 +32,7 @@ import ch.bfh.awebt.bookmaker.persistence.data.Game;
 import ch.bfh.awebt.bookmaker.persistence.data.Team;
 import ch.bfh.awebt.bookmaker.persistence.data.User;
 import ch.bfh.awebt.bookmaker.persistence.data.UserBet;
+import ch.bfh.awebt.bookmaker.presentation.data.AccessCondition;
 import ch.bfh.awebt.bookmaker.presentation.data.BetDTO;
 import ch.bfh.awebt.bookmaker.presentation.data.GameBetStatisticsDTO;
 import ch.bfh.awebt.bookmaker.presentation.data.UserBetStatisticsDTO;
@@ -663,6 +666,7 @@ public class GameBean implements Serializable {
 	 * @return outcome: identifier of the view to navigate to
 	 */
 	public String saveGame() {
+		verifyAccess(AccessCondition.MANAGER);
 
 		try {
 			Team team1 = getTeamDAO().find(gameTeam1);
@@ -762,6 +766,7 @@ public class GameBean implements Serializable {
 	 * @return outcome: identifier of the view to navigate to
 	 */
 	public String deleteGame() {
+		verifyAccess(AccessCondition.MANAGER);
 
 		try {
 			Game game = gameId != null ? getGameDAO().find(gameId) : null;
@@ -787,6 +792,7 @@ public class GameBean implements Serializable {
 	 * Shows the confirmation page for changing user bets.
 	 */
 	public void confirmUserBets() {
+		verifyAccess(AccessCondition.REGISTERED);
 
 		if (!isGamePassed()) {
 			statusConfirmation = true;
@@ -826,6 +832,7 @@ public class GameBean implements Serializable {
 	 * Saves the stakes the user put on the bets.
 	 */
 	public void saveUserBets() {
+		verifyAccess(AccessCondition.REGISTERED);
 
 		if (!isGamePassed())
 			try {
@@ -886,5 +893,11 @@ public class GameBean implements Serializable {
 		//implement actual payment process
 		//
 		return gamePaymentCreditCardCode != null && gamePaymentCreditCardCode != null && now.compareTo(exp) < 0;
+	}
+
+	private void verifyAccess(AccessCondition condition) {
+
+		if (!condition.hasAccess(loginBean.getUser()))
+			throw new AbortProcessingException(MessageFactory.getMessage(FacesMessage.SEVERITY_ERROR, "ch.bfh.awebt.bookmaker.SECURITY_ERROR").getSummary());
 	}
 }
